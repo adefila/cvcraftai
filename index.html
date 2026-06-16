@@ -196,7 +196,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 @media print{
   .bar,.pnl,.pnl-r{display:none!important}
   body{overflow:visible;height:auto}
-  #print-target{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff;overflow:auto}
+  #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff}
 }
 #print-target{display:none}
 #pdf-render-zone{position:fixed;top:0;left:-99999px;width:794px;overflow:visible;z-index:-1}
