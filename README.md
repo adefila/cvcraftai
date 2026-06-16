@@ -1,17 +1,26 @@
 # CVCraft AI — ATS-Optimized CV Builder
 
-A sleek, AI-powered CV builder with 8 professional templates, real-time ATS scoring, JD keyword matching, and one-click PDF export. Built as a single HTML file — no install, no backend, no dependencies to manage.
+A sleek, AI-powered CV builder with 11 professional templates, real-time ATS scoring, JD keyword matching, and one-click PDF export. Built as a single HTML file — no install, no backend, no dependencies to manage.
 
-![CVCraft AI](https://img.shields.io/badge/CVCraft-AI%20Powered-6366F1?style=flat-square)
-![Templates](https://img.shields.io/badge/Templates-8-0EA5E9?style=flat-square)
-![ATS](https://img.shields.io/badge/ATS-Optimized-10B981?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-F59E0B?style=flat-square)
+![CVCraft AI](https://img.shields.io/badge/CVCraft-AI%20Powered-4F5BFF?style=flat-square)
+![Templates](https://img.shields.io/badge/Templates-11-0EA5E9?style=flat-square)
+![ATS](https://img.shields.io/badge/ATS-Optimized-0F9D58?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-D97706?style=flat-square)
 
 ---
 
+## What's new in this build
+- **Unified AI Review** — one Claude call returns a reasoned score, specific rewrite suggestions, and ATS keywords together, instead of disconnected calls. More context per call means more grounded, consistent output.
+- **Fixed PDF export** — the previous build cloned the CV into a zero-opacity container, which `html2canvas` can mishandle (some versions return a blank or broken canvas for `opacity:0` ancestors even when laid out correctly). The fix renders the clone fully opaque off-screen at `left:-9999px` with an explicit white background, and waits for `document.fonts.ready` before capture so web fonts are loaded.
+- **Fixed modal close bug** — Add Experience / Add Education modals previously closed via an ambiguous `document.querySelector('.modal-bg')`, which could grab the wrong modal if more than one existed in the DOM. Each modal now holds a direct reference to itself via closure, so the correct modal always closes on save.
+- **New visual direction** — white/off-white surfaces, fully-rounded black pill buttons as the primary action style, blue reserved for the logo accent only.
+- **Micro-interactions** — button press states (scale down on click), modal entrance animation, toast notifications with icons, tab transitions, hover lift on template cards.
+- **Standard template** — the classic, conservative single-column CV format with zero visual flourish, for traditional industries or maximum ATS safety.
+
+
 ## Features
 
-### 8 Distinct Templates
+### 11 Distinct Templates
 | Template | Best For |
 |----------|----------|
 | **Nova** | Tech, design, startups — dark sidebar with skill bars |
@@ -22,10 +31,26 @@ A sleek, AI-powered CV builder with 8 professional templates, real-time ATS scor
 | **Zenith** | Finance, law, academia — centred, symmetric |
 | **Carbon** | Engineers, developers — full dark mode |
 | **Pulse** | Product, SaaS, startups — metric cards, tag cloud |
+| **Meridian** | Senior creative/brand — asymmetric two-tone editorial, numbered sections |
+| **Axis** | Data, engineering, analytical roles — technical grid, monospace, numbered markers |
+| **Standard** | Traditional industries, maximum ATS safety — classic black-text format, zero flourish |
+
+### Typography
+- **Display:** Plus Jakarta Sans — geometric, distinctive headings
+- **Body:** Inter — 16px base size across all UI for comfortable reading
+- **Mono:** IBM Plex Mono — contact details, dates, technical chips
+- CV preview text is intentionally kept at print-realistic sizes (10–13px) since it mirrors an actual printed document, not app UI
+
+### On ATS scoring accuracy
+No company's actual ATS algorithm — Workday, Greenhouse, Taleo, iCIMS, or whatever Google, Amazon, Apple, or Meta runs internally — is publicly documented. Those systems are proprietary and not reverse-engineerable from outside. What this app scores against instead is the well-documented, broadly-agreed set of ATS parsing and keyword-matching practices: standard section headers, clean parseable formatting, keyword/skill alignment with a job description, and quantified achievements. The app is upfront about this distinction directly in the ATS panel — it is not claiming to replicate any specific company's internal system.
+
+### On AI accuracy
+The AI Review feature makes a single Claude API call with your complete CV text and target role, returning a reasoned score, specific improvement suggestions, and relevant keywords together — rather than three disconnected calls each missing context the others have. This combined-context approach produces more consistent, grounded output. Accuracy still scales directly with input specificity: vague CV content produces vague feedback, while detailed achievements with real numbers produce sharper, more specific suggestions. The AI does not verify factual claims in your CV — it reasons over what you provide.
+
 
 ### AI Features (Anthropic Claude API)
-- **AI Enhance** — Enter your target role and get 3 specific, actionable improvements plus ATS keywords you can add with one click
-- **JD Gap Analysis** — Paste any job description and get an AI-powered gap analysis with prioritised recommendations
+- **AI Review** — One unified call: enter your target role (and optionally paste a job description) and get a reasoned quality score, 3 specific rewrite suggestions, and missing ATS keywords — all from a single pass over your complete CV, so nothing contradicts itself.
+- **JD Gap Analysis** — In the JD Match tab, paste any job description and get a focused AI gap analysis with prioritised recommendations specific to that role.
 
 ### JD Keyword Matcher
 - Paste a job description and instantly see your match percentage
@@ -138,24 +163,28 @@ const COLORS = [
 
 ## ATS Scoring Criteria
 
-The app scores your CV on 12 criteria:
+Live, rule-based, instant feedback as you type:
 
 | Criteria | Points |
 |----------|--------|
-| Full name | 10 |
-| Email address | 10 |
+| Full name | 8 |
+| Valid email format | 8 |
 | Phone number | 5 |
-| Location | 5 |
-| Professional summary (60+ chars) | 15 |
-| Work experience (1+ roles) | 20 |
+| Location | 4 |
+| Strong summary (80+ chars) | 12 |
+| Work experience (1+ roles) | 15 |
 | Multiple roles | 5 |
-| Education | 10 |
-| Skills (3+ listed) | 10 |
-| Strong skills section (8+) | 5 |
-| Achievement bullet points | 10 |
-| Quantified achievements (numbers/%) | 5 |
+| Education | 8 |
+| Skills (5+ listed) | 10 |
+| Comprehensive skills (10+) | 4 |
+| Achievement bullet points (3+) | 10 |
+| Quantified achievements (numbers/%) | 8 |
+| Strong action verbs | 5 |
+| LinkedIn / portfolio link | 3 |
 
-**Total: 110 points, capped at 100%**
+**Total: 105 points, capped at 100%**
+
+This sits alongside the AI Review's reasoned score (0–100), which judges the CV holistically rather than as a checklist — the two are intentionally separate signals, shown in different places, so one doesn't silently override the other.
 
 ---
 
