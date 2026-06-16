@@ -18,9 +18,9 @@ html,body{height:100%;overflow:hidden}
 body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--surf);color:var(--ink);-webkit-font-smoothing:antialiased}
 
 /* ── TOPBAR ── */
-.bar{position:fixed;top:0;left:0;right:0;height:92px;background:var(--bg);border-bottom:1px solid var(--bdr);z-index:200;display:flex;justify-content:center}
+.bar{position:fixed;top:0;left:0;right:0;height:68px;background:var(--bg);border-bottom:1px solid var(--bdr);z-index:200;display:flex;justify-content:center}
 .bar-inner{width:100%;max-width:1200px;display:flex;align-items:center;padding:0 22px;gap:18px}
-.logo{font-family:var(--ff-d);font-weight:800;font-size:50px;letter-spacing:-1.5px;white-space:nowrap;color:var(--ink);line-height:1}
+.logo{font-family:var(--ff-d);font-weight:800;font-size:32px;letter-spacing:-1px;white-space:nowrap;color:var(--ink);line-height:1}
 .logo span{color:var(--ac)}
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
@@ -48,8 +48,8 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .btn-pill-sm:disabled{opacity:.4;cursor:not-allowed}
 
 /* ── LAYOUT ── */
-.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:92px;background:var(--surf)}
-.ws{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 92px);width:100%;max-width:1200px}
+.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:68px;background:var(--surf)}
+.ws{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 68px);width:100%;max-width:1200px}
 .pnl{background:var(--bg);border-right:1px solid var(--bdr);overflow-y:auto;height:100%;display:none;flex-direction:column}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:var(--surf);overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:32px 24px}
@@ -199,7 +199,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   #print-target{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff;overflow:auto}
 }
 #print-target{display:none}
-#pdf-render-zone{position:fixed;top:0;left:-9999px;width:794px;background:#fff;pointer-events:none}
+#pdf-render-zone{height:0;overflow:hidden;width:794px}
 
 /* ══════════════════════
    TEMPLATE STYLES
@@ -580,17 +580,21 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
       </div>
     </div>
 
+    <div class="sec">
+      <div class="lbl">Certifications &amp; Licenses</div>
+      <div id="cert-list"></div>
+      <button class="btn-add" onclick="addCert()">+ Add Certification</button>
+    </div>
+
+    <div class="sec">
+      <div class="lbl">Languages</div>
+      <div id="lang-list"></div>
+      <button class="btn-add" onclick="addLang()">+ Add Language</button>
+    </div>
+
     <div class="sec" style="border-bottom:none">
       <div class="lbl">Additional Info <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(commonly missed, often a silent rejection reason)</span></div>
       <div class="fg">
-        <div>
-          <label class="date-lbl">Certifications / Licenses</label>
-          <input class="fi" id="f-certs" placeholder="e.g. AWS Certified Solutions Architect, PMP" oninput="rCV()">
-        </div>
-        <div>
-          <label class="date-lbl">Languages</label>
-          <input class="fi" id="f-langs" placeholder="e.g. English (native), Spanish (fluent)" oninput="rCV()">
-        </div>
         <div>
           <label class="date-lbl">Work authorization</label>
           <input class="fi" id="f-workauth" placeholder="e.g. Authorized to work in the US" oninput="rCV()">
@@ -727,7 +731,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 
 <script>
 // ── STATE ──
-let CT='classic', skills=[], exps=[], edus=[], AC='#4F5BD5', exportSel='pdf';
+let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], AC='#4F5BD5', exportSel='pdf';
 const SL=[90,78,85,70,92,65,88,75,82];
 
 const TPLS={
@@ -1104,6 +1108,92 @@ function renderEduList(){
     </div>`).join('');
 }
 
+function addCert(editIdx){
+  const isEdit=typeof editIdx==='number';
+  const c=isEdit?certs[editIdx]:{name:'',issuer:'',year:''};
+  const modalEl=mkModal(`
+    <div class="modal-title">${isEdit?'Edit':'Add'} Certification</div>
+    <div class="fg">
+      <input class="fi" id="cert-name" placeholder="Certification name (e.g. AWS Certified Solutions Architect)" value="${esc(c.name)}">
+      <input class="fi" id="cert-issuer" placeholder="Issuing organization (e.g. Amazon Web Services)" value="${esc(c.issuer)}">
+      <input class="fi" id="cert-year" placeholder="Year obtained" value="${esc(c.year)}">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-pill" id="cert-save-btn" style="flex:1;justify-content:center">Save</button>
+      <button class="btn-pill-outline" id="cert-cancel-btn">Cancel</button>
+    </div>`);
+  gi('cert-save-btn').onclick=()=>saveCert(modalEl,editIdx);
+  gi('cert-cancel-btn').onclick=()=>modalEl.remove();
+  setTimeout(()=>gi('cert-name')?.focus(),60);
+}
+
+function saveCert(modalEl,editIdx){
+  const name=v('cert-name'),issuer=v('cert-issuer'),year=v('cert-year');
+  if(!name){toast('Please enter a certification name','err');return;}
+  const rec={name,issuer,year};
+  if(typeof editIdx==='number'){certs[editIdx]=rec;}else{certs.push(rec);}
+  modalEl.remove();
+  renderCertList();rCV();upATS();
+  toast(typeof editIdx==='number'?'Certification updated':'Certification added','ok');
+}
+
+function renderCertList(){
+  gi('cert-list').innerHTML=certs.map((c,i)=>`
+    <div class="ei ei-editable">
+      <div class="ei-t">${c.name}</div>
+      <div class="ei-s">${[c.issuer,c.year].filter(Boolean).join(' · ')}</div>
+      <div class="ei-actions">
+        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function addLang(editIdx){
+  const isEdit=typeof editIdx==='number';
+  const l=isEdit?langs[editIdx]:{name:'',level:'Fluent'};
+  const modalEl=mkModal(`
+    <div class="modal-title">${isEdit?'Edit':'Add'} Language</div>
+    <div class="fg">
+      <input class="fi" id="lang-name" placeholder="Language (e.g. Spanish)" value="${esc(l.name)}">
+      <div>
+        <label class="date-lbl">Proficiency</label>
+        <select class="fi" id="lang-level">
+          ${['Native','Fluent','Professional','Conversational','Basic'].map(lvl=>`<option value="${lvl}" ${l.level===lvl?'selected':''}>${lvl}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-pill" id="lang-save-btn" style="flex:1;justify-content:center">Save</button>
+      <button class="btn-pill-outline" id="lang-cancel-btn">Cancel</button>
+    </div>`);
+  gi('lang-save-btn').onclick=()=>saveLang(modalEl,editIdx);
+  gi('lang-cancel-btn').onclick=()=>modalEl.remove();
+  setTimeout(()=>gi('lang-name')?.focus(),60);
+}
+
+function saveLang(modalEl,editIdx){
+  const name=v('lang-name'),level=v('lang-level');
+  if(!name){toast('Please enter a language','err');return;}
+  const rec={name,level};
+  if(typeof editIdx==='number'){langs[editIdx]=rec;}else{langs.push(rec);}
+  modalEl.remove();
+  renderLangList();rCV();upATS();
+  toast(typeof editIdx==='number'?'Language updated':'Language added','ok');
+}
+
+function renderLangList(){
+  gi('lang-list').innerHTML=langs.map((l,i)=>`
+    <div class="ei ei-editable">
+      <div class="ei-t">${l.name}</div>
+      <div class="ei-s">${l.level}</div>
+      <div class="ei-actions">
+        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove">✕</button>
+      </div>
+    </div>`).join('');
+}
+
 // ── JD MATCHER ──
 const STOPWORDS=new Set(['the','and','or','in','at','of','to','a','an','is','are','with','for','on','as','be','by','that','this','will','you','we','our','your','from','have','has','it','not','but','they','their','its','was','were','been','can','may','should','must','who','what','which','when','how','any','all','both','each','more','also','than','into']);
 
@@ -1348,8 +1438,8 @@ function upATS(){
   const actionVerbs=/\b(led|built|launched|managed|drove|increased|reduced|created|designed|developed|improved|delivered|scaled|optimi[sz]ed|implemented)\b/i;
   if(exps.some(e=>e.d&&actionVerbs.test(e.d))){sc+=5;checks.push({l:'Uses strong action verbs',ok:true})}else if(exps.length){checks.push({l:'Start bullets with strong action verbs (Led, Built, Drove)',ok:false})}
   if(v('f-li')){sc+=3;checks.push({l:'LinkedIn / portfolio link added',ok:true})}
-  if(v('f-certs')){sc+=4;checks.push({l:'Certifications listed',ok:true})}
-  if(v('f-langs')){sc+=2;checks.push({l:'Languages listed',ok:true})}
+  if(certs.length){sc+=4;checks.push({l:`${certs.length} certification(s) listed`,ok:true})}
+  if(langs.length){sc+=2;checks.push({l:`${langs.length} language(s) listed`,ok:true})}
   if(v('f-workauth')){sc+=3;checks.push({l:'Work authorization stated',ok:true})}else{checks.push({l:'Consider adding work authorization status — some ATS filters reject applications without it',ok:false})}
 
   renderWeakWords();
@@ -1401,18 +1491,23 @@ function getData(){
     lo:v('f-loc')||'City, Country',
     li:v('f-li')||'linkedin.com/in/yourprofile',
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
-    certs:v('f-certs'),
-    langs:v('f-langs'),
+    certs,langs,
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
     skills,exps,edus
   };
 }
 
+function certsLine(certs){
+  return certs.map(c=>[c.name,c.issuer,c.year].filter(Boolean).join(', ')).join(' • ');
+}
+function langsLine(langs){
+  return langs.map(l=>`${l.name} (${l.level})`).join(' • ');
+}
 function additionalInfoHTML(d,sectionLabelClass,bodyClass){
   const rows=[];
-  if(d.certs)rows.push(`<strong>Certifications:</strong> ${d.certs}`);
-  if(d.langs)rows.push(`<strong>Languages:</strong> ${d.langs}`);
+  if(d.certs&&d.certs.length)rows.push(`<strong>Certifications:</strong> ${certsLine(d.certs)}`);
+  if(d.langs&&d.langs.length)rows.push(`<strong>Languages:</strong> ${langsLine(d.langs)}`);
   if(d.workauth)rows.push(`<strong>Work Authorization:</strong> ${d.workauth}`);
   if(d.refs)rows.push(`References available upon request.`);
   if(!rows.length)return'';
@@ -1440,7 +1535,7 @@ const TPL={
       <div class="nova-sl" style="color:${AC}">Contact</div>
       ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.slice(0,9).map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
-      ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs&&`Certifications: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth&&d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
+      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="nova-mn">
       <div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Profile</div><p style="font-size:13px;color:#4D4D5E;line-height:1.7">${d.sum}</p></div>
@@ -1462,7 +1557,7 @@ const TPL={
       </div>
       <div class="apex-sb">
         ${d.skills.length?`<div class="apex-sl" style="color:${AC}">Skills</div>${d.skills.map(s=>`<div class="apex-ch" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}`:''}
-        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="apex-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs&&`<strong>Certifications:</strong> ${d.certs}`,d.langs&&`<strong>Languages:</strong> ${d.langs}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="apex-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`<strong>Certifications:</strong> ${certsLine(d.certs)}`,d.langs.length&&`<strong>Languages:</strong> ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1479,7 +1574,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="prism-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="prism-ski"><span>${s}</span><div style="display:flex;gap:3px">${[1,2,3,4,5].map(j=>`<div class="pd${SL[i%SL.length]/20>=j?' f':''}"></div>`).join('')}</div></div>`).join('')}`:''}
-        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="prism-sl" style="color:${AC}">Additional Info</div><div style="font-size:11px;color:#4D4D5E;line-height:1.7">${[d.certs&&`Certs: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth,d.refs&&'References on request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="prism-sl" style="color:${AC}">Additional Info</div><div style="font-size:11px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certs: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References on request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1531,7 +1626,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Skills &amp; Expertise</div><div>${d.skills.map(s=>`<div class="zenith-sk">${s}</div>`).join('')}</div>`:''}
-        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:18px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs&&`Certifications: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:18px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1641,7 +1736,7 @@ const TPL={
       <div>
         ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${d.skills.map(s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
         ${d.edus.length?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="lat-edu-card"><div class="lat-edu-d">${e.d}</div><div class="lat-edu-s">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
-        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs&&`Certifications: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1679,6 +1774,26 @@ function selExport(mode,el){
   gi('btn-do-export').textContent=labels[mode];
 }
 
+function isCanvasBlank(canvas){
+  if(!canvas||!canvas.getContext)return true;
+  try{
+    const ctx=canvas.getContext('2d');
+    const w=canvas.width,h=canvas.height;
+    if(!w||!h)return true;
+    const sampleCount=24;
+    let nonWhitePixels=0;
+    for(let i=0;i<sampleCount;i++){
+      const sx=Math.floor((w/sampleCount)*i+10);
+      const sy=Math.floor(h*0.05)+Math.floor((h*0.85/sampleCount)*i);
+      const px=ctx.getImageData(Math.min(sx,w-1),Math.min(sy,h-1),1,1).data;
+      if(px[0]<250||px[1]<250||px[2]<250)nonWhitePixels++;
+    }
+    return nonWhitePixels===0;
+  }catch(e){
+    return false;
+  }
+}
+
 async function doExport(){
   closeExport();
   const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
@@ -1687,7 +1802,7 @@ async function doExport(){
     const zone=gi('pdf-render-zone');
     zone.innerHTML='';
     const clone=gi('paper').cloneNode(true);
-    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;position:relative;overflow:visible';
+    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block';
     zone.appendChild(clone);
     try{
       if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
@@ -1695,7 +1810,8 @@ async function doExport(){
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
       await new Promise(r=>setTimeout(r,300));
       const actualHeight=Math.max(clone.scrollHeight,1123);
-      await html2pdf().set({
+
+      const worker=html2pdf().set({
         margin:0,
         filename:`${name}-cv.pdf`,
         image:{type:'jpeg',quality:0.98},
@@ -1706,15 +1822,20 @@ async function doExport(){
           backgroundColor:'#ffffff',
           windowWidth:794,
           width:794,
-          height:actualHeight,
-          scrollX:0,
-          scrollY:0,
-          x:0,
-          y:0
+          height:actualHeight
         },
         jsPDF:{unit:'px',format:[794,actualHeight],orientation:'portrait'},
         pagebreak:{mode:['avoid-all','css','legacy']}
-      }).from(clone).save();
+      }).from(clone);
+
+      const canvas=await worker.toCanvas().get('canvas');
+      if(isCanvasBlank(canvas)){
+        console.error('PDF canvas rendered blank — clone height/content check:',clone.scrollHeight,clone.innerHTML.length);
+        toast('PDF rendered blank — try Print instead, or refresh and retry','err',4500);
+        zone.innerHTML='';
+        return;
+      }
+      await worker.save();
       toast('PDF downloaded','ok');
     }catch(err){
       console.error('PDF export error:',err);
@@ -1740,6 +1861,8 @@ async function doExport(){
 function init(){
   buildTplGrid();
   buildColorGrid();
+  renderCertList();
+  renderLangList();
   gi('ats-tips').innerHTML=ATS_TIPS.map(t=>`
     <div class="ats-tip-box" style="background:${t.ok?'#F2FAF6':'#FCF1F1'}">
       <div style="font-size:14px;flex-shrink:0">${t.ok?'✓':'✕'}</div>
