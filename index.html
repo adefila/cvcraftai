@@ -18,7 +18,8 @@ html,body{height:100%;overflow:hidden}
 body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--surf);color:var(--ink);-webkit-font-smoothing:antialiased}
 
 /* ── TOPBAR ── */
-.bar{position:fixed;top:0;left:0;right:0;height:64px;background:var(--bg);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 22px;gap:18px;z-index:200}
+.bar{position:fixed;top:0;left:0;right:0;height:64px;background:var(--bg);border-bottom:1px solid var(--bdr);z-index:200;display:flex;justify-content:center}
+.bar-inner{width:100%;max-width:1200px;display:flex;align-items:center;padding:0 22px;gap:18px}
 .logo{font-family:var(--ff-d);font-weight:700;font-size:19px;letter-spacing:-.5px;white-space:nowrap;color:var(--ink)}
 .logo span{color:var(--ac)}
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
@@ -47,7 +48,8 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .btn-pill-sm:disabled{opacity:.4;cursor:not-allowed}
 
 /* ── LAYOUT ── */
-.ws{display:grid;grid-template-columns:400px 1fr;height:100vh;padding-top:64px}
+.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:64px;background:var(--surf)}
+.ws{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 64px);width:100%;max-width:1200px}
 .pnl{background:var(--bg);border-right:1px solid var(--bdr);overflow-y:auto;height:100%;display:none;flex-direction:column}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:var(--surf);overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:32px 24px}
@@ -74,6 +76,9 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .kw-pill.added{background:#DEF4EA;color:#0E6B49;cursor:default}
 .score-badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #E6E5F7;border-radius:999px;padding:6px 14px;margin-top:11px}
 .score-badge-num{font-family:var(--ff-d);font-weight:700;font-size:15px}
+.rewrite-box{background:#fff;border:1.5px solid #D8D6F5;border-radius:12px;padding:13px 15px;margin-top:12px}
+.rewrite-lbl{font-size:11.5px;font-weight:600;color:#4F5BD5;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+.rewrite-text{font-size:14px;color:#1A1A2E;line-height:1.6;font-style:italic}
 
 /* ── JD MATCHER ── */
 .jd-match-bar{height:8px;border-radius:999px;background:#ECECE8;overflow:hidden;margin:11px 0 6px}
@@ -96,12 +101,22 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .btn-add:hover{border-color:var(--ink);color:var(--ink);border-style:solid}
 
 /* ── EXPERIENCE ITEMS ── */
-.ei{background:var(--surf);border-radius:14px;padding:13px 40px 13px 15px;margin-bottom:8px;position:relative;transition:background .15s}
+.ei{background:var(--surf);border-radius:14px;padding:13px 15px;margin-bottom:8px;position:relative;transition:background .15s}
+.ei.ei-editable{padding-right:78px}
 .ei:hover{background:#F0EFEB}
 .ei-t{font-size:15px;font-weight:600;color:var(--ink)}
 .ei-s{font-size:13px;color:var(--muted);margin-top:3px}
-.ei-rm{position:absolute;top:11px;right:11px;border:none;background:#fff;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;transition:all .15s;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ei-actions{position:absolute;top:10px;right:10px;display:flex;gap:5px}
+.ei-edit,.ei-rm{border:none;background:#fff;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;transition:all .15s;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ei-edit svg{width:13px;height:13px}
+.ei-edit:hover{color:#fff;background:var(--ink)}
 .ei-rm:hover{color:#fff;background:var(--err)}
+
+/* ── DATE PICKER / PRESENT CHECKBOX ── */
+.date-lbl{font-size:11.5px;color:var(--muted);margin-bottom:5px;display:block;font-weight:500}
+.present-check{display:flex;align-items:center;gap:9px;cursor:pointer;padding:4px 2px;user-select:none}
+.present-check input[type=checkbox]{width:18px;height:18px;accent-color:var(--ink);cursor:pointer}
+.present-check span{font-size:14px;color:var(--ink)}
 
 /* ── TEMPLATES PANEL ── */
 .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
@@ -121,6 +136,11 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .ats-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 .ats-tip-box{border-radius:14px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.55}
 .ats-disclaimer-box{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.weak-word-hit{background:#FCF6EC;border:1px solid #F2DCA8;border-radius:12px;padding:11px 14px;margin-bottom:8px}
+.weak-word-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.weak-word-flag{font-family:var(--ff-m);font-size:13px;font-weight:600;color:#8A5E0A;background:#FBF1DE;padding:2px 8px;border-radius:6px}
+.weak-word-field{font-size:11.5px;color:var(--muted)}
+.weak-word-sug{font-size:13px;color:#5C4310;line-height:1.5}
 
 /* ── PREVIEW ── */
 .cv-wrap{width:100%;max-width:720px}
@@ -392,6 +412,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 
 <!-- TOPBAR -->
 <div class="bar">
+ <div class="bar-inner">
   <div class="logo">cv<span>craft</span>.ai</div>
   <div class="tabs">
     <button class="tab on" onclick="swTab('build',this)">Build</button>
@@ -417,9 +438,11 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     Export PDF
   </button>
+ </div>
 </div>
 
 <!-- WORKSPACE -->
+<div class="ws-outer">
 <div class="ws">
 
   <!-- BUILD PANEL -->
@@ -528,6 +551,10 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
       <div class="lbl">Score Breakdown</div>
       <div id="ats-bd"><div style="padding:18px;text-align:center;font-size:14.5px;color:var(--muted)">Fill in your CV to see a full breakdown</div></div>
     </div>
+    <div class="sec">
+      <div class="lbl">Weak Word Scan <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(scans your whole CV automatically)</span></div>
+      <div id="weak-words-box"></div>
+    </div>
     <div class="sec" style="border-bottom:none">
       <div class="lbl">ATS Best Practices</div>
       <div id="ats-tips" style="margin-bottom:14px"></div>
@@ -548,6 +575,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
       <div class="paper" id="paper"></div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- EXPORT MODAL -->
@@ -627,6 +655,52 @@ const ATS_TIPS=[
   {ok:false,txt:'Avoid unusual fonts or special characters'},
   {ok:false,txt:'Don\'t use graphics or charts to represent skills'},
 ];
+
+// Weak / cliché words that ATS and recruiters consistently flag — instant local scan, no API needed
+const WEAK_WORDS={
+  'hardworking':'specific output (e.g. "shipped 12 features in Q1")',
+  'hard-working':'specific output (e.g. "shipped 12 features in Q1")',
+  'team player':'a specific collaboration outcome (e.g. "partnered with 3 teams to launch X")',
+  'passionate':'a concrete action verb (e.g. "built", "led", "drove")',
+  'go-getter':'a measurable initiative you took',
+  'go getter':'a measurable initiative you took',
+  'detail-oriented':'a specific example of precision (e.g. "reduced defect rate by 18%")',
+  'detail oriented':'a specific example of precision (e.g. "reduced defect rate by 18%")',
+  'self-starter':'a specific project you initiated unprompted',
+  'self starter':'a specific project you initiated unprompted',
+  'results-driven':'the actual result, with a number',
+  'results driven':'the actual result, with a number',
+  'synergy':'"collaboration" or the specific outcome of that collaboration',
+  'synergize':'"aligned" or "coordinated"',
+  'leverage':'"used" or "applied"',
+  'leveraged':'"used" or "applied"',
+  'utilize':'"used"',
+  'utilized':'"used"',
+  'utilizing':'"using"',
+  'spearheaded':'"led" (unless genuinely the founding initiator — then keep it, but only once)',
+  'dynamic':'a specific trait demonstrated by an actual achievement',
+  'go-to person':'your specific area of ownership',
+  'think outside the box':'the specific unconventional approach you took',
+  'wear many hats':'the specific roles/responsibilities, listed',
+  'circle back':'"follow up"',
+  'touch base':'"meet" or "discuss"',
+  'value add':'the specific value, quantified',
+  'value-add':'the specific value, quantified',
+  'proven track record':'the actual track record — list the results',
+  'responsible for':'a direct action verb ("managed", "owned", "ran") instead of passive framing',
+  'in charge of':'a direct action verb ("led", "managed", "directed")',
+  'helped with':'"contributed to" plus the specific contribution, or name the direct action you took',
+  'worked on':'a specific, stronger verb describing what you actually did',
+  'duties included':'direct action verbs — list what you did, not what you were assigned',
+  'good communication skills':'a specific example (e.g. "presented quarterly results to 50+ stakeholders")',
+  'excellent communication':'a specific example demonstrating it',
+  'people person':'a specific relationship-building outcome',
+  'thought leader':'the specific publication, talk, or initiative that demonstrates it',
+  'rockstar':'a specific, professional achievement',
+  'ninja':'a specific, professional achievement',
+  'guru':'a specific, professional achievement',
+  'wizard':'a specific, professional achievement',
+};
 
 // ── HELPERS ──
 function v(id){return(document.getElementById(id)||{}).value||'';}
@@ -736,80 +810,112 @@ function mkModal(html){
   return el;
 }
 
-function addExp(){
+function addExp(editIdx){
+  const isEdit=typeof editIdx==='number';
+  const ex=isEdit?exps[editIdx]:{t:'',co:'',s:'',e:'',present:false,d:''};
   const modalEl=mkModal(`
-    <div class="modal-title">Add Experience</div>
+    <div class="modal-title">${isEdit?'Edit':'Add'} Experience</div>
     <div class="fg">
-      <input class="fi" id="ex-t" placeholder="Job Title">
-      <input class="fi" id="ex-co" placeholder="Company">
+      <input class="fi" id="ex-t" placeholder="Job Title" value="${esc(ex.t)}">
+      <input class="fi" id="ex-co" placeholder="Company" value="${esc(ex.co)}">
       <div class="row2">
-        <input class="fi" id="ex-s" placeholder="Start (e.g. Jan 2022)">
-        <input class="fi" id="ex-e" placeholder="End / Present">
+        <div>
+          <label class="date-lbl">Start date</label>
+          <input class="fi" id="ex-s" type="month" value="${esc(ex.s)}">
+        </div>
+        <div>
+          <label class="date-lbl">End date</label>
+          <input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':ex.e)}" ${ex.present?'disabled':''}>
+        </div>
       </div>
-      <textarea class="fi" id="ex-d" rows="4" placeholder="Key achievements — one per line. Use numbers: 'Increased revenue by 40%'"></textarea>
+      <label class="present-check">
+        <input type="checkbox" id="ex-present" ${ex.present?'checked':''} onchange="document.getElementById('ex-e').disabled=this.checked;if(this.checked)document.getElementById('ex-e').value=''">
+        <span>I currently work here</span>
+      </label>
+      <textarea class="fi" id="ex-d" rows="4" placeholder="Key achievements — one per line. Use numbers: 'Increased revenue by 40%'">${esc(ex.d)}</textarea>
     </div>
     <div class="modal-btns">
       <button class="btn-pill" id="ex-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="ex-cancel-btn">Cancel</button>
     </div>`);
-  gi('ex-save-btn').onclick=()=>saveExp(modalEl);
+  gi('ex-save-btn').onclick=()=>saveExp(modalEl,editIdx);
   gi('ex-cancel-btn').onclick=()=>modalEl.remove();
   setTimeout(()=>gi('ex-t')?.focus(),60);
 }
 
-function saveExp(modalEl){
-  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),e=v('ex-e'),d=v('ex-d');
+function saveExp(modalEl,editIdx){
+  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d');
   if(!t){toast('Please enter a job title','err');return;}
-  exps.push({t,co,s,e,d});
+  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d};
+  if(typeof editIdx==='number'){exps[editIdx]=rec;}else{exps.push(rec);}
   modalEl.remove();
   renderExpList();rCV();upATS();runJDMatch();
-  toast('Experience added','ok');
+  toast(typeof editIdx==='number'?'Experience updated':'Experience added','ok');
 }
 
-function addEdu(){
+function formatMonth(val){
+  if(!val)return'';
+  const[y,m]=val.split('-');
+  if(!y||!m)return val;
+  const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return`${names[parseInt(m)-1]} ${y}`;
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+function addEdu(editIdx){
+  const isEdit=typeof editIdx==='number';
+  const ed=isEdit?edus[editIdx]:{d:'',s:'',y:'',g:''};
   const modalEl=mkModal(`
-    <div class="modal-title">Add Education</div>
+    <div class="modal-title">${isEdit?'Edit':'Add'} Education</div>
     <div class="fg">
-      <input class="fi" id="edu-d" placeholder="Degree & Field of Study">
-      <input class="fi" id="edu-s" placeholder="University / Institution">
+      <input class="fi" id="edu-d" placeholder="Degree & Field of Study" value="${esc(ed.d)}">
+      <input class="fi" id="edu-s" placeholder="University / Institution" value="${esc(ed.s)}">
       <div class="row2">
-        <input class="fi" id="edu-y" placeholder="Graduation Year">
-        <input class="fi" id="edu-g" placeholder="GPA (optional)">
+        <input class="fi" id="edu-y" placeholder="Graduation Year" value="${esc(ed.y)}">
+        <input class="fi" id="edu-g" placeholder="GPA (optional)" value="${esc(ed.g)}">
       </div>
     </div>
     <div class="modal-btns">
       <button class="btn-pill" id="edu-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="edu-cancel-btn">Cancel</button>
     </div>`);
-  gi('edu-save-btn').onclick=()=>saveEdu(modalEl);
+  gi('edu-save-btn').onclick=()=>saveEdu(modalEl,editIdx);
   gi('edu-cancel-btn').onclick=()=>modalEl.remove();
   setTimeout(()=>gi('edu-d')?.focus(),60);
 }
 
-function saveEdu(modalEl){
+function saveEdu(modalEl,editIdx){
   const d=v('edu-d'),s=v('edu-s'),y=v('edu-y'),g=v('edu-g');
   if(!d){toast('Please enter a degree','err');return;}
-  edus.push({d,s,y,g});
+  const rec={d,s,y,g};
+  if(typeof editIdx==='number'){edus[editIdx]=rec;}else{edus.push(rec);}
   modalEl.remove();
   renderEduList();rCV();upATS();
-  toast('Education added','ok');
+  toast(typeof editIdx==='number'?'Education updated':'Education added','ok');
 }
 
 function renderExpList(){
   gi('exp-list').innerHTML=exps.map((e,i)=>`
-    <div class="ei">
+    <div class="ei ei-editable">
       <div class="ei-t">${e.t}${e.co?' @ '+e.co:''}</div>
-      <div class="ei-s">${[e.s,e.e].filter(Boolean).join(' – ')}</div>
-      <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')">✕</button>
+      <div class="ei-s">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>
+      <div class="ei-actions">
+        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove">✕</button>
+      </div>
     </div>`).join('');
 }
 
 function renderEduList(){
   gi('edu-list').innerHTML=edus.map((e,i)=>`
-    <div class="ei">
+    <div class="ei ei-editable">
       <div class="ei-t">${e.d}</div>
       <div class="ei-s">${[e.s,e.y].filter(Boolean).join(' · ')}</div>
-      <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')">✕</button>
+      <div class="ei-actions">
+        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove">✕</button>
+      </div>
     </div>`).join('');
 }
 
@@ -890,7 +996,7 @@ Experience: ${exps.map(e=>`${e.t} at ${e.co} (${e.s}–${e.e}): ${e.d}`).join(' 
 Education: ${edus.map(e=>`${e.d}, ${e.s}`).join(' | ')||'(none)'}
 Skills: ${skills.join(', ')||'(none)'}`;
 
-  const prompt=`You are a senior recruiter and ATS (applicant tracking system) specialist. Analyse this CV as one complete picture — do not treat sections in isolation.
+  const prompt=`You are a senior technical recruiter and ATS specialist with 15 years of experience screening resumes at large companies. Analyse this CV as one complete picture — do not treat sections in isolation.
 
 Target role: "${jt||'a professional position, unspecified'}"
 ${jd?`\nJob description provided:\n${jd.slice(0,1500)}\n`:'\n(No job description provided — assess generally for the target role.)\n'}
@@ -902,13 +1008,20 @@ Give your analysis in this exact format:
 SCORE: [a number 0-100 representing how strong this CV is for ATS parseability AND human recruiter appeal for the target role, reasoned holistically — not a simple checklist]
 
 IMPROVEMENTS:
-1. [specific, actionable improvement, 1-2 sentences]
-2. [specific, actionable improvement, 1-2 sentences]
-3. [specific, actionable improvement, 1-2 sentences]
+1. [specific, actionable improvement referencing actual content from this CV, 1-2 sentences]
+2. [specific, actionable improvement referencing actual content from this CV, 1-2 sentences]
+3. [specific, actionable improvement referencing actual content from this CV, 1-2 sentences]
+
+REWRITE: [Pick the single weakest bullet point or summary sentence in this CV and rewrite it as it should actually appear. Output ONLY the rewritten line, no preamble, no quotes around it, no "here's the rewrite" framing — just the corrected sentence ready to paste in.]
 
 KEYWORDS: [6 specific ATS keywords this CV is missing for the target role, comma separated, no markdown]
 
-Be direct and specific — reference actual content from the CV, not generic advice.`;
+Rules for the IMPROVEMENTS and REWRITE sections:
+- Never use these words, they are AI clichés that recruiters now actively distrust: leverage, utilize, synergy, dynamic, passionate, results-driven, detail-oriented, team player, hardworking, proven track record, go-getter, self-starter, spearheaded (unless literally true and used once), wear many hats, think outside the box.
+- Write the way a sharp, slightly impatient human recruiter would write a margin note — plain, concrete, specific. No marketing voice, no LinkedIn-influencer tone.
+- Every rewritten sentence must contain a real number, metric, or concrete scope if the original CV content supports one. If the CV gives you nothing concrete to work with, say so directly rather than inventing a fake number.
+- Do not pad sentences with adjectives that carry no information ("highly", "extremely", "very successfully").
+- Prefer short, declarative sentences over compound ones stitched together with "and" and "while".`;
 
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
@@ -917,7 +1030,8 @@ Be direct and specific — reference actual content from the CV, not generic adv
     if(!tx){out.innerHTML='<span style="color:var(--err);font-size:14px">No response. Try again.</span>';btn.disabled=false;btn.innerHTML='Analyse &amp; Enhance ✦';return;}
 
     const scoreMatch=tx.match(/SCORE:\s*(\d+)/i);
-    const impMatch=tx.match(/IMPROVEMENTS:\s*([\s\S]*?)(?=KEYWORDS:|$)/i);
+    const impMatch=tx.match(/IMPROVEMENTS:\s*([\s\S]*?)(?=REWRITE:|KEYWORDS:|$)/i);
+    const rewriteMatch=tx.match(/REWRITE:\s*([\s\S]*?)(?=KEYWORDS:|$)/i);
     const kwMatch=tx.match(/KEYWORDS:\s*([^\n]+)/i);
 
     let html='';
@@ -933,6 +1047,17 @@ Be direct and specific — reference actual content from the CV, not generic adv
     }
     out.innerHTML=html;
 
+    if(rewriteMatch&&rewriteMatch[1].trim()){
+      const rewriteText=rewriteMatch[1].trim().replace(/^["']|["']$/g,'');
+      const box=document.createElement('div');
+      box.className='rewrite-box';
+      box.innerHTML=`<div class="rewrite-lbl">Suggested rewrite — copy what you want to use</div>
+        <div class="rewrite-text" id="rewrite-text-${Date.now()}">${rewriteText}</div>
+        <button class="btn-pill-sm" style="margin-top:9px" onclick="copyRewrite(this)">Copy text</button>`;
+      box.dataset.text=rewriteText;
+      out.appendChild(box);
+    }
+
     if(kwMatch){
       const kws=kwMatch[1].split(',').map(s=>s.trim().replace(/[*_\[\]]/g,'')).filter(s=>s&&!skills.includes(s));
       if(kws.length){
@@ -947,6 +1072,17 @@ Be direct and specific — reference actual content from the CV, not generic adv
   }
   btn.disabled=false;
   btn.innerHTML='Analyse &amp; Enhance ✦';
+}
+
+function copyRewrite(btn){
+  const box=btn.closest('.rewrite-box');
+  const text=box.dataset.text;
+  navigator.clipboard.writeText(text).then(()=>{
+    toast('Copied to clipboard','ok',1600);
+    const orig=btn.textContent;
+    btn.textContent='Copied ✓';
+    setTimeout(()=>btn.textContent=orig,1500);
+  }).catch(()=>toast('Could not copy — select the text manually','err'));
 }
 
 async function jdAIAnalysis(){
@@ -975,6 +1111,39 @@ function addKW(s,btn){
 }
 
 // ── ATS SCORE (rule-based, instant, runs on every keystroke) ──
+function scanWeakWords(){
+  const fields=[
+    {label:'Summary',text:v('f-sum')},
+    ...exps.map((e,i)=>({label:`Experience: ${e.t||'Untitled role'}`,text:e.d})),
+  ];
+  const hits=[];
+  fields.forEach(f=>{
+    if(!f.text)return;
+    const lower=f.text.toLowerCase();
+    Object.keys(WEAK_WORDS).forEach(w=>{
+      if(lower.includes(w)){
+        hits.push({field:f.label,word:w,suggestion:WEAK_WORDS[w]});
+      }
+    });
+  });
+  return hits;
+}
+
+function renderWeakWords(){
+  const box=gi('weak-words-box');
+  if(!box)return;
+  const hits=scanWeakWords();
+  if(!hits.length){
+    box.innerHTML=`<div class="ats-tip-box" style="background:#F2FAF6"><div style="font-size:14px;flex-shrink:0">✓</div><span style="color:#0E6B49">No weak or clichéd phrases detected. Your language reads concrete and specific.</span></div>`;
+    return;
+  }
+  box.innerHTML=hits.map(h=>`
+    <div class="weak-word-hit">
+      <div class="weak-word-top"><span class="weak-word-flag">"${h.word}"</span><span class="weak-word-field">${h.field}</span></div>
+      <div class="weak-word-sug">Try instead: ${h.suggestion}</div>
+    </div>`).join('');
+}
+
 function upATS(){
   const nm=v('f-name'),em=v('f-email'),ph=v('f-phone'),sum=v('f-sum');
   let sc=0;
@@ -996,6 +1165,8 @@ function upATS(){
   const actionVerbs=/\b(led|built|launched|managed|drove|increased|reduced|created|designed|developed|improved|delivered|scaled|optimi[sz]ed|implemented)\b/i;
   if(exps.some(e=>e.d&&actionVerbs.test(e.d))){sc+=5;checks.push({l:'Uses strong action verbs',ok:true})}else if(exps.length){checks.push({l:'Start bullets with strong action verbs (Led, Built, Drove)',ok:false})}
   if(v('f-li')){sc+=3;checks.push({l:'LinkedIn / portfolio link added',ok:true})}
+
+  renderWeakWords();
 
   sc=Math.min(sc,100);
   const circ=2*Math.PI*14;
@@ -1258,21 +1429,37 @@ async function doExport(){
   closeExport();
   const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
   if(exportSel==='pdf'){
-    toast('Generating PDF…','default',6000);
+    toast('Generating PDF…','default',7000);
     const zone=gi('pdf-render-zone');
     zone.innerHTML='';
     const clone=gi('paper').cloneNode(true);
-    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0';
+    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;position:relative;overflow:visible';
     zone.appendChild(clone);
     try{
       if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
-      await new Promise(r=>setTimeout(r,150));
+      void clone.offsetHeight;
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      await new Promise(r=>setTimeout(r,300));
+      const actualHeight=Math.max(clone.scrollHeight,1123);
       await html2pdf().set({
         margin:0,
         filename:`${name}-cv.pdf`,
         image:{type:'jpeg',quality:0.98},
-        html2canvas:{scale:2,useCORS:true,letterRendering:true,backgroundColor:'#ffffff',windowWidth:794,width:794},
-        jsPDF:{unit:'px',format:[794,1123],orientation:'portrait'}
+        html2canvas:{
+          scale:2,
+          useCORS:true,
+          letterRendering:false,
+          backgroundColor:'#ffffff',
+          windowWidth:794,
+          width:794,
+          height:actualHeight,
+          scrollX:0,
+          scrollY:0,
+          x:0,
+          y:0
+        },
+        jsPDF:{unit:'px',format:[794,actualHeight],orientation:'portrait'},
+        pagebreak:{mode:['avoid-all','css','legacy']}
       }).from(clone).save();
       toast('PDF downloaded','ok');
     }catch(err){
