@@ -10,12 +10,13 @@ A sleek, AI-powered CV builder with 11 professional templates, real-time ATS sco
 ---
 
 ## What's new in this build
-- **Unified AI Review** — one Claude call returns a reasoned score, specific rewrite suggestions, and ATS keywords together, instead of disconnected calls. More context per call means more grounded, consistent output.
-- **Fixed PDF export** — the previous build cloned the CV into a zero-opacity container, which `html2canvas` can mishandle (some versions return a blank or broken canvas for `opacity:0` ancestors even when laid out correctly). The fix renders the clone fully opaque off-screen at `left:-9999px` with an explicit white background, and waits for `document.fonts.ready` before capture so web fonts are loaded.
-- **Fixed modal close bug** — Add Experience / Add Education modals previously closed via an ambiguous `document.querySelector('.modal-bg')`, which could grab the wrong modal if more than one existed in the DOM. Each modal now holds a direct reference to itself via closure, so the correct modal always closes on save.
-- **New visual direction** — white/off-white surfaces, fully-rounded black pill buttons as the primary action style, blue reserved for the logo accent only.
-- **Micro-interactions** — button press states (scale down on click), modal entrance animation, toast notifications with icons, tab transitions, hover lift on template cards.
-- **Standard template** — the classic, conservative single-column CV format with zero visual flourish, for traditional industries or maximum ATS safety.
+- **Edit Experience/Education** — the edit icon on each entry reopens the same modal pre-filled, so saving updates in place instead of duplicating.
+- **Date picker + "Present" toggle** — start date is a native month picker; end date disables and switches to "Present" via a checkbox instead of typing text.
+- **1200px max-width layout** — the topbar and full workspace are now centred and capped at 1200px, so the app doesn't stretch unreasonably wide on large monitors.
+- **Fixed PDF rendering** — the previous export occasionally cropped content or misaligned multi-column templates. Root cause: `html2canvas` was capturing before the cloned node had a full reflow/paint cycle, and the PDF page height was hardcoded rather than measured. Fixed by waiting on `document.fonts.ready`, forcing a synchronous reflow, waiting two animation frames plus a settle delay, measuring the actual rendered height via `scrollHeight`, and setting `pagebreak: avoid-all` so no column gets sliced across a page boundary.
+- **Weak Word Scanner** — a new section in the ATS tab automatically scans your entire CV (summary + every experience bullet) against a list of recruiter-flagged clichés (e.g. "leverage", "synergy", "team player", "results-driven") and shows what to write instead, with no AI call needed — instant and free.
+- **Sharper AI rewrites** — the AI prompt now explicitly bans common AI-sounding phrases, requires concrete numbers where the CV supports them, and produces one ready-to-copy rewritten line per analysis rather than only abstract advice. Suggestions are shown as text with a copy button — nothing auto-overwrites your fields.
+- **Unified AI Review** — one Claude call returns a reasoned score, specific rewrite suggestions, and ATS keywords together, instead of disconnected calls.
 
 
 ## Features
