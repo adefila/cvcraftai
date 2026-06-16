@@ -18,9 +18,9 @@ html,body{height:100%;overflow:hidden}
 body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--surf);color:var(--ink);-webkit-font-smoothing:antialiased}
 
 /* ── TOPBAR ── */
-.bar{position:fixed;top:0;left:0;right:0;height:64px;background:var(--bg);border-bottom:1px solid var(--bdr);z-index:200;display:flex;justify-content:center}
+.bar{position:fixed;top:0;left:0;right:0;height:92px;background:var(--bg);border-bottom:1px solid var(--bdr);z-index:200;display:flex;justify-content:center}
 .bar-inner{width:100%;max-width:1200px;display:flex;align-items:center;padding:0 22px;gap:18px}
-.logo{font-family:var(--ff-d);font-weight:700;font-size:19px;letter-spacing:-.5px;white-space:nowrap;color:var(--ink)}
+.logo{font-family:var(--ff-d);font-weight:800;font-size:50px;letter-spacing:-1.5px;white-space:nowrap;color:var(--ink);line-height:1}
 .logo span{color:var(--ac)}
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
@@ -48,8 +48,8 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .btn-pill-sm:disabled{opacity:.4;cursor:not-allowed}
 
 /* ── LAYOUT ── */
-.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:64px;background:var(--surf)}
-.ws{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 64px);width:100%;max-width:1200px}
+.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:92px;background:var(--surf)}
+.ws{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 92px);width:100%;max-width:1200px}
 .pnl{background:var(--bg);border-right:1px solid var(--bdr);overflow-y:auto;height:100%;display:none;flex-direction:column}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:var(--surf);overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:32px 24px}
@@ -150,11 +150,24 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .paper{background:#fff;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 48px rgba(0,0,0,.09);min-height:920px;overflow:hidden;transition:box-shadow .2s}
 
 /* ── MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(15,15,20,.5);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease}
-.modal{background:#fff;border-radius:20px;padding:28px;width:420px;box-shadow:0 24px 80px rgba(0,0,0,.25);animation:modalIn .2s cubic-bezier(.34,1.56,.64,1)}
+.modal-bg{position:fixed;inset:0;background:rgba(15,15,20,.5);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease;padding:20px}
+.modal{background:#fff;border-radius:20px;padding:28px;width:460px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.25);animation:modalIn .2s cubic-bezier(.34,1.56,.64,1);box-sizing:border-box}
 @keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .modal-title{font-family:var(--ff-d);font-size:18px;font-weight:600;margin-bottom:18px}
 .modal-btns{display:flex;gap:10px;margin-top:18px}
+.modal .row2{min-width:0}
+.date-field{min-width:0}
+.date-field .fi{width:100%;min-width:0;box-sizing:border-box}
+.date-field .fi[type=month]{padding-right:8px}
+
+/* ── AI WRITE (inside experience modal) ── */
+.ai-write-btn{width:100%;justify-content:center;display:flex;align-items:center;gap:7px;color:var(--ac);border-color:#D8D6F5}
+.ai-write-btn:hover{background:#F4F4FF;border-color:var(--ac)}
+.ai-write-out{margin-top:10px;background:#F9F9FF;border:1px solid #E6E5F7;border-radius:12px;padding:12px 13px}
+.ai-write-lbl{font-size:11.5px;font-weight:600;color:var(--ac);text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px}
+.ai-write-line{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid #ECEBF7;border-radius:9px;padding:9px 11px;margin-bottom:6px}
+.ai-write-line span{font-size:13.5px;color:#2A2A3E;line-height:1.45}
+.ai-write-all{width:100%;justify-content:center;margin-top:4px}
 
 /* ── EXPORT MODAL ── */
 .export-opt{border:1.5px solid var(--bdr);border-radius:16px;padding:16px 18px;cursor:pointer;margin-bottom:10px;transition:all .15s;display:flex;align-items:center;gap:14px}
@@ -406,6 +419,76 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .classic-bl{font-size:12.5px;color:#333;line-height:1.6;padding-left:16px;position:relative;margin-bottom:3px}
 .classic-bl::before{content:'•';position:absolute;left:2px}
 .classic-sk-line{font-size:12.5px;color:#333;line-height:1.8}
+
+/* 12. MONOLITH — brutalist-editorial, oversized type, no color until the rule line */
+.monolith{min-height:920px;padding:0}
+.mono-h{padding:50px 48px 32px}
+.mono-nm{font-family:var(--ff-d);font-weight:800;font-size:52px;letter-spacing:-3px;line-height:.92;color:var(--ink)}
+.mono-ti{font-family:var(--ff-m);font-size:13px;color:var(--muted);margin-top:14px;letter-spacing:.5px}
+.mono-rule{height:5px;margin:26px 0 0}
+.mono-cs{display:flex;gap:22px;margin-top:18px;flex-wrap:wrap}
+.mono-c{font-family:var(--ff-m);font-size:11px;color:var(--muted)}
+.mono-body{padding:36px 48px}
+.mono-sum{font-size:14px;color:#2A2A2A;line-height:1.8;max-width:600px;margin-bottom:36px}
+.mono-sl{font-family:var(--ff-d);font-weight:800;font-size:15px;letter-spacing:-.3px;color:var(--ink);margin:30px 0 16px;display:flex;align-items:baseline;gap:10px}
+.mono-sl:first-of-type{margin-top:0}
+.mono-sl-num{font-family:var(--ff-m);font-size:12px;font-weight:400;color:var(--muted)}
+.mono-ex{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--bdr)}
+.mono-ex:last-child{border-bottom:none}
+.mono-et{font-family:var(--ff-d);font-size:16px;font-weight:700;color:var(--ink)}
+.mono-em{font-family:var(--ff-m);font-size:11.5px;color:var(--muted);margin:4px 0 10px}
+.mono-bl{font-size:13px;color:#2A2A2A;line-height:1.75;padding-left:0;margin-bottom:5px}
+.mono-sk-row{display:flex;flex-wrap:wrap;gap:10px}
+.mono-sk-item{font-family:var(--ff-m);font-size:12.5px;color:var(--ink);padding-bottom:2px;border-bottom:2px solid}
+
+/* 13. LATTICE — precise card-grid skills, clean two-tone header */
+.lattice{min-height:920px;padding:0}
+.lat-h{padding:36px 40px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.lat-nm{font-family:var(--ff-d);font-weight:700;font-size:27px;letter-spacing:-.8px;color:var(--ink)}
+.lat-ti{font-size:12px;color:var(--muted);margin-top:5px;letter-spacing:.3px}
+.lat-cs{text-align:right}
+.lat-c{font-family:var(--ff-m);font-size:10.5px;color:var(--muted);display:block;margin-bottom:4px}
+.lat-divider{height:1px;background:var(--bdr);margin:0 40px}
+.lat-body{padding:30px 40px;display:grid;grid-template-columns:1fr 230px;gap:34px}
+.lat-sl{font-family:var(--ff-d);font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:14px;padding:6px 0;border-top:2px solid;border-bottom:2px solid}
+.lat-ex{margin-bottom:18px}
+.lat-eh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lat-et{font-size:14px;font-weight:600;color:var(--ink)}
+.lat-ed{font-family:var(--ff-m);font-size:10px;color:var(--muted);white-space:nowrap}
+.lat-ec{font-size:12px;font-weight:500;margin:2px 0 8px}
+.lat-bl{font-size:12.5px;color:#3D3D4E;line-height:1.65;padding-left:13px;position:relative;margin-bottom:3px}
+.lat-bl::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px}
+.lat-sk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lat-sk-card{border:1px solid var(--bdr);border-radius:9px;padding:9px 11px;font-size:11.5px;font-weight:500;color:var(--ink);text-align:center}
+.lat-edu-card{border:1px solid var(--bdr);border-radius:9px;padding:11px 13px;margin-bottom:8px}
+.lat-edu-d{font-size:12.5px;font-weight:600;color:var(--ink)}
+.lat-edu-s{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* 14. AURORA — soft accent band header, modern SaaS feel */
+.aurora{min-height:920px;padding:0}
+.aur-h{padding:42px 44px 34px;position:relative;overflow:hidden}
+.aur-h::before{content:'';position:absolute;top:0;left:0;right:0;height:100%;opacity:.06;z-index:0}
+.aur-h-content{position:relative;z-index:1}
+.aur-nm{font-family:var(--ff-d);font-weight:700;font-size:30px;letter-spacing:-1px;color:var(--ink)}
+.aur-ti{font-size:13px;color:var(--muted);margin-top:6px}
+.aur-cs{display:flex;gap:14px;margin-top:16px;flex-wrap:wrap}
+.aur-c{font-size:11.5px;color:var(--ink);background:#fff;padding:5px 12px;border-radius:999px;border:1px solid var(--bdr)}
+.aur-body{padding:32px 44px}
+.aur-sl{font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;margin:24px 0 14px;display:flex;align-items:center;gap:9px}
+.aur-sl:first-child{margin-top:0}
+.aur-sl-dot{width:8px;height:8px;border-radius:50%}
+.aur-ex{margin-bottom:18px;background:var(--surf);border-radius:14px;padding:16px 18px}
+.aur-eh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.aur-et{font-size:14px;font-weight:600;color:var(--ink)}
+.aur-ed{font-size:10.5px;color:var(--muted);font-family:var(--ff-m);white-space:nowrap;padding-top:2px}
+.aur-ec{font-size:12px;font-weight:500;margin:3px 0 9px}
+.aur-bl{font-size:12.5px;color:#3D3D4E;line-height:1.65;padding-left:13px;position:relative;margin-bottom:4px}
+.aur-bl::before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%}
+.aur-sk-cloud{display:flex;flex-wrap:wrap;gap:7px}
+.aur-sk-pill{font-size:11.5px;font-weight:600;padding:7px 14px;border-radius:999px}
+.aur-edu{background:var(--surf);border-radius:14px;padding:14px 16px;margin-bottom:8px}
+.aur-edu-d{font-size:13px;font-weight:600;color:var(--ink)}
+.aur-edu-s{font-size:11.5px;color:var(--muted);margin-top:3px}
 </style>
 </head>
 <body>
@@ -454,7 +537,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
         <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Analyse &amp; Enhance ✦</button>
       </div>
       <div class="ai-out" id="ai-out">Enter your target role, then run analysis. One AI pass reviews your summary, experience, and skills together — covering rewrite suggestions, missing keywords, and a reasoned quality score — so nothing contradicts itself across tabs.</div>
-      <div class="ai-disclaimer">ⓘ Powered by Claude, reasoning live over your actual CV text. This models documented ATS mechanics (keyword matching, parseable structure) — not any specific company's proprietary algorithm, which isn't public.</div>
+      <div class="ai-disclaimer">ⓘ CVCraft AI reasons live over your actual CV text. This models documented ATS mechanics (keyword matching, parseable structure) — not any specific company's proprietary algorithm, which isn't public.</div>
     </div>
 
     <div class="sec">
@@ -488,12 +571,34 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
       <button class="btn-add" onclick="addEdu()">+ Add Education</button>
     </div>
 
-    <div class="sec" style="border-bottom:none">
+    <div class="sec">
       <div class="lbl">Skills</div>
       <div class="sk-tags" id="sk-tags"></div>
       <div class="sk-row">
         <input class="fi" id="sk-inp" placeholder="Add skill & press Enter" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}">
         <button class="btn-pill-sm" style="flex-shrink:0" onclick="addSk()">Add</button>
+      </div>
+    </div>
+
+    <div class="sec" style="border-bottom:none">
+      <div class="lbl">Additional Info <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(commonly missed, often a silent rejection reason)</span></div>
+      <div class="fg">
+        <div>
+          <label class="date-lbl">Certifications / Licenses</label>
+          <input class="fi" id="f-certs" placeholder="e.g. AWS Certified Solutions Architect, PMP" oninput="rCV()">
+        </div>
+        <div>
+          <label class="date-lbl">Languages</label>
+          <input class="fi" id="f-langs" placeholder="e.g. English (native), Spanish (fluent)" oninput="rCV()">
+        </div>
+        <div>
+          <label class="date-lbl">Work authorization</label>
+          <input class="fi" id="f-workauth" placeholder="e.g. Authorized to work in the US" oninput="rCV()">
+        </div>
+        <label class="present-check">
+          <input type="checkbox" id="f-refs" onchange="rCV()">
+          <span>Include "References available upon request"</span>
+        </label>
       </div>
     </div>
   </div>
@@ -637,6 +742,9 @@ const TPLS={
   pulse:{name:'Pulse',desc:'Startup energy: live metric cards in the header, tag-cloud skills, card-boxed experience. Product, growth, SaaS, and founder roles.'},
   meridian:{name:'Meridian',desc:'Asymmetric two-tone editorial layout with a deep colour-block sidebar and numbered sections. Premium, magazine-grade — design leads, brand, and senior creative roles.'},
   axis:{name:'Axis',desc:'Technical grid system with monospace type and numbered section markers. Precise and engineered — built for data, engineering, and analytical roles.'},
+  monolith:{name:'Monolith',desc:'Brutalist-editorial with oversized display type and a single bold accent rule. Confident and stripped-back — strong for senior creative, architecture, and brand strategy roles.'},
+  lattice:{name:'Lattice',desc:'Precise card-grid skills layout with a clean two-tone header and bracketed section rules. Structured and exacting — suits engineering, operations, and data roles.'},
+  aurora:{name:'Aurora',desc:'Soft rounded cards on a tinted surface with pill-shaped skills and tags. Warm, modern SaaS feel — ideal for product, customer success, and people-facing roles.'},
 };
 
 const COLORS=[
@@ -710,6 +818,22 @@ function bls(desc,cls){
   if(!desc)return'';
   return desc.split('\n').filter(Boolean).map(l=>`<div class="${cls}">${l}</div>`).join('');
 }
+
+// Single entry point for all AI calls — routes through the serverless proxy at /api/ai
+// so the Anthropic API key never reaches the browser and calls don't get blocked by CORS.
+async function callAI(prompt,maxTokens=1200){
+  const r=await fetch('/api/ai',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt,max_tokens:maxTokens})
+  });
+  const data=await r.json();
+  if(!r.ok){
+    throw new Error(data?.error||`Request failed (${r.status})`);
+  }
+  return data.text||'';
+}
+
 function toast(msg,type='default',dur=3000){
   const t=gi('toast');
   const icons={
@@ -754,6 +878,9 @@ function miniPrev(k){
     pulse:`<div style="height:100%"><div style="border-bottom:3px solid ${c};padding:5px"><div style="height:2px;background:#0A0A0F;width:70%;margin-bottom:2px"></div></div></div>`,
     meridian:`<div style="display:flex;height:100%"><div style="width:38%;background:#0A0A0F;padding:5px 4px"><div style="height:2px;background:#fff;width:75%;margin-bottom:3px"></div></div><div style="flex:1;padding:5px 4px"><div style="display:flex;gap:2px;align-items:center;margin-bottom:3px"><div style="width:6px;height:6px;border-radius:50%;background:${c}"></div></div></div></div>`,
     axis:`<div style="padding:5px;height:100%"><div style="border-bottom:1.5px solid #0A0A0F;padding-bottom:4px;margin-bottom:5px"><div style="height:3px;background:#0A0A0F;width:55%"></div><div style="height:1px;background:${c};width:40%;margin-top:3px"></div></div></div>`,
+    monolith:`<div style="padding:5px;height:100%"><div style="height:6px;background:#0A0A0F;width:90%;margin-bottom:2px"></div><div style="height:6px;background:#0A0A0F;width:60%;margin-bottom:5px"></div><div style="height:2px;background:${c};width:100%;margin-bottom:6px"></div><div style="height:1px;background:#ddd;margin-bottom:2px"></div><div style="height:1px;background:#ddd;width:80%"></div></div>`,
+    lattice:`<div style="padding:0;height:100%"><div style="display:flex;justify-content:space-between;padding:5px 5px 3px"><div style="height:2.5px;background:#0A0A0F;width:50%"></div><div style="height:1px;background:#ccc;width:20%"></div></div><div style="height:1px;background:#ddd;margin:0 5px 4px"></div><div style="display:flex;gap:3px;padding:0 5px"><div style="flex:1"><div style="height:1px;background:${c};margin-bottom:2px"></div><div style="height:1px;background:#ddd;margin-bottom:1px"></div></div><div style="width:35%;display:grid;grid-template-columns:1fr 1fr;gap:2px"><div style="border:1px solid #ddd;height:6px"></div><div style="border:1px solid #ddd;height:6px"></div></div></div></div>`,
+    aurora:`<div style="padding:5px;height:100%;background:#fff"><div style="height:2px;background:#0A0A0F;width:65%;margin-bottom:2px"></div><div style="height:1px;background:#ccc;width:45%;margin-bottom:4px"></div><div style="display:flex;gap:2px;margin-bottom:5px"><div style="border:1px solid #ddd;border-radius:8px;height:6px;width:30%"></div><div style="border:1px solid #ddd;border-radius:8px;height:6px;width:30%"></div></div><div style="background:#F7F7F5;border-radius:4px;padding:3px;margin-bottom:2px"><div style="height:1px;background:#333;margin-bottom:1px"></div><div style="height:1px;background:${c};width:40%"></div></div></div>`,
   };
   return m[k]||'';
 }
@@ -819,11 +946,11 @@ function addExp(editIdx){
       <input class="fi" id="ex-t" placeholder="Job Title" value="${esc(ex.t)}">
       <input class="fi" id="ex-co" placeholder="Company" value="${esc(ex.co)}">
       <div class="row2">
-        <div>
+        <div class="date-field">
           <label class="date-lbl">Start date</label>
           <input class="fi" id="ex-s" type="month" value="${esc(ex.s)}">
         </div>
-        <div>
+        <div class="date-field">
           <label class="date-lbl">End date</label>
           <input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':ex.e)}" ${ex.present?'disabled':''}>
         </div>
@@ -833,6 +960,8 @@ function addExp(editIdx){
         <span>I currently work here</span>
       </label>
       <textarea class="fi" id="ex-d" rows="4" placeholder="Key achievements — one per line. Use numbers: 'Increased revenue by 40%'">${esc(ex.d)}</textarea>
+      <button class="btn-pill-outline ai-write-btn" id="ex-ai-write-btn" type="button">✦ Write with AI</button>
+      <div class="ai-write-out" id="ex-ai-write-out" style="display:none"></div>
     </div>
     <div class="modal-btns">
       <button class="btn-pill" id="ex-save-btn" style="flex:1;justify-content:center">Save</button>
@@ -840,7 +969,63 @@ function addExp(editIdx){
     </div>`);
   gi('ex-save-btn').onclick=()=>saveExp(modalEl,editIdx);
   gi('ex-cancel-btn').onclick=()=>modalEl.remove();
+  gi('ex-ai-write-btn').onclick=()=>aiWriteExperience(modalEl);
   setTimeout(()=>gi('ex-t')?.focus(),60);
+}
+
+async function aiWriteExperience(modalEl){
+  const t=v('ex-t'),co=v('ex-co');
+  if(!t){toast('Enter a job title first so AI knows what to write about','err');return;}
+  const btn=gi('ex-ai-write-btn'),out=gi('ex-ai-write-out');
+  const existing=v('ex-d');
+  const jt=v('ai-jt');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Writing…';
+  out.style.display='block';
+  out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  const prompt=`Write 3-4 resume bullet points for this role. Output ONLY the bullet points, one per line, no numbering, no bullet characters, no preamble, no markdown — plain lines ready to paste into a CV.
+
+Job title: ${t}
+Company: ${co||'(not specified)'}
+${jt?`Target role this person is applying for: ${jt}\n`:''}${existing?`They already have these draft notes — refine and expand on the substance, do not just repeat them verbatim: ${existing}\n`:''}
+Rules:
+- Start every line with a strong action verb (Led, Built, Reduced, Drove, Designed, Launched, Increased — vary them, don't repeat the same verb twice).
+- Include a real, plausible number or metric in at least half the lines (%, $, time saved, team size, scale) — but only if it would be plausible for this role; do not invent absurd numbers.
+- Never use these clichés: leveraged, utilized, synergy, dynamic, passionate, results-driven, detail-oriented, team player, hardworking, proven track record, spearheaded.
+- Write like a specific human describing real work, not a marketing summary. Short, concrete, declarative sentences.
+- No adjectives that carry no information ("highly", "extremely", "successfully").`;
+  try{
+    const tx=await callAI(prompt,500);
+    const lines=tx.split('\n').map(l=>l.trim().replace(/^[-•*\d.)\s]+/,'')).filter(Boolean);
+    out.innerHTML=`<div class="ai-write-lbl">Suggested bullets — click to use, or copy individually</div>
+      ${lines.map((l,i)=>`<div class="ai-write-line" data-text="${esc(l)}">
+        <span>${l}</span>
+        <button class="btn-pill-sm" onclick="useAIBullet(this)">Use</button>
+      </div>`).join('')}
+      <button class="btn-pill-sm ai-write-all" onclick="useAllAIBullets(this)">Use all</button>`;
+  }catch(err){
+    out.innerHTML=`<span style="color:var(--err);font-size:13px">${(err&&err.message)||'Could not generate. Try again.'}</span>`;
+  }
+  btn.disabled=false;
+  btn.innerHTML='✦ Write with AI';
+}
+
+function useAIBullet(btn){
+  const line=btn.closest('.ai-write-line');
+  const text=line.dataset.text;
+  const ta=gi('ex-d');
+  ta.value=ta.value?(ta.value.replace(/\n+$/,'')+'\n'+text):text;
+  btn.textContent='Added ✓';
+  btn.disabled=true;
+}
+
+function useAllAIBullets(btn){
+  const lines=[...document.querySelectorAll('.ai-write-line')].map(l=>l.dataset.text);
+  const ta=gi('ex-d');
+  ta.value=lines.join('\n');
+  document.querySelectorAll('.ai-write-line button').forEach(b=>{b.textContent='Added ✓';b.disabled=true;});
+  btn.textContent='All added ✓';
+  btn.disabled=true;
 }
 
 function saveExp(modalEl,editIdx){
@@ -1024,9 +1209,7 @@ Rules for the IMPROVEMENTS and REWRITE sections:
 - Prefer short, declarative sentences over compound ones stitched together with "and" and "while".`;
 
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
-    const data=await r.json();
-    const tx=data.content?.map(b=>b.text||'').join('')||'';
+    const tx=await callAI(prompt,1200);
     if(!tx){out.innerHTML='<span style="color:var(--err);font-size:14px">No response. Try again.</span>';btn.disabled=false;btn.innerHTML='Analyse &amp; Enhance ✦';return;}
 
     const scoreMatch=tx.match(/SCORE:\s*(\d+)/i);
@@ -1067,8 +1250,8 @@ Rules for the IMPROVEMENTS and REWRITE sections:
       }
     }
     toast('Analysis complete','ok',1800);
-  }catch{
-    out.innerHTML='<span style="color:var(--err);font-size:14px">AI request failed. Check your connection and try again.</span>';
+  }catch(err){
+    out.innerHTML=`<span style="color:var(--err);font-size:14px">${(err&&err.message)||'AI request failed. Check your connection and try again.'}</span>`;
   }
   btn.disabled=false;
   btn.innerHTML='Analyse &amp; Enhance ✦';
@@ -1094,11 +1277,11 @@ async function jdAIAnalysis(){
   const jd=v('jd-text').slice(0,1500);
   const cv=`Name: ${v('f-name')}, Title: ${v('f-title')}, Summary: ${v('f-sum')}, Experience: ${exps.map(e=>e.t+' at '+e.co).join(', ')}, Skills: ${skills.join(', ')}`;
   try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:`You are an expert CV and recruitment consultant. Analyse this CV against this job description and give 3 specific, actionable gap-closing recommendations.\n\nCV: ${cv}\n\nJob Description: ${jd}\n\nFormat: numbered list 1-3, each 1-2 sentences. Be specific and direct. End with: "Priority keywords to add: [5 keywords]"`}]})});
-    const data=await r.json();
-    const tx=data.content?.map(b=>b.text||'').join('')||'Could not analyse. Try again.';
-    out.innerHTML=`<div style="white-space:pre-line;line-height:1.65;font-size:14.5px">${tx}</div>`;
-  }catch{out.innerHTML='<span style="color:var(--err);font-size:14px">Analysis failed. Check connection and try again.</span>';}
+    const tx=await callAI(`You are an expert CV and recruitment consultant. Analyse this CV against this job description and give 3 specific, actionable gap-closing recommendations.\n\nCV: ${cv}\n\nJob Description: ${jd}\n\nFormat: numbered list 1-3, each 1-2 sentences. Be specific and direct. End with: "Priority keywords to add: [5 keywords]"`,1000);
+    out.innerHTML=`<div style="white-space:pre-line;line-height:1.65;font-size:14.5px">${tx||'Could not analyse. Try again.'}</div>`;
+  }catch(err){
+    out.innerHTML=`<span style="color:var(--err);font-size:14px">${(err&&err.message)||'Analysis failed. Check connection and try again.'}</span>`;
+  }
   btn.disabled=false;btn.innerHTML='Analyse with AI ✦';
 }
 
@@ -1165,6 +1348,9 @@ function upATS(){
   const actionVerbs=/\b(led|built|launched|managed|drove|increased|reduced|created|designed|developed|improved|delivered|scaled|optimi[sz]ed|implemented)\b/i;
   if(exps.some(e=>e.d&&actionVerbs.test(e.d))){sc+=5;checks.push({l:'Uses strong action verbs',ok:true})}else if(exps.length){checks.push({l:'Start bullets with strong action verbs (Led, Built, Drove)',ok:false})}
   if(v('f-li')){sc+=3;checks.push({l:'LinkedIn / portfolio link added',ok:true})}
+  if(v('f-certs')){sc+=4;checks.push({l:'Certifications listed',ok:true})}
+  if(v('f-langs')){sc+=2;checks.push({l:'Languages listed',ok:true})}
+  if(v('f-workauth')){sc+=3;checks.push({l:'Work authorization stated',ok:true})}else{checks.push({l:'Consider adding work authorization status — some ATS filters reject applications without it',ok:false})}
 
   renderWeakWords();
 
@@ -1215,8 +1401,22 @@ function getData(){
     lo:v('f-loc')||'City, Country',
     li:v('f-li')||'linkedin.com/in/yourprofile',
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
+    certs:v('f-certs'),
+    langs:v('f-langs'),
+    workauth:v('f-workauth'),
+    refs:gi('f-refs')?gi('f-refs').checked:false,
     skills,exps,edus
   };
+}
+
+function additionalInfoHTML(d,sectionLabelClass,bodyClass){
+  const rows=[];
+  if(d.certs)rows.push(`<strong>Certifications:</strong> ${d.certs}`);
+  if(d.langs)rows.push(`<strong>Languages:</strong> ${d.langs}`);
+  if(d.workauth)rows.push(`<strong>Work Authorization:</strong> ${d.workauth}`);
+  if(d.refs)rows.push(`References available upon request.`);
+  if(!rows.length)return'';
+  return`<div class="${sectionLabelClass}">Additional Information</div><div class="${bodyClass}">${rows.join('<br>')}</div>`;
 }
 
 const TPL={
@@ -1229,6 +1429,7 @@ const TPL={
     ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skills.join(' • ')}</div>`:''}
+    ${additionalInfoHTML(d,'classic-sl','classic-sum')}
   </div>`,
 
   nova:d=>`<div class="nova">
@@ -1239,6 +1440,7 @@ const TPL={
       <div class="nova-sl" style="color:${AC}">Contact</div>
       ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.slice(0,9).map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+      ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs&&`Certifications: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth&&d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="nova-mn">
       <div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Profile</div><p style="font-size:13px;color:#4D4D5E;line-height:1.7">${d.sum}</p></div>
@@ -1260,6 +1462,7 @@ const TPL={
       </div>
       <div class="apex-sb">
         ${d.skills.length?`<div class="apex-sl" style="color:${AC}">Skills</div>${d.skills.map(s=>`<div class="apex-ch" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}`:''}
+        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="apex-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs&&`<strong>Certifications:</strong> ${d.certs}`,d.langs&&`<strong>Languages:</strong> ${d.langs}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1276,6 +1479,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="prism-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="prism-ski"><span>${s}</span><div style="display:flex;gap:3px">${[1,2,3,4,5].map(j=>`<div class="pd${SL[i%SL.length]/20>=j?' f':''}"></div>`).join('')}</div></div>`).join('')}`:''}
+        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="prism-sl" style="color:${AC}">Additional Info</div><div style="font-size:11px;color:#4D4D5E;line-height:1.7">${[d.certs&&`Certs: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth,d.refs&&'References on request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1327,6 +1531,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Skills &amp; Expertise</div><div>${d.skills.map(s=>`<div class="zenith-sk">${s}</div>`).join('')}</div>`:''}
+        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:18px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs&&`Certifications: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1405,6 +1610,55 @@ const TPL={
       ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">02</div><div class="axis-sec-title">Education</div></div>${d.edus.map(e=>`<div class="axis-grid-row"><div class="axis-date">${e.y||''}</div><div><div class="axis-et">${e.d}</div><div class="axis-em" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${d.skills.map(s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
+    </div></div>`,
+
+  monolith:d=>`<div class="monolith">
+    <div class="mono-h">
+      <div class="mono-nm">${d.nm}</div>
+      <div class="mono-ti">${d.ti}</div>
+      <div class="mono-rule" style="background:${AC}"></div>
+      <div class="mono-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="mono-c">${c}</span>`).join('')}</div>
+    </div>
+    <div class="mono-body">
+      <p class="mono-sum">${d.sum}</p>
+      ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.e].filter(Boolean).join(' — ')}</div>${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
+      ${d.edus.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="mono-ex"><div class="mono-et">${e.d}</div><div class="mono-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+      ${d.skills.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">03</span>Skills</div><div class="mono-sk-row">${d.skills.map(s=>`<div class="mono-sk-item" style="border-color:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${additionalInfoHTML(d,'mono-sl','mono-sum')}
+    </div></div>`,
+
+  lattice:d=>`<div class="lattice">
+    <div class="lat-h">
+      <div><div class="lat-nm">${d.nm}</div><div class="lat-ti">${d.ti}</div></div>
+      <div class="lat-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="lat-c">${c}</span>`).join('')}</div>
+    </div>
+    <div class="lat-divider"></div>
+    <div class="lat-body">
+      <div>
+        <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:22px">${d.sum}</p>
+        ${d.exps.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="lat-ex"><div class="lat-eh"><div class="lat-et">${e.t}</div><div class="lat-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="lat-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="lat-bl"><span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+      </div>
+      <div>
+        ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${d.skills.map(s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
+        ${d.edus.length?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="lat-edu-card"><div class="lat-edu-d">${e.d}</div><div class="lat-edu-s">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
+        ${(d.certs||d.langs||d.workauth||d.refs)?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs&&`Certifications: ${d.certs}`,d.langs&&`Languages: ${d.langs}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+      </div>
+    </div></div>`,
+
+  aurora:d=>`<div class="aurora">
+    <div class="aur-h">
+      <div class="aur-h-content">
+        <div class="aur-nm">${d.nm}</div>
+        <div class="aur-ti">${d.ti}</div>
+        <div class="aur-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="aur-c">${c}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div class="aur-body">
+      <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
+      ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+      ${d.edus.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="aur-edu"><div class="aur-edu-d">${e.d}</div><div class="aur-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+      ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${d.skills.map(s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
     </div></div>`,
 };
 
