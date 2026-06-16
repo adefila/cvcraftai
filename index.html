@@ -199,7 +199,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   #print-target{display:block!important;position:fixed;inset:0;z-index:9999;background:#fff;overflow:auto}
 }
 #print-target{display:none}
-#pdf-render-zone{height:0;overflow:hidden;width:794px}
+#pdf-render-zone{position:fixed;top:0;left:-99999px;width:794px;overflow:visible;z-index:-1}
 
 /* ══════════════════════
    TEMPLATE STYLES
@@ -556,6 +556,8 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
           <input class="fi" id="f-li" placeholder="LinkedIn / Portfolio" oninput="rCV()">
         </div>
         <textarea class="fi" id="f-sum" placeholder="Professional summary (2–3 sentences)" rows="3" oninput="rCV()"></textarea>
+        <button class="btn-pill-outline ai-write-btn" id="sum-ai-write-btn" type="button" onclick="aiWriteSummary()">✦ Write with AI</button>
+        <div class="ai-write-out" id="sum-ai-write-out" style="display:none"></div>
       </div>
     </div>
 
@@ -1030,6 +1032,55 @@ function useAllAIBullets(btn){
   document.querySelectorAll('.ai-write-line button').forEach(b=>{b.textContent='Added ✓';b.disabled=true;});
   btn.textContent='All added ✓';
   btn.disabled=true;
+}
+
+async function aiWriteSummary(){
+  const nm=v('f-name'),t=v('f-title');
+  if(!t&&!exps.length&&!skills.length){toast('Add a job title, an experience entry, or a few skills first so AI has something to work with','err');return;}
+  const btn=gi('sum-ai-write-btn'),out=gi('sum-ai-write-out');
+  const existing=v('f-sum');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Writing…';
+  out.style.display='block';
+  out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  const expLine=exps.length?exps.map(e=>`${e.t} at ${e.co}${e.d?' — '+e.d.split('\n')[0]:''}`).join('; '):'(none listed yet)';
+  const skillsLine=skills.length?skills.join(', '):'(none listed yet)';
+  const prompt=`Write 2 alternative professional summaries (2-3 sentences each) for a CV. Output ONLY the two summaries, separated by a single line containing exactly --- and nothing else on that line. No numbering, no labels like "Option 1", no preamble, no markdown.
+
+Name: ${nm||'(not given)'}
+Target title/role: ${t||'(not given)'}
+Experience: ${expLine}
+Skills: ${skillsLine}
+${existing?`They already drafted this — treat it as raw material to improve, don't just repeat it verbatim: ${existing}\n`:''}
+Rules:
+- Sound like a specific real person summarizing their own work, not a marketing brochure or a generic template.
+- Ground every claim in the experience and skills given above — do not invent specific employers, metrics, or accomplishments that aren't implied by that information.
+- Never use these clichés: results-driven, dynamic, synergy, passionate, detail-oriented, proven track record, team player, leverage, utilize, hardworking, go-getter, self-starter, motivated individual.
+- No empty intensifiers — avoid "highly", "extremely", "successfully", "various".
+- Plain, declarative sentences written in standard CV style with the "I" dropped — start directly with what they do or have done.
+- Each summary roughly 35-55 words, substantial enough to read as a real paragraph, not a one-liner.`;
+  try{
+    const tx=await callAI(prompt,350);
+    const opts=tx.split(/\n?---\n?/).map(s=>s.trim()).filter(Boolean);
+    out.innerHTML=`<div class="ai-write-lbl">Suggested summaries — click to use</div>
+      ${opts.map(o=>`<div class="ai-write-line" style="align-items:flex-start" data-text="${esc(o)}">
+        <span>${o}</span>
+        <button class="btn-pill-sm" style="flex-shrink:0" onclick="useAISummary(this)">Use</button>
+      </div>`).join('')}`;
+  }catch(err){
+    out.innerHTML=`<span style="color:var(--err);font-size:13px">${(err&&err.message)||'Could not generate. Try again.'}</span>`;
+  }
+  btn.disabled=false;
+  btn.innerHTML='✦ Write with AI';
+}
+
+function useAISummary(btn){
+  const line=btn.closest('.ai-write-line');
+  const text=line.dataset.text;
+  gi('f-sum').value=text;
+  btn.textContent='Added ✓';
+  btn.disabled=true;
+  rCV();upATS();runJDMatch();
 }
 
 function saveExp(modalEl,editIdx){
