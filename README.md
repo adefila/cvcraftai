@@ -1,6 +1,6 @@
 # CVCraft AI — ATS-Optimized CV Builder
 
-A sleek, AI-powered CV builder with 11 professional templates, real-time ATS scoring, JD keyword matching, and one-click PDF export. Built as a single HTML file — no install, no backend, no dependencies to manage.
+A sleek, AI-powered CV builder with 14 professional templates, real-time ATS scoring, JD keyword matching, and one-click PDF export. Single static frontend plus one tiny serverless function — no framework, no database.
 
 ![CVCraft AI](https://img.shields.io/badge/CVCraft-AI%20Powered-4F5BFF?style=flat-square)
 ![Templates](https://img.shields.io/badge/Templates-11-0EA5E9?style=flat-square)
@@ -9,21 +9,40 @@ A sleek, AI-powered CV builder with 11 professional templates, real-time ATS sco
 
 ---
 
+## Critical setup step: the AI features need one environment variable
+
+The previous version called `api.anthropic.com` directly from the browser. That cannot work on a real deployed site — browsers block cross-origin calls to Anthropic's API (CORS), and even if they didn't, it would expose your API key to every visitor. This is almost certainly why you saw "AI request failed."
+
+The fix: a tiny serverless function at `/api/ai.js` now holds your API key server-side and proxies requests. **You must add your key in Vercel for this to work:**
+
+1. Go to your Vercel project → **Settings → Environment Variables**
+2. Add a new variable: Name = `ANTHROPIC_API_KEY`, Value = your key from [console.anthropic.com](https://console.anthropic.com)
+3. Redeploy (Vercel → Deployments → ⋯ → Redeploy)
+
+Without this step, every AI feature (Analyse & Enhance, JD Gap Analysis, Write with AI) will fail with a clear error message telling you the key is missing — it won't fail silently.
+
 ## What's new in this build
+- **Fixed blank PDF download** — root cause: the CV clone was rendered off-screen at `left:-9999px`, and `html2canvas` cannot reliably capture elements positioned outside the viewport bounds — several versions silently return a blank canvas for this. Fixed by keeping the clone in normal document flow (no `position:fixed`/`absolute`) inside a `height:0;overflow:hidden` wrapper, which is invisible to the user but fully readable by html2canvas. Also added a blank-canvas detector that inspects actual pixel data before saving — if a PDF would come out blank, you get a clear warning instead of a silent empty download.
+- **Certifications and Languages are now proper add/edit lists** — matching Experience and Education exactly: click "+ Add Certification" or "+ Add Language", fill a small form, edit or remove any entry afterward. No more cramming multiple credentials into one text field.
+- **Logo resized to 32px** with a correspondingly shorter top bar.
+- **AI features actually work now** — fixed via the serverless proxy below. All three AI entry points (main analysis, JD gap analysis, and the in-modal bullet writer) route through `/api/ai` instead of calling Anthropic directly.
+- **"Write with AI" inside the Experience modal** — generates 3-4 ready-to-use bullet points for the specific role you're adding, using the same anti-cliché, metric-driven prompt rules as the main AI Review. Click "Use" per line or "Use all" — nothing is auto-applied without your action.
 - **Edit Experience/Education** — the edit icon on each entry reopens the same modal pre-filled, so saving updates in place instead of duplicating.
 - **Date picker + "Present" toggle** — start date is a native month picker; end date disables and switches to "Present" via a checkbox instead of typing text.
-- **1200px max-width layout** — the topbar and full workspace are now centred and capped at 1200px, so the app doesn't stretch unreasonably wide on large monitors.
-- **Fixed PDF rendering** — the previous export occasionally cropped content or misaligned multi-column templates. Root cause: `html2canvas` was capturing before the cloned node had a full reflow/paint cycle, and the PDF page height was hardcoded rather than measured. Fixed by waiting on `document.fonts.ready`, forcing a synchronous reflow, waiting two animation frames plus a settle delay, measuring the actual rendered height via `scrollHeight`, and setting `pagebreak: avoid-all` so no column gets sliced across a page boundary.
-- **Weak Word Scanner** — a new section in the ATS tab automatically scans your entire CV (summary + every experience bullet) against a list of recruiter-flagged clichés (e.g. "leverage", "synergy", "team player", "results-driven") and shows what to write instead, with no AI call needed — instant and free.
-- **Sharper AI rewrites** — the AI prompt now explicitly bans common AI-sounding phrases, requires concrete numbers where the CV supports them, and produces one ready-to-copy rewritten line per analysis rather than only abstract advice. Suggestions are shown as text with a copy button — nothing auto-overwrites your fields.
-- **Unified AI Review** — one Claude call returns a reasoned score, specific rewrite suggestions, and ATS keywords together, instead of disconnected calls.
+- **Fixed modal overflow bug** — the End date field was visually overflowing its container. Root cause: the date input's native calendar-icon UI has a fixed intrinsic width that ignored its flex column without `min-width:0`. Fixed at the source.
+- **1200px max-width layout** — the topbar and full workspace are now centred and capped at 1200px.
+- **3 new templates: Monolith, Lattice, Aurora** — see table below.
+- **Work Authorization + References fields**, plus Certifications/Languages above — all commonly missing from CVs and a real cause of silent ATS rejections; now factored into the ATS score too.
+- **Weak Word Scanner** — automatically scans your entire CV against a list of recruiter-flagged clichés, no AI call needed.
+- **Unified AI Review** — one call returns a reasoned score, rewrite suggestions, and ATS keywords together.
 
 
 ## Features
 
-### 11 Distinct Templates
+### 14 Distinct Templates
 | Template | Best For |
 |----------|----------|
+| **Classic** | Any traditional industry, maximum ATS safety — single column, zero flourish |
 | **Nova** | Tech, design, startups — dark sidebar with skill bars |
 | **Apex** | Senior/VP roles — dark header band, chip skills |
 | **Prism** | Any industry — Swiss-grid minimal, dot-rating skills |
@@ -34,7 +53,9 @@ A sleek, AI-powered CV builder with 11 professional templates, real-time ATS sco
 | **Pulse** | Product, SaaS, startups — metric cards, tag cloud |
 | **Meridian** | Senior creative/brand — asymmetric two-tone editorial, numbered sections |
 | **Axis** | Data, engineering, analytical roles — technical grid, monospace, numbered markers |
-| **Standard** | Traditional industries, maximum ATS safety — classic black-text format, zero flourish |
+| **Monolith** | Senior creative, architecture, brand strategy — brutalist-editorial, oversized type |
+| **Lattice** | Engineering, operations, data — precise card-grid skills, two-tone header |
+| **Aurora** | Product, customer success, people-facing roles — soft rounded cards, pill tags |
 
 ### Typography
 - **Display:** Plus Jakarta Sans — geometric, distinctive headings
@@ -102,13 +123,11 @@ python3 -m http.server 8080
 
 ## AI Setup
 
-The app calls the Anthropic API directly from the browser. To enable AI features:
+See "Critical setup step" near the top of this README — add `ANTHROPIC_API_KEY` in Vercel's Environment Variables and redeploy. That's the only setup required; the frontend already calls `/api/ai`, not Anthropic directly.
 
-1. Get an API key at [console.anthropic.com](https://console.anthropic.com)
-2. Open `index.html` and find the fetch call to `https://api.anthropic.com/v1/messages`
-3. For production, proxy this through your own backend to keep the key safe
+If you're not deploying to Vercel, any platform that supports a single serverless/edge function (Netlify Functions, Cloudflare Workers, AWS Lambda) works the same way — just adapt `api/ai.js`'s export signature to that platform's convention and update the fetch URL in `index.html`'s `callAI()` function if the path differs.
 
-> **Note:** The AI Enhance and JD Analysis features require an Anthropic API key. The rest of the app (templates, ATS scoring, JD keyword matching) works fully offline without any API key.
+> **Note:** Templates, ATS scoring, the Weak Word Scanner, and JD keyword matching all work fully offline with zero API key. Only AI Review, JD Gap Analysis, and Write with AI need the key.
 
 ---
 
@@ -116,14 +135,14 @@ The app calls the Anthropic API directly from the browser. To enable AI features
 
 ```
 cvcraftai/
-└── index.html    # Entire app — HTML, CSS, JS in one file
+├── index.html       # Entire frontend — HTML, CSS, JS in one file
+├── api/
+│   └── ai.js         # Serverless function — proxies Claude API calls, keeps your key server-side
+├── vercel.json        # Routes /api/ai to the function, everything else to index.html
+└── README.md
 ```
 
-Single-file architecture means:
-- Zero build step
-- Zero dependencies to install
-- Works offline (except AI features)
-- Easy to deploy anywhere static files are served
+This is a static frontend plus exactly one serverless function — no framework, no database, no build step for the HTML. Works on Vercel's free tier as-is.
 
 ---
 
@@ -182,8 +201,13 @@ Live, rule-based, instant feedback as you type:
 | Quantified achievements (numbers/%) | 8 |
 | Strong action verbs | 5 |
 | LinkedIn / portfolio link | 3 |
+| Certifications listed | 4 |
+| Languages listed | 2 |
+| Work authorization stated | 3 |
 
-**Total: 105 points, capped at 100%**
+**Total: 114 points, capped at 100%**
+
+A separate Weak Word Scanner (also instant, rule-based) flags recruiter-disliked clichés anywhere in your summary or bullets, independent of the numeric score.
 
 This sits alongside the AI Review's reasoned score (0–100), which judges the CV holistically rather than as a checklist — the two are intentionally separate signals, shown in different places, so one doesn't silently override the other.
 
