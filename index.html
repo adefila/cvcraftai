@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -1852,57 +1851,33 @@ async function doExport(){
   const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
   if(exportSel==='pdf'){
     toast('Generating PDF…','default',7000);
-    const zone=gi('pdf-render-zone');
-    zone.innerHTML='';
-    const clone=gi('paper').cloneNode(true);
-    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;overflow:visible';
-    zone.appendChild(clone);
+    const paper=gi('paper');
     try{
       if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
-      void clone.offsetHeight;
-      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-      await new Promise(r=>setTimeout(r,300));
-      const actualHeight=Math.max(clone.scrollHeight,1123);
-
-      const worker=html2pdf().set({
-        margin:0,
-        filename:`${name}-cv.pdf`,
-        image:{type:'jpeg',quality:0.98},
-        html2canvas:{
-          scale:2,
-          useCORS:true,
-          letterRendering:false,
-          backgroundColor:'#ffffff',
-          windowWidth:794,
-          width:794,
-          height:actualHeight
-        },
-        jsPDF:{unit:'px',format:[794,actualHeight],orientation:'portrait'},
-        pagebreak:{mode:['avoid-all','css','legacy']}
-      }).from(clone);
-
-      const canvas=await worker.toCanvas().get('canvas');
-      try{
-        const dbg=document.createElement('a');
-        dbg.href=canvas.toDataURL('image/png');
-        dbg.download=`${name}-debug-snapshot.png`;
-        document.body.appendChild(dbg);
-        dbg.click();
-        dbg.remove();
-      }catch(dbgErr){console.error('debug snapshot failed:',dbgErr);}
+      const canvas=await html2canvas(paper,{
+        scale:2,
+        useCORS:true,
+        backgroundColor:'#ffffff',
+        windowWidth:794,
+        width:794
+      });
+      console.log('PDF capture check — canvas size:',canvas.width,canvas.height,'paper scrollHeight:',paper.scrollHeight);
       if(isCanvasBlank(canvas)){
-        console.error('PDF canvas rendered blank — clone height/content check:',clone.scrollHeight,clone.innerHTML.length);
+        console.error('PDF canvas rendered blank — paper height/content check:',paper.scrollHeight,paper.innerHTML.length);
         toast('PDF rendered blank — try Print instead, or refresh and retry','err',4500);
-        zone.innerHTML='';
         return;
       }
-      await worker.save();
+      const imgData=canvas.toDataURL('image/jpeg',0.98);
+      const pdfW=794,pdfH=canvas.height/canvas.width*pdfW;
+      const{jsPDF}=window.jspdf;
+      const pdf=new jsPDF({unit:'px',format:[pdfW,pdfH],orientation:'portrait'});
+      pdf.addImage(imgData,'JPEG',0,0,pdfW,pdfH);
+      pdf.save(`${name}-cv.pdf`);
       toast('PDF downloaded','ok');
     }catch(err){
       console.error('PDF export error:',err);
       toast('PDF export failed — try Print instead','err',3500);
     }
-    zone.innerHTML='';
   } else if(exportSel==='print'){
     const pt=gi('print-target');
     pt.innerHTML=gi('paper').innerHTML;
