@@ -1882,6 +1882,14 @@ async function doExport(){
       }).from(clone);
 
       const canvas=await worker.toCanvas().get('canvas');
+      try{
+        const dbg=document.createElement('a');
+        dbg.href=canvas.toDataURL('image/png');
+        dbg.download=`${name}-debug-snapshot.png`;
+        document.body.appendChild(dbg);
+        dbg.click();
+        dbg.remove();
+      }catch(dbgErr){console.error('debug snapshot failed:',dbgErr);}
       if(isCanvasBlank(canvas)){
         console.error('PDF canvas rendered blank — clone height/content check:',clone.scrollHeight,clone.innerHTML.length);
         toast('PDF rendered blank — try Print instead, or refresh and retry','err',4500);
