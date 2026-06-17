@@ -6,7 +6,9 @@
 <title>CVCraft AI — ATS-Optimized CV Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -199,7 +201,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff}
 }
 #print-target{display:none}
-#pdf-render-zone{position:fixed;top:0;left:-99999px;width:794px;overflow:visible;z-index:-1}
+#pdf-render-zone{position:absolute;top:0;left:-9999px;width:794px;overflow:visible}
 
 /* ══════════════════════
    TEMPLATE STYLES
@@ -1853,7 +1855,7 @@ async function doExport(){
     const zone=gi('pdf-render-zone');
     zone.innerHTML='';
     const clone=gi('paper').cloneNode(true);
-    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block';
+    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;overflow:visible';
     zone.appendChild(clone);
     try{
       if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
