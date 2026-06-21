@@ -23,6 +23,22 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .bar-inner{width:100%;max-width:1200px;display:flex;align-items:center;padding:0 22px;gap:18px}
 .logo{font-family:var(--ff-d);font-weight:800;font-size:32px;letter-spacing:-1px;white-space:nowrap;color:var(--ink);line-height:1}
 .logo span{color:var(--ac)}
+
+/* ── DESKTOP-ONLY GATE ── */
+#mobile-gate{display:none}
+.gate-card{
+  max-width:380px;width:100%;background:#fff;border-radius:18px;padding:40px 28px;
+  text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.09);
+}
+.gate-title{font-family:var(--ff-d);font-size:21px;font-weight:700;color:var(--ink);margin-bottom:12px}
+.gate-body{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+@media (max-width:1023px){
+  .bar,.ws{display:none!important}
+  #mobile-gate{
+    display:flex;position:fixed;inset:0;z-index:1000;background:var(--surf);
+    align-items:center;justify-content:center;padding:24px;
+  }
+}
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
 .tab:hover{color:var(--ink)}
@@ -508,6 +524,21 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 </style>
 </head>
 <body>
+
+<!-- DESKTOP-ONLY GATE — shown via CSS below on screens under 1024px wide -->
+<div id="mobile-gate">
+  <div class="gate-card">
+    <div class="logo" style="margin-bottom:22px">cv<span>craft</span>.ai</div>
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:18px">
+      <rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>
+    <div class="gate-title">Best on a bigger screen</div>
+    <p class="gate-body">CVCraft AI's builder needs more room than a phone or tablet screen can give it — the live preview, template panel, and editor are all designed to sit side by side.</p>
+    <p class="gate-body">Open this page on a laptop or desktop to build your CV.</p>
+    <button class="btn-pill" id="gate-copy-btn" onclick="copyGateLink()" style="margin-top:6px">Copy link to send to yourself</button>
+  </div>
+</div>
+
 
 <!-- TOPBAR -->
 <div class="bar">
@@ -1963,6 +1994,36 @@ async function doExport(){
     a.href='data:text/html;charset=utf-8,'+encodeURIComponent(html);
     a.download=`${name}-cv.html`;a.click();
     toast('HTML downloaded','ok');
+  }
+}
+
+// ── DESKTOP-ONLY GATE ──
+function copyGateLink(){
+  const url=location.href;
+  const btn=gi('gate-copy-btn');
+  const done=()=>{
+    const orig=btn.textContent;
+    btn.textContent='Link copied ✓';
+    setTimeout(()=>{btn.textContent=orig;},2200);
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(()=>fallbackCopy(url,done));
+  }else{
+    fallbackCopy(url,done);
+  }
+}
+function fallbackCopy(text,done){
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.style.position='fixed';ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.focus();ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    done();
+  }catch(e){
+    prompt('Copy this link:',text);
   }
 }
 
