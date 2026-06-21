@@ -1889,18 +1889,22 @@ function selExport(mode,el){
 function isCanvasBlank(canvas){
   if(!canvas||!canvas.getContext)return true;
   try{
-    const ctx=canvas.getContext('2d');
     const w=canvas.width,h=canvas.height;
     if(!w||!h)return true;
-    const sampleCount=24;
+    // Downscale the ENTIRE canvas onto a tiny one so every region of the page
+    // contributes to the check (averaged), instead of sparsely sampling a few
+    // points that can land entirely on whitespace in sparse/minimal templates.
+    const sw=80,sh=Math.max(1,Math.round(sw*h/w));
+    const tmp=document.createElement('canvas');
+    tmp.width=sw;tmp.height=sh;
+    const tctx=tmp.getContext('2d');
+    tctx.drawImage(canvas,0,0,sw,sh);
+    const data=tctx.getImageData(0,0,sw,sh).data;
     let nonWhitePixels=0;
-    for(let i=0;i<sampleCount;i++){
-      const sx=Math.floor((w/sampleCount)*i+10);
-      const sy=Math.floor(h*0.05)+Math.floor((h*0.85/sampleCount)*i);
-      const px=ctx.getImageData(Math.min(sx,w-1),Math.min(sy,h-1),1,1).data;
-      if(px[0]<250||px[1]<250||px[2]<250)nonWhitePixels++;
+    for(let i=0;i<data.length;i+=4){
+      if(data[i]<250||data[i+1]<250||data[i+2]<250)nonWhitePixels++;
     }
-    return nonWhitePixels===0;
+    return nonWhitePixels<5;
   }catch(e){
     return false;
   }
@@ -1911,20 +1915,28 @@ async function doExport(){
   const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
   if(exportSel==='pdf'){
     toast('Generating PDF…','default',7000);
-    const paper=gi('paper');
+    const zone=gi('pdf-render-zone');
+    zone.innerHTML='';
+    const clone=gi('paper').cloneNode(true);
+    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;overflow:visible';
+    zone.appendChild(clone);
     try{
       if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
-      const canvas=await html2canvas(paper,{
+      void clone.offsetHeight; // force layout before measuring
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      const canvas=await html2canvas(clone,{
         scale:2,
         useCORS:true,
         backgroundColor:'#ffffff',
-        windowWidth:794,
-        width:794
+        width:794,
+        height:clone.scrollHeight,
+        windowWidth:794
       });
-      console.log('PDF capture check — canvas size:',canvas.width,canvas.height,'paper scrollHeight:',paper.scrollHeight);
+      console.log('PDF capture check — canvas size:',canvas.width,canvas.height,'clone scrollHeight:',clone.scrollHeight);
       if(isCanvasBlank(canvas)){
-        console.error('PDF canvas rendered blank — paper height/content check:',paper.scrollHeight,paper.innerHTML.length);
+        console.error('PDF canvas rendered blank — clone height/content check:',clone.scrollHeight,clone.innerHTML.length);
         toast('PDF rendered blank — try Print instead, or refresh and retry','err',4500);
+        zone.innerHTML='';
         return;
       }
       const imgData=canvas.toDataURL('image/jpeg',0.98);
@@ -1938,6 +1950,7 @@ async function doExport(){
       console.error('PDF export error:',err);
       toast('PDF export failed — try Print instead','err',3500);
     }
+    zone.innerHTML='';
   } else if(exportSel==='print'){
     const pt=gi('print-target');
     pt.innerHTML=gi('paper').innerHTML;
