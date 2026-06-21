@@ -77,6 +77,10 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .lbl{font-family:var(--ff-d);font-size:12.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);margin-bottom:13px}
 .fi{width:100%;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;font-family:var(--ff-b);font-size:16px;color:var(--ink);background:var(--card);transition:border-color .15s,box-shadow .15s;resize:vertical}
 .fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(21,21,26,.06)}
+button:focus-visible,.tpl-card:focus-visible,.clr-dot:focus-visible,.export-opt:focus-visible,
+a:focus-visible,[tabindex]:focus-visible{
+  outline:2.5px solid var(--ac);outline-offset:2px;border-radius:6px;
+}
 .fi::placeholder{color:#B4B2AC;font-size:15px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fg{display:flex;flex-direction:column;gap:10px}
@@ -137,6 +141,10 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 
 /* ── TEMPLATES PANEL ── */
 .tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.tpl-cat-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
+.tpl-cat-chip{border:1.5px solid var(--bdr);background:var(--card);color:var(--muted);font-family:var(--ff-b);font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:999px;cursor:pointer;transition:all .15s}
+.tpl-cat-chip:hover{border-color:var(--ink);color:var(--ink)}
+.tpl-cat-chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .tpl-card{border:2px solid var(--bdr);border-radius:14px;padding:9px 8px 8px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);background:var(--card)}
 .tpl-card:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.08)}
 .tpl-card.sel{border-color:var(--ink);background:var(--surf)}
@@ -214,6 +222,18 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   .bar,.pnl,.pnl-r{display:none!important}
   body{overflow:visible;height:auto}
   #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff}
+  /* Keep each entry intact — never split one job/degree across two pages */
+  .entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,
+  .zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,
+  .mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu{
+    break-inside:avoid;page-break-inside:avoid;
+  }
+  /* Keep a section heading attached to the content that follows it */
+  .classic-sl,.nova-sl,.apex-sl,.prism-sl,.strand-sl,.folio-sl,.zenith-sl,.carbon-sl,
+  .pulse-sl,.merid-ml,.axis-sec-head,.mono-sl,.lat-sl,.aur-sl,
+  .bcn-sl,.csc-ml,.vtx-sl,.hbr-sl,.spc-sl,.org-sl{
+    break-after:avoid;page-break-after:avoid;
+  }
 }
 #print-target{display:none}
 #pdf-render-zone{position:absolute;top:0;left:-9999px;width:794px;overflow:visible}
@@ -521,6 +541,131 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .aur-edu{background:var(--surf);border-radius:14px;padding:14px 16px;margin-bottom:8px}
 .aur-edu-d{font-size:13px;font-weight:600;color:var(--ink)}
 .aur-edu-s{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* ── BEACON ── */
+.beacon{background:#fff}
+.bcn-h{padding:36px 40px;color:#fff}
+.bcn-nm{font-family:var(--ff-d);font-size:27px;font-weight:800;letter-spacing:-.3px}
+.bcn-ti{font-size:13px;opacity:.85;margin-top:4px;letter-spacing:.3px}
+.bcn-cs{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:16px;font-size:11px;opacity:.92}
+.bcn-body{padding:28px 40px 36px}
+.bcn-sl{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin:22px 0 12px;padding-bottom:8px;border-bottom:2px solid;color:var(--ink)}
+.bcn-sl:first-child{margin-top:0}
+.bcn-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.bcn-et{font-size:14px;font-weight:700;color:var(--ink)}
+.bcn-ed{font-size:10.5px;color:var(--muted);font-family:var(--ff-m);white-space:nowrap}
+.bcn-ec{font-size:12px;font-weight:600;margin:2px 0 7px}
+.bcn-ex{margin-bottom:14px}
+.bcn-edu-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
+.bcn-edu-d{font-size:13.5px;font-weight:600;color:var(--ink)}
+.bcn-edu-s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.bcn-sk-row{display:flex;flex-wrap:wrap;gap:8px}
+.bcn-sk-chip{font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:7px;background:var(--surf);color:var(--ink)}
+.bcn-add-body{font-size:11.5px;color:var(--muted);line-height:1.7}
+
+/* ── CASCADE ── */
+.cascade{display:flex;min-height:920px}
+.csc-sb{width:235px;flex-shrink:0;background:var(--surf);padding:34px 26px;border-right:3px solid}
+.csc-av{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--ff-d);font-weight:800;font-size:19px;margin-bottom:16px}
+.csc-nm{font-family:var(--ff-d);font-size:19px;font-weight:800;color:var(--ink);line-height:1.25}
+.csc-ti{font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:8px}
+.csc-sl{font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:22px}
+.csc-cr{font-size:11.5px;color:#3D3D4E;margin-bottom:7px;line-height:1.5;word-break:break-word}
+.csc-sk-pill{display:inline-block;font-size:10.5px;font-weight:600;padding:5px 10px;border-radius:999px;background:#fff;color:var(--ink);border:1px solid var(--bdr);margin:0 5px 5px 0}
+.csc-mn{flex:1;min-width:0;padding:34px 36px}
+.csc-ml{font-size:11.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink);margin-bottom:13px;padding-left:13px;border-left:3px solid}
+.csc-ex{margin-bottom:18px}
+.csc-et{font-size:14px;font-weight:700;color:var(--ink)}
+.csc-em{font-size:11.5px;color:var(--muted);margin:2px 0 7px}
+.csc-edu-row{margin-bottom:10px}
+.csc-edu-d{font-size:13.5px;font-weight:600;color:var(--ink)}
+.csc-edu-s{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* ── VERTEX ── */
+.vertex{padding:0;position:relative;overflow:hidden}
+.vtx-h{padding:44px 42px 24px;position:relative}
+.vtx-shape{position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:24px;transform:rotate(18deg);opacity:.12}
+.vtx-nm{font-family:var(--ff-d);font-size:36px;font-weight:800;letter-spacing:-1.2px;line-height:1.06;position:relative}
+.vtx-ti{font-size:13.5px;font-weight:600;margin-top:8px;position:relative}
+.vtx-cs{display:flex;flex-wrap:wrap;gap:5px 16px;margin-top:16px;font-size:11px;color:var(--muted);position:relative}
+.vtx-body{padding:8px 42px 38px}
+.vtx-sl{font-size:17px;font-weight:800;font-family:var(--ff-d);color:var(--ink);margin:22px 0 14px;display:flex;align-items:center;gap:10px}
+.vtx-sl-bar{width:22px;height:5px;border-radius:3px;display:inline-block;flex-shrink:0}
+.vtx-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.vtx-et{font-size:14.5px;font-weight:700;color:var(--ink)}
+.vtx-ec{font-size:12px;font-weight:600;margin:2px 0 3px}
+.vtx-ed{font-size:10.5px;color:var(--muted);font-family:var(--ff-m);white-space:nowrap}
+.vtx-ex{margin-bottom:16px}
+.vtx-edu-row{margin-bottom:10px}
+.vtx-edu-d{font-size:13.5px;font-weight:600;color:var(--ink)}
+.vtx-edu-s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.vtx-sk-row{display:flex;flex-wrap:wrap;gap:8px}
+.vtx-sk-chip{font-size:11.5px;font-weight:700;padding:7px 14px;border-radius:3px;color:#fff}
+
+/* ── HARBOR ── */
+.harbor{padding:40px 44px}
+.hbr-nm{font-family:var(--ff-d);font-size:25px;font-weight:800;color:var(--ink)}
+.hbr-ti{font-size:13px;color:var(--muted);margin-top:4px}
+.hbr-cs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.hbr-c{font-size:11px;color:var(--ink);background:var(--surf);padding:6px 12px;border-radius:8px}
+.hbr-sum{font-size:13px;color:#3D3D4E;line-height:1.75;margin:20px 0}
+.hbr-sl{font-size:12px;font-weight:700;color:#fff;padding:8px 14px;border-radius:8px;margin:18px 0 14px;display:inline-block}
+.hbr-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hbr-et{font-size:14px;font-weight:700;color:var(--ink)}
+.hbr-ed{font-size:10.5px;color:var(--muted);font-family:var(--ff-m);white-space:nowrap}
+.hbr-ec{font-size:12px;font-weight:600;margin:2px 0 6px}
+.hbr-ex{margin-bottom:14px}
+.hbr-edu-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;gap:10px}
+.hbr-edu-d{font-size:13.5px;font-weight:600;color:var(--ink)}
+.hbr-edu-s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.hbr-sk-row{display:flex;flex-wrap:wrap;gap:8px}
+.hbr-sk-chip{font-size:11.5px;font-weight:600;padding:7px 14px;border-radius:999px;border:1.5px solid}
+.hbr-add-body{font-size:11.5px;color:var(--muted);line-height:1.7}
+
+/* ── SPECTRUM ── */
+.spectrum{padding:38px 42px}
+.spc-nm{font-family:var(--ff-d);font-size:25px;font-weight:800;color:var(--ink)}
+.spc-ti{font-size:13px;color:var(--muted);margin-top:4px}
+.spc-cs{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:11px;color:var(--muted)}
+.spc-sum{font-size:13px;color:#3D3D4E;line-height:1.75;margin:18px 0 22px}
+.spc-sl{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:13px}
+.spc-sk-grid{display:flex;flex-wrap:wrap;gap:12px 22px;margin-bottom:26px}
+.spc-sk-item{width:calc(33.333% - 15px);min-width:140px}
+.spc-sk-nm{font-size:11.5px;font-weight:600;color:var(--ink);margin-bottom:4px;display:flex;justify-content:space-between}
+.spc-sk-tr{height:4px;border-radius:2px;background:var(--bdr);overflow:hidden}
+.spc-sk-fl{height:100%;border-radius:2px}
+.spc-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.spc-et{font-size:14px;font-weight:700;color:var(--ink)}
+.spc-ed{font-size:10.5px;color:var(--muted);font-family:var(--ff-m);white-space:nowrap}
+.spc-ec{font-size:12px;font-weight:600;margin:2px 0 6px}
+.spc-ex{margin-bottom:14px}
+.spc-foot{display:flex;gap:34px;margin-top:22px;padding-top:20px;border-top:1px solid var(--bdr)}
+.spc-foot>div{flex:1;min-width:0}
+.spc-edu-row{margin-bottom:9px}
+.spc-edu-d{font-size:13px;font-weight:600;color:var(--ink)}
+.spc-edu-s{font-size:11px;color:var(--muted);margin-top:2px}
+.spc-add-body{font-size:11px;color:var(--muted);line-height:1.7}
+
+/* ── ORIGIN ── */
+.origin{padding:32px 38px}
+.org-nm{font-family:var(--ff-d);font-size:22px;font-weight:800;color:var(--ink)}
+.org-ti{font-size:12px;color:var(--muted);margin-top:3px}
+.org-cs{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:10px;font-size:10.5px;color:var(--muted)}
+.org-hr{height:1px;background:var(--bdr);margin:14px 0}
+.org-sum{font-size:12px;color:#3D3D4E;line-height:1.65;margin-bottom:14px}
+.org-sl{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--ink);margin:14px 0 9px}
+.org-num{width:18px;height:18px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.org-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.org-et{font-size:12.5px;font-weight:700;color:var(--ink)}
+.org-ed{font-size:9.5px;color:var(--muted);font-family:var(--ff-m);white-space:nowrap}
+.org-ec{font-size:11px;font-weight:600;margin:1px 0 3px}
+.org-ex{margin-bottom:9px}
+.org-edu-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;gap:10px}
+.org-edu-d{font-size:12px;font-weight:600;color:var(--ink)}
+.org-edu-s{font-size:10.5px;color:var(--muted)}
+.org-sk-row{display:flex;flex-wrap:wrap;gap:6px}
+.org-sk-chip{font-size:10px;font-weight:600;padding:4px 10px;border-radius:5px;background:var(--surf);color:var(--ink)}
+.org-add-body{font-size:10.5px;color:var(--muted);line-height:1.65}
 </style>
 </head>
 <body>
@@ -551,7 +696,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
     <button class="tab" onclick="swTab('templates',this)">Templates</button>
     <button class="tab" onclick="swTab('ats',this)">ATS Score</button>
   </div>
-  <div class="ats-pill" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
+  <div class="ats-pill" role="button" tabindex="0" aria-label="View ATS score details" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
     <div class="ats-ring">
       <svg width="34" height="34" viewBox="0 0 34 34">
         <circle cx="17" cy="17" r="14" fill="none" stroke="#E7E6E2" stroke-width="3.5"/>
@@ -692,6 +837,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   <div class="pnl" id="pnl-templates">
     <div class="sec">
       <div class="lbl">Choose Template</div>
+      <div class="tpl-cat-row" id="tpl-cat-row"></div>
       <div class="tpl-grid" id="tpl-grid"></div>
     </div>
     <div class="sec">
@@ -742,21 +888,21 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   <div class="modal-bg" onclick="if(event.target===this)closeExport()">
     <div class="modal">
       <div class="modal-title">Export Your CV</div>
-      <div class="export-opt sel" id="opt-pdf" onclick="selExport('pdf',this)">
+      <div class="export-opt sel" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
         <div class="export-icon" style="background:#FBEAEA;color:#E14B4B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">PDF — Best for ATS</div>
           <div class="export-info-s">Clean, parseable. Recommended for job applications.</div>
         </div>
       </div>
-      <div class="export-opt" id="opt-print" onclick="selExport('print',this)">
+      <div class="export-opt" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
         <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Print / Save as PDF</div>
           <div class="export-info-s">Opens browser print dialog. Use "Save as PDF".</div>
         </div>
       </div>
-      <div class="export-opt" id="opt-html" onclick="selExport('html',this)">
+      <div class="export-opt" id="opt-html" role="button" tabindex="0" onclick="selExport('html',this)">
         <div class="export-icon" style="background:#F4F4FF;color:#4F5BD5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Download HTML</div>
@@ -828,20 +974,26 @@ function confirmStartOver(){
 const SL=[90,78,85,70,92,65,88,75,82];
 
 const TPLS={
-  classic:{name:'Classic',desc:'The standard, fully conventional single-column CV format. Centred header, horizontal rule, plain bullet lists. This is the safest possible structure for any ATS parser and the most universally expected format by human reviewers across every industry.'},
-  nova:{name:'Nova',desc:'Dark sidebar with gradient skill bars. Bold and tech-forward — great for engineering, design, and startup roles where personality matters.'},
-  apex:{name:'Apex',desc:'Full-width dark header band. Executive gravitas with chip-style skills. Ideal for senior, director, and VP-level positions.'},
-  prism:{name:'Prism',desc:'Swiss-grid minimalism with monospace contacts and dot-rating skills. Timeless and precise — works for any industry.'},
-  strand:{name:'Strand',desc:'Timeline rail layout. Emphasises career progression chronologically. Strong for roles where trajectory matters.'},
-  folio:{name:'Folio',desc:'Left accent stripe with pill-outline skills and hover-border experience cards. Creative roles — UX, brand, content, marketing.'},
-  zenith:{name:'Zenith',desc:'Centred header, symmetric two-column body. Formal authority — law, finance, consulting, academia, medicine.'},
-  carbon:{name:'Carbon',desc:'Full dark-mode CV — rare and bold. Card-boxed experience with glowing accents. Engineering, dev, and technical portfolios.'},
-  pulse:{name:'Pulse',desc:'Startup energy: live metric cards in the header, tag-cloud skills, card-boxed experience. Product, growth, SaaS, and founder roles.'},
-  meridian:{name:'Meridian',desc:'Asymmetric two-tone editorial layout with a deep colour-block sidebar and numbered sections. Premium, magazine-grade — design leads, brand, and senior creative roles.'},
-  axis:{name:'Axis',desc:'Technical grid system with monospace type and numbered section markers. Precise and engineered — built for data, engineering, and analytical roles.'},
-  monolith:{name:'Monolith',desc:'Brutalist-editorial with oversized display type and a single bold accent rule. Confident and stripped-back — strong for senior creative, architecture, and brand strategy roles.'},
-  lattice:{name:'Lattice',desc:'Precise card-grid skills layout with a clean two-tone header and bracketed section rules. Structured and exacting — suits engineering, operations, and data roles.'},
-  aurora:{name:'Aurora',desc:'Soft rounded cards on a tinted surface with pill-shaped skills and tags. Warm, modern SaaS feel — ideal for product, customer success, and people-facing roles.'},
+  classic:{name:'Classic',cat:'Minimal',desc:'The standard, fully conventional single-column CV format. Centred header, horizontal rule, plain bullet lists. This is the safest possible structure for any ATS parser and the most universally expected format by human reviewers across every industry.'},
+  nova:{name:'Nova',cat:'Modern',desc:'Dark sidebar with gradient skill bars. Bold and tech-forward — great for engineering, design, and startup roles where personality matters.'},
+  apex:{name:'Apex',cat:'Executive',desc:'Full-width dark header band. Executive gravitas with chip-style skills. Ideal for senior, director, and VP-level positions.'},
+  prism:{name:'Prism',cat:'Minimal',desc:'Swiss-grid minimalism with monospace contacts and dot-rating skills. Timeless and precise — works for any industry.'},
+  strand:{name:'Strand',cat:'Modern',desc:'Timeline rail layout. Emphasises career progression chronologically. Strong for roles where trajectory matters.'},
+  folio:{name:'Folio',cat:'Creative',desc:'Left accent stripe with pill-outline skills and hover-border experience cards. Creative roles — UX, brand, content, marketing.'},
+  zenith:{name:'Zenith',cat:'Executive',desc:'Centred header, symmetric two-column body. Formal authority — law, finance, consulting, academia, medicine.'},
+  carbon:{name:'Carbon',cat:'Technical',desc:'Full dark-mode CV — rare and bold. Card-boxed experience with glowing accents. Engineering, dev, and technical portfolios.'},
+  pulse:{name:'Pulse',cat:'Modern',desc:'Startup energy: live metric cards in the header, tag-cloud skills, card-boxed experience. Product, growth, SaaS, and founder roles.'},
+  meridian:{name:'Meridian',cat:'Creative',desc:'Asymmetric two-tone editorial layout with a deep colour-block sidebar and numbered sections. Premium, magazine-grade — design leads, brand, and senior creative roles.'},
+  axis:{name:'Axis',cat:'Technical',desc:'Technical grid system with monospace type and numbered section markers. Precise and engineered — built for data, engineering, and analytical roles.'},
+  monolith:{name:'Monolith',cat:'Bold',desc:'Brutalist-editorial with oversized display type and a single bold accent rule. Confident and stripped-back — strong for senior creative, architecture, and brand strategy roles.'},
+  lattice:{name:'Lattice',cat:'Technical',desc:'Precise card-grid skills layout with a clean two-tone header and bracketed section rules. Structured and exacting — suits engineering, operations, and data roles.'},
+  aurora:{name:'Aurora',cat:'Modern',desc:'Soft rounded cards on a tinted surface with pill-shaped skills and tags. Warm, modern SaaS feel — ideal for product, customer success, and people-facing roles.'},
+  beacon:{name:'Beacon',cat:'Bold',desc:'Full-width colour banner header with a clean single-column body below. Confident and direct — works well for sales, marketing, and general business roles.'},
+  cascade:{name:'Cascade',cat:'Minimal',desc:'Light, airy sidebar separated by a single accent rule — no heavy color blocks. Calm and professional — suits operations, admin, HR, and people-facing roles.'},
+  vertex:{name:'Vertex',cat:'Bold',desc:'Oversized display name with an angled geometric accent shape. Confident and distinctive — strong for design, architecture, and brand-forward creative roles.'},
+  harbor:{name:'Harbor',cat:'Creative',desc:'Filled colour-block section headers on a single relaxed column. Warm and approachable — great for customer-facing, hospitality, and community roles.'},
+  spectrum:{name:'Spectrum',cat:'Technical',desc:'Leads with a visual skills grid before experience. Built for skills-driven roles where your toolkit is the headline — engineering, data, and specialist technical roles.'},
+  origin:{name:'Origin',cat:'Minimal',desc:'Compact and dense with circular numbered section markers. Fits more on one page than any other template — ideal for extensive experience or strict one-page limits.'},
 };
 
 const COLORS=[
@@ -953,9 +1105,21 @@ function swTab(t,btn){
 }
 
 // ── TEMPLATE GRID ──
+let tplFilter='All';
+function buildTplCatRow(){
+  const cats=['All',...new Set(Object.values(TPLS).map(t=>t.cat))];
+  gi('tpl-cat-row').innerHTML=cats.map(c=>`
+    <button class="tpl-cat-chip${tplFilter===c?' on':''}" onclick="setTplFilter('${c}')">${c}</button>`).join('');
+}
+function setTplFilter(c){
+  tplFilter=c;
+  buildTplCatRow();
+  buildTplGrid();
+}
 function buildTplGrid(){
-  gi('tpl-grid').innerHTML=Object.entries(TPLS).map(([k,t])=>`
-    <div class="tpl-card${CT===k?' sel':''}" onclick="selTpl('${k}',this)">
+  const entries=Object.entries(TPLS).filter(([k,t])=>tplFilter==='All'||t.cat===tplFilter);
+  gi('tpl-grid').innerHTML=entries.map(([k,t])=>`
+    <div class="tpl-card${CT===k?' sel':''}" role="button" tabindex="0" onclick="selTpl('${k}',this)">
       <div class="tpl-prev">${miniPrev(k)}</div>
       <div class="tpl-nm">${t.name}</div>
     </div>`).join('');
@@ -978,6 +1142,12 @@ function miniPrev(k){
     monolith:`<div style="padding:5px;height:100%"><div style="height:6px;background:#0A0A0F;width:90%;margin-bottom:2px"></div><div style="height:6px;background:#0A0A0F;width:60%;margin-bottom:5px"></div><div style="height:2px;background:${c};width:100%;margin-bottom:6px"></div><div style="height:1px;background:#ddd;margin-bottom:2px"></div><div style="height:1px;background:#ddd;width:80%"></div></div>`,
     lattice:`<div style="padding:0;height:100%"><div style="display:flex;justify-content:space-between;padding:5px 5px 3px"><div style="height:2.5px;background:#0A0A0F;width:50%"></div><div style="height:1px;background:#ccc;width:20%"></div></div><div style="height:1px;background:#ddd;margin:0 5px 4px"></div><div style="display:flex;gap:3px;padding:0 5px"><div style="flex:1"><div style="height:1px;background:${c};margin-bottom:2px"></div><div style="height:1px;background:#ddd;margin-bottom:1px"></div></div><div style="width:35%;display:grid;grid-template-columns:1fr 1fr;gap:2px"><div style="border:1px solid #ddd;height:6px"></div><div style="border:1px solid #ddd;height:6px"></div></div></div></div>`,
     aurora:`<div style="padding:5px;height:100%;background:#fff"><div style="height:2px;background:#0A0A0F;width:65%;margin-bottom:2px"></div><div style="height:1px;background:#ccc;width:45%;margin-bottom:4px"></div><div style="display:flex;gap:2px;margin-bottom:5px"><div style="border:1px solid #ddd;border-radius:8px;height:6px;width:30%"></div><div style="border:1px solid #ddd;border-radius:8px;height:6px;width:30%"></div></div><div style="background:#F7F7F5;border-radius:4px;padding:3px;margin-bottom:2px"><div style="height:1px;background:#333;margin-bottom:1px"></div><div style="height:1px;background:${c};width:40%"></div></div></div>`,
+    beacon:`<div style="height:100%"><div style="background:${c};height:32%;padding:4px 5px"><div style="height:2px;background:#fff;width:60%;margin-bottom:2px"></div><div style="height:1px;background:#fff;opacity:.6;width:40%"></div></div><div style="padding:5px"><div style="height:1px;background:#333;margin-bottom:2px"></div><div style="height:1px;background:#ddd;margin-bottom:1px"></div><div style="height:1px;background:#ddd;width:75%"></div></div></div>`,
+    cascade:`<div style="display:flex;height:100%"><div style="width:36%;background:#F7F7F5;border-right:2px solid ${c};padding:5px 4px"><div style="width:14px;height:14px;border-radius:50%;background:${c};margin-bottom:4px"></div><div style="height:1px;background:#999;margin-bottom:2px"></div><div style="height:1px;background:#999;width:60%"></div></div><div style="flex:1;padding:5px 4px"><div style="height:1px;background:${c};margin-bottom:3px"></div><div style="height:1px;background:#ddd;margin-bottom:2px"></div><div style="height:1px;background:#ddd;width:70%"></div></div></div>`,
+    vertex:`<div style="padding:5px;height:100%;position:relative;overflow:hidden"><div style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;background:${c};opacity:.15;transform:rotate(20deg)"></div><div style="height:5px;background:#0A0A0F;width:80%;margin-bottom:2px;position:relative"></div><div style="height:1px;background:${c};width:35%;margin-bottom:5px;position:relative"></div><div style="height:1px;background:#ddd;margin-bottom:1px"></div><div style="height:1px;background:#ddd;width:70%"></div></div>`,
+    harbor:`<div style="padding:5px;height:100%"><div style="height:2px;background:#0A0A0F;width:60%;margin-bottom:4px"></div><div style="background:${c};border-radius:3px;height:6px;width:45%;margin-bottom:4px"></div><div style="height:1px;background:#ddd;margin-bottom:1px"></div><div style="height:1px;background:#ddd;width:70%"></div></div>`,
+    spectrum:`<div style="padding:5px;height:100%"><div style="height:2px;background:#0A0A0F;width:55%;margin-bottom:4px"></div>${[0,1].map(()=>`<div style="margin-bottom:3px"><div style="height:1px;background:#999;width:30%;margin-bottom:1.5px"></div><div style="height:2px;background:#eee;border-radius:1px"><div style="height:100%;width:65%;background:${c};border-radius:1px"></div></div></div>`).join('')}</div>`,
+    origin:`<div style="padding:5px;height:100%"><div style="height:2px;background:#0A0A0F;width:50%;margin-bottom:1.5px"></div><div style="height:1px;background:#ccc;width:35%;margin-bottom:4px"></div><div style="display:flex;align-items:center;gap:3px;margin-bottom:2px"><div style="width:6px;height:6px;border-radius:50%;border:1px solid ${c}"></div><div style="height:1px;background:#333;flex:1"></div></div><div style="height:1px;background:#ddd;margin-bottom:1px;margin-left:9px"></div><div style="height:1px;background:#ddd;width:70%;margin-left:9px"></div></div>`,
   };
   return m[k]||'';
 }
@@ -993,7 +1163,7 @@ function selTpl(k,el){
 
 function buildColorGrid(){
   gi('clr-grid').innerHTML=COLORS.map(col=>`
-    <div class="clr-dot" onclick="setAC('${col.hex}',this)" title="${col.name}"
+    <div class="clr-dot" role="button" tabindex="0" onclick="setAC('${col.hex}',this)" title="${col.name}" aria-label="${col.name} accent color"
       style="background:${col.hex};border:2px solid ${AC===col.hex?col.hex:'transparent'};box-shadow:${AC===col.hex?`0 0 0 2px #fff,0 0 0 4px ${col.hex}`:'none'}">
     </div>`).join('');
 }
@@ -1676,7 +1846,7 @@ const TPL={
       <div class="nova-ti">${d.ti}</div>
       <div class="nova-sl" style="color:${AC}">Contact</div>
       ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
-      ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.slice(0,9).map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+      ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="nova-mn">
@@ -1695,7 +1865,7 @@ const TPL={
         <div class="apex-sl" style="color:${AC}">Profile</div>
         <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:17px">${d.sum}</p>
         ${d.exps.length?`<div class="apex-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="apex-ex"><div class="apex-eh"><div class="apex-et">${e.t}</div><div class="apex-ed">${[e.s,e.e].filter(Boolean).join('–')}</div></div><div class="apex-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
-        ${d.edus.length?`<div class="apex-sl" style="color:${AC};margin-top:17px">Education</div>${d.edus.map(e=>`<div style="margin-bottom:10px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+        ${d.edus.length?`<div class="apex-sl" style="color:${AC};margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:10px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div class="apex-sb">
         ${d.skills.length?`<div class="apex-sl" style="color:${AC}">Skills</div>${d.skills.map(s=>`<div class="apex-ch" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}`:''}
@@ -1723,7 +1893,7 @@ const TPL={
   strand:d=>`<div class="strand">
     <div class="strand-nm">${d.nm}</div>
     <div class="strand-tg">${d.ti}</div>
-    <div class="strand-cs">${[d.em,d.ph,d.lo].map(c=>`<span class="strand-c">${c}</span>`).join('')}</div>
+    <div class="strand-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="strand-c">${c}</span>`).join('')}</div>
     <div style="font-size:13px;color:#4D4D5E;line-height:1.75;margin:17px 0;border-left:2.5px solid ${AC};padding-left:14px">${d.sum}</div>
     <div class="strand-bd">
       <div>
@@ -1732,6 +1902,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Skills</div>${d.skills.map((s,i)=>`<div class="strand-skb"><div class="strand-skn">${s}</div><div class="strand-skt"><div class="strand-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Additional Info</div><div style="font-size:11.5px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1746,10 +1917,11 @@ const TPL={
       <div class="folio-grid">
         <div>
           ${d.exps.length?`<div class="folio-sl">Experience</div>${d.exps.map(e=>`<div class="folio-ex"><div class="folio-et">${e.t}</div><div class="folio-em" style="color:${AC}">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${bls(e.d,'folio-bl')}</div>`).join('')}`:''}
-          ${d.edus.length?`<div class="folio-sl" style="margin-top:17px">Education</div>${d.edus.map(e=>`<div style="margin-bottom:11px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
+          ${d.edus.length?`<div class="folio-sl" style="margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:11px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
         </div>
         <div>
           ${d.skills.length?`<div class="folio-sl">Skills</div><div>${d.skills.map(s=>`<div class="folio-pill" style="color:${AC};border-color:${AC}">${s}</div>`).join('')}</div>`:''}
+          ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="folio-sl" style="margin-top:17px">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
         </div>
       </div>
     </div></div>`,
@@ -1775,7 +1947,7 @@ const TPL={
   carbon:d=>`<div class="carbon">
     <div class="carbon-top">
       <div><div class="carbon-nm">${d.nm}</div><div class="carbon-ti">${d.ti}</div></div>
-      <div class="carbon-cts">${[d.em,d.ph,d.lo].map(c=>`<span class="carbon-ct">${c}</span>`).join('')}</div>
+      <div class="carbon-cts">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="carbon-ct">${c}</span>`).join('')}</div>
     </div>
     <p class="carbon-sum" style="border-color:${AC}">${d.sum}</p>
     <div class="carbon-bd">
@@ -1785,6 +1957,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="carbon-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="carbon-sk"><div class="carbon-skn">${s}</div><div class="carbon-skt"><div class="carbon-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="carbon-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:#A0A0C4;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -1794,7 +1967,7 @@ const TPL={
     <div class="pulse-h" style="border-color:${AC}">
       <div class="pulse-top">
         <div><div class="pulse-nm">${d.nm}</div><div class="pulse-ti">${d.ti}</div>
-          <div class="pulse-cs">${[d.em,d.ph,d.lo].map(c=>`<span class="pulse-c">${c}</span>`).join('')}</div>
+          <div class="pulse-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="pulse-c">${c}</span>`).join('')}</div>
         </div>
         <div class="pulse-mets">
           <div class="pulse-met"><div class="pulse-met-v" style="color:${AC}">${d.exps.length}</div><div class="pulse-met-l">Roles</div></div>
@@ -1811,6 +1984,7 @@ const TPL={
       </div>
       <div class="pulse-sb">
         ${d.skills.length?`<div class="pulse-sl" style="color:${AC}">Tech Stack</div><div>${d.skills.map(s=>`<div class="pulse-tag" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}</div>`:''}
+        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`;
   },
@@ -1823,6 +1997,7 @@ const TPL={
       <div class="merid-sl">Contact</div>
       ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="merid-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${d.skills.map(s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
+      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="merid-main">
       <div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">01</div>Profile</div>
@@ -1839,6 +2014,7 @@ const TPL={
           <div class="axis-meta-row">${d.em}</div>
           <div class="axis-meta-row">${d.ph}</div>
           <div class="axis-meta-row">${d.lo}</div>
+          ${d.li?`<div class="axis-meta-row">${d.li}</div>`:''}
         </div>
       </div>
       <p class="axis-sum">${d.sum}</p>
@@ -1847,6 +2023,7 @@ const TPL={
       ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">02</div><div class="axis-sec-title">Education</div></div>${d.edus.map(e=>`<div class="axis-grid-row"><div class="axis-date">${e.y||''}</div><div><div class="axis-et">${e.d}</div><div class="axis-em" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${d.skills.map(s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">04</div><div class="axis-sec-title">Additional Info</div></div><p class="axis-sum" style="margin:0 0 18px">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</p>`:''}
     </div></div>`,
 
   monolith:d=>`<div class="monolith">
@@ -1897,6 +2074,88 @@ const TPL={
       ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${d.skills.map(s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
     </div></div>`,
+
+  beacon:d=>`<div class="beacon">
+    <div class="bcn-h" style="background:${AC}">
+      <div class="bcn-nm">${d.nm}</div>
+      <div class="bcn-ti">${d.ti}</div>
+      <div class="bcn-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span>${c}</span>`).join('')}</div>
+    </div>
+    <div class="bcn-body">
+      <p style="font-size:13px;color:#3D3D4E;line-height:1.75">${d.sum}</p>
+      ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.edus.length?`<div class="bcn-sl" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="bcn-edu-row entry-card"><div><div class="bcn-edu-d">${e.d}</div><div class="bcn-edu-s">${e.s}</div></div><div class="bcn-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+      ${d.skills.length?`<div class="bcn-sl" style="border-color:${AC}">Skills</div><div class="bcn-sk-row">${d.skills.map(s=>`<div class="bcn-sk-chip">${s}</div>`).join('')}</div>`:''}
+      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="bcn-sl" style="border-color:${AC}">Additional Info</div><div class="bcn-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+    </div></div>`,
+
+  cascade:d=>`<div class="cascade">
+    <div class="csc-sb" style="border-color:${AC}">
+      <div class="csc-av" style="background:${AC}">${ini()}</div>
+      <div class="csc-nm">${d.nm}</div>
+      <div class="csc-ti">${d.ti}</div>
+      <div class="csc-sl">Contact</div>
+      ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="csc-cr">${c}</div>`).join('')}
+      ${d.skills.length?`<div class="csc-sl">Skills</div><div>${d.skills.map(s=>`<span class="csc-sk-pill">${s}</span>`).join('')}</div>`:''}
+      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="csc-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="csc-cr">${t}</div>`).join('')}`:''}
+    </div>
+    <div class="csc-mn">
+      <div class="csc-ml" style="border-color:${AC}">Profile</div>
+      <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:22px">${d.sum}</p>
+      ${d.exps.length?`<div class="csc-ml" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="csc-ex entry-card"><div class="csc-et">${e.t}</div><div class="csc-em">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.edus.length?`<div class="csc-ml" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="csc-edu-row entry-card"><div class="csc-edu-d">${e.d}</div><div class="csc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+    </div></div>`,
+
+  vertex:d=>`<div class="vertex">
+    <div class="vtx-h">
+      <div class="vtx-shape" style="background:${AC}"></div>
+      <div class="vtx-nm">${d.nm}</div>
+      <div class="vtx-ti" style="color:${AC}">${d.ti}</div>
+      <div class="vtx-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join('  ·  ')}</div>
+    </div>
+    <div class="vtx-body">
+      <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
+      ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.edus.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="vtx-edu-row entry-card"><div class="vtx-edu-d">${e.d}</div><div class="vtx-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+      ${d.skills.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Skills</div><div class="vtx-sk-row">${d.skills.map(s=>`<div class="vtx-sk-chip" style="background:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+    </div></div>`,
+
+  harbor:d=>`<div class="harbor">
+    <div class="hbr-nm">${d.nm}</div>
+    <div class="hbr-ti">${d.ti}</div>
+    <div class="hbr-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="hbr-c">${c}</span>`).join('')}</div>
+    <p class="hbr-sum">${d.sum}</p>
+    ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.edus.length?`<div class="hbr-sl" style="background:${AC}">Education</div>${d.edus.map(e=>`<div class="hbr-edu-row entry-card"><div><div class="hbr-edu-d">${e.d}</div><div class="hbr-edu-s">${e.s}</div></div><div class="hbr-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+    ${d.skills.length?`<div class="hbr-sl" style="background:${AC}">Skills</div><div class="hbr-sk-row">${d.skills.map(s=>`<div class="hbr-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
+    ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="hbr-sl" style="background:${AC}">Additional Info</div><div class="hbr-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+  </div>`,
+
+  spectrum:d=>`<div class="spectrum">
+    <div class="spc-nm">${d.nm}</div>
+    <div class="spc-ti">${d.ti}</div>
+    <div class="spc-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join(' · ')}</div>
+    <p class="spc-sum">${d.sum}</p>
+    ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${d.skills.map((s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
+    ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${(d.edus.length||d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-foot">
+      <div>${d.edus.length?`<div class="spc-sl">Education</div>${d.edus.map(e=>`<div class="spc-edu-row entry-card"><div class="spc-edu-d">${e.d}</div><div class="spc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}</div>
+      <div>${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-sl">Additional Info</div><div class="spc-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}</div>
+    </div>`:''}
+  </div>`,
+
+  origin:d=>`<div class="origin">
+    <div class="org-nm">${d.nm}</div>
+    <div class="org-ti">${d.ti}</div>
+    <div class="org-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join(' • ')}</div>
+    <div class="org-hr"></div>
+    <p class="org-sum">${d.sum}</p>
+    ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.edus.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="org-edu-row entry-card"><div class="org-edu-d">${e.d}, ${e.s}</div><div class="org-edu-s">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
+    ${d.skills.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">03</span>Skills</div><div class="org-sk-row">${d.skills.map(s=>`<div class="org-sk-chip">${s}</div>`).join('')}</div>`:''}
+    ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">04</span>Additional Info</div><div class="org-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+  </div>`,
 };
 
 function rCV(){
@@ -1945,7 +2204,7 @@ async function doExport(){
   closeExport();
   const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
   if(exportSel==='pdf'){
-    toast('Generating PDF…','default',7000);
+    toast('Generating PDF…','default',9000);
     const zone=gi('pdf-render-zone');
     zone.innerHTML='';
     const clone=gi('paper').cloneNode(true);
@@ -1955,8 +2214,9 @@ async function doExport(){
       if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
       void clone.offsetHeight; // force layout before measuring
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      const SCALE=2;
       const canvas=await html2canvas(clone,{
-        scale:2,
+        scale:SCALE,
         useCORS:true,
         backgroundColor:'#ffffff',
         width:794,
@@ -1970,13 +2230,62 @@ async function doExport(){
         zone.innerHTML='';
         return;
       }
-      const imgData=canvas.toDataURL('image/jpeg',0.98);
-      const pdfW=794,pdfH=canvas.height/canvas.width*pdfW;
+
+      // ── Real multi-page pagination ──
+      // Slice the tall capture into standard A4-size pages (794×1123px) instead
+      // of one oversized non-standard page. Each cut snaps to the start of any
+      // entry it would otherwise land inside, so a job or degree never gets
+      // sliced in half across two pages — same protected-element list used by
+      // the print stylesheet's break-inside:avoid rules.
+      const PAGE_W=794,PAGE_H=1123;
+      const protectedSel='.entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,.zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,.mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu';
+      const cloneTop=clone.getBoundingClientRect().top;
+      const blocks=[...clone.querySelectorAll(protectedSel)].map(el=>{
+        const r=el.getBoundingClientRect();
+        return{top:(r.top-cloneTop)*SCALE,bottom:(r.bottom-cloneTop)*SCALE};
+      });
+      const pageHeightPx=PAGE_H*SCALE;
+      const totalH=canvas.height;
+      const cuts=[0];
+      let pos=0;
+      while(pos<totalH-1){
+        let target=Math.min(pos+pageHeightPx,totalH);
+        if(target<totalH){
+          const collision=blocks.find(b=>b.top<target&&b.bottom>target);
+          if(collision&&collision.top>pos&&(collision.bottom-collision.top)<pageHeightPx){
+            target=collision.top;
+          }
+        }
+        if(target<=pos)target=pos+pageHeightPx; // safety: never get stuck
+        cuts.push(target);
+        pos=target;
+      }
+
       const{jsPDF}=window.jspdf;
-      const pdf=new jsPDF({unit:'px',format:[pdfW,pdfH],orientation:'portrait'});
-      pdf.addImage(imgData,'JPEG',0,0,pdfW,pdfH);
+      let pdf=null;
+      for(let i=0;i<cuts.length-1;i++){
+        const sliceTop=cuts[i],sliceBottom=Math.min(cuts[i+1],totalH);
+        const sliceHpx=sliceBottom-sliceTop;
+        if(sliceHpx<=0)continue;
+        const pageCanvas=document.createElement('canvas');
+        pageCanvas.width=canvas.width;
+        pageCanvas.height=sliceHpx;
+        const pctx=pageCanvas.getContext('2d');
+        pctx.fillStyle='#ffffff';
+        pctx.fillRect(0,0,pageCanvas.width,pageCanvas.height);
+        pctx.drawImage(canvas,0,sliceTop,canvas.width,sliceHpx,0,0,canvas.width,sliceHpx);
+        const imgData=pageCanvas.toDataURL('image/jpeg',0.98);
+        const imgHInPdfPx=sliceHpx/SCALE;
+        if(!pdf){
+          pdf=new jsPDF({unit:'px',format:[PAGE_W,PAGE_H],orientation:'portrait'});
+        }else{
+          pdf.addPage([PAGE_W,PAGE_H],'portrait');
+        }
+        pdf.addImage(imgData,'JPEG',0,0,PAGE_W,imgHInPdfPx);
+      }
+      const pageCount=cuts.length-1;
       pdf.save(`${name}-cv.pdf`);
-      toast('PDF downloaded','ok');
+      toast(pageCount>1?`PDF downloaded (${pageCount} pages)`:'PDF downloaded','ok');
     }catch(err){
       console.error('PDF export error:',err);
       toast('PDF export failed — try Print instead','err',3500);
@@ -2030,6 +2339,7 @@ function fallbackCopy(text,done){
 // ── INIT ──
 function init(){
   loadDraft();
+  buildTplCatRow();
   buildTplGrid();
   buildColorGrid();
   renderSk();
@@ -2045,6 +2355,13 @@ function init(){
     toast('Restored your last draft','ok',2500);
   }
 }
+
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role="button"]')){
+    e.preventDefault();
+    e.target.click();
+  }
+});
 
 document.querySelectorAll('input.fi,textarea.fi').forEach(el=>{
   el.addEventListener('input',()=>{rCV();upATS();});
