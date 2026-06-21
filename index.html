@@ -513,6 +513,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 <div class="bar">
  <div class="bar-inner">
   <div class="logo">cv<span>craft</span>.ai</div>
+  <button class="btn-pill-outline" onclick="confirmStartOver()" title="Clear this CV and start a new one" style="padding:7px 14px;font-size:12.5px">Start Over</button>
   <div class="tabs">
     <button class="tab on" onclick="swTab('build',this)">Build</button>
     <button class="tab" onclick="swTab('jd',this)">JD Match</button>
@@ -750,6 +751,49 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 <script>
 // ── STATE ──
 let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], AC='#4F5BD5', exportSel='pdf';
+
+// ── AUTOSAVE ──
+// Saves the whole form to localStorage so a refresh, crash, or closed tab
+// never costs someone their CV. Runs after every edit (hooked into rCV()
+// below, the single place every mutation already passes through).
+const DRAFT_KEY='cvcraftai-draft-v1';
+const FIELD_IDS=['f-name','f-title','f-email','f-phone','f-loc','f-li','f-sum','f-workauth'];
+let saveDraftTimer=null;
+function saveDraft(){
+  clearTimeout(saveDraftTimer);
+  saveDraftTimer=setTimeout(()=>{
+    try{
+      const fields={};
+      FIELD_IDS.forEach(id=>{const el=gi(id);if(el)fields[id]=el.value;});
+      const refsEl=gi('f-refs');
+      const draft={fields,refs:refsEl?refsEl.checked:false,skills,exps,edus,certs,langs,CT,AC,savedAt:Date.now()};
+      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    }catch(e){/* storage full or unavailable — fail silently, don't block the UI */}
+  },400);
+}
+function loadDraft(){
+  let draft;
+  try{draft=JSON.parse(localStorage.getItem(DRAFT_KEY));}catch(e){return;}
+  if(!draft)return;
+  FIELD_IDS.forEach(id=>{const el=gi(id);if(el&&draft.fields&&draft.fields[id]!==undefined)el.value=draft.fields[id];});
+  const refsEl=gi('f-refs');if(refsEl&&draft.refs!==undefined)refsEl.checked=draft.refs;
+  if(Array.isArray(draft.skills))skills=draft.skills;
+  if(Array.isArray(draft.exps))exps=draft.exps;
+  if(Array.isArray(draft.edus))edus=draft.edus;
+  if(Array.isArray(draft.certs))certs=draft.certs;
+  if(Array.isArray(draft.langs))langs=draft.langs;
+  if(draft.CT)CT=draft.CT;
+  if(draft.AC){AC=draft.AC;document.documentElement.style.setProperty('--ac',AC);}
+}
+function clearDraft(){
+  try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
+}
+function confirmStartOver(){
+  if(confirm('Clear this CV and start over? This cannot be undone.')){
+    clearDraft();
+    location.reload();
+  }
+}
 const SL=[90,78,85,70,92,65,88,75,82];
 
 const TPLS={
@@ -1828,6 +1872,7 @@ function rCV(){
   const d=getData();
   gi('paper').innerHTML=TPL[CT](d);
   upATS();runJDMatch();
+  saveDraft();
 }
 
 // ── EXPORT ──
@@ -1910,8 +1955,10 @@ async function doExport(){
 
 // ── INIT ──
 function init(){
+  loadDraft();
   buildTplGrid();
   buildColorGrid();
+  renderSk();
   renderCertList();
   renderLangList();
   gi('ats-tips').innerHTML=ATS_TIPS.map(t=>`
@@ -1920,6 +1967,9 @@ function init(){
       <span style="font-size:14.5px;color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.txt}</span>
     </div>`).join('');
   rCV();
+  if(localStorage.getItem(DRAFT_KEY)&&(v('f-name')||skills.length||exps.length)){
+    toast('Restored your last draft','ok',2500);
+  }
 }
 
 document.querySelectorAll('input.fi,textarea.fi').forEach(el=>{
