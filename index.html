@@ -336,8 +336,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .proj-card-ext{opacity:0;transition:opacity .15s;flex-shrink:0}
 .proj-card-link:hover .proj-card-ext{opacity:.6}
 .proj-card-yr{font-family:var(--ff-m);font-size:10px;color:var(--muted);flex-shrink:0;white-space:nowrap}
-/* Bare domain — visible for ATS parsers, muted for humans */
-.proj-card-domain{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--muted);margin-bottom:4px;line-height:1.4}
+/* Bare domain line removed — link is embedded in the title */
 .proj-card-desc{font-size:12px;color:#3D3D4E;line-height:1.65;margin-bottom:5px}
 .proj-card-stack{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .proj-card-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;line-height:1.6}
@@ -2278,11 +2277,7 @@ function projsHTML(d,sectionLabelClass,_unused,accentColor,darkMode){
   const chipBgColor=chipBg(accentColor&&accentColor.startsWith('#')?accentColor:'#4F5BD5');
   const descColor=darkMode?'rgba(255,255,255,0.65)':'#3D3D4E';
   const chipColor=darkMode?'rgba(255,255,255,0.9)':ac;
-  const items=d.projs.map(p=>{
-    // Extract bare domain for ATS-visible text (ATS parsers read visible text, not href attrs)
-    let domain='';
-    if(p.url){try{domain=new URL(p.url).hostname.replace(/^www\./,'');}catch(_){domain=p.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0];}}
-    return`
+  const items=d.projs.map(p=>`
     <div class="proj-card entry-card">
       <div class="proj-card-head">
         ${p.url
@@ -2290,11 +2285,9 @@ function projsHTML(d,sectionLabelClass,_unused,accentColor,darkMode){
           :`<span class="proj-card-nm" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}</span>`}
         ${p.yr?`<span class="proj-card-yr">${esc(p.yr)}</span>`:''}
       </div>
-      ${domain?`<div class="proj-card-domain" style="color:${darkMode?'rgba(255,255,255,0.45)':'var(--muted)'}"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>${domain}</div>`:''}
       ${p.desc?`<div class="proj-card-desc" style="color:${descColor}">${esc(p.desc)}</div>`:''}
       ${p.stack?`<div class="proj-card-stack">${p.stack.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span class="proj-card-chip" style="background:${chipBgColor};color:${chipColor}">${esc(s)}</span>`).join('')}</div>`:''}
-    </div>`;
-  }).join('');
+    </div>`).join('');
   return`<div class="${sectionLabelClass}">Projects</div>${items}`;
 }
 function additionalInfoHTML(d,sectionLabelClass,bodyClass){
