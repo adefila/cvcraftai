@@ -26,6 +26,26 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 
 /* ── DESKTOP-ONLY GATE ── */
 #mobile-gate{display:none}
+/* ── ONBOARDING TOOLTIP ── */
+#onb-overlay{position:fixed;inset:0;z-index:500;pointer-events:none}
+#onb-overlay.active{pointer-events:auto}
+.onb-backdrop{position:fixed;inset:0;background:rgba(10,10,15,.45);opacity:0;transition:opacity .3s;z-index:501}
+.onb-backdrop.visible{opacity:1}
+.onb-spotlight{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(10,10,15,.45);z-index:502;pointer-events:none;transition:all .35s cubic-bezier(.4,0,.2,1)}
+.onb-card{position:fixed;background:#fff;border-radius:18px;padding:22px 24px;width:290px;box-shadow:0 24px 80px rgba(0,0,0,.22);z-index:503;transition:all .35s cubic-bezier(.4,0,.2,1)}
+.onb-step{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.onb-title{font-family:var(--ff-d);font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.onb-body{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.onb-actions{display:flex;align-items:center;gap:10px}
+.onb-next{background:var(--ink);color:#fff;border:none;border-radius:999px;font-family:var(--ff-b);font-size:13.5px;font-weight:600;padding:9px 20px;cursor:pointer;transition:all .15s}
+.onb-next:hover{background:#111;transform:translateY(-1px)}
+.onb-skip{background:none;border:none;color:var(--muted);font-family:var(--ff-b);font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:color .15s}
+.onb-skip:hover{color:var(--ink)}
+.onb-dots{display:flex;gap:5px;margin-left:auto}
+.onb-dot{width:6px;height:6px;border-radius:50%;background:var(--bdr);transition:background .2s}
+.onb-dot.on{background:var(--ink)}
+.onb-arrow{position:absolute;width:14px;height:14px;background:#fff;transform:rotate(45deg)}
+
 .gate-card{
   max-width:380px;width:100%;background:#fff;border-radius:18px;padding:40px 28px;
   text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.09);
@@ -41,8 +61,8 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 }
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
-.tab:hover{color:var(--ink)}
-.tab.on{background:var(--ink);color:#fff}
+.tab:hover{color:var(--ink);background:rgba(21,21,26,.05)}
+.tab.on{background:var(--ink);color:#fff;box-shadow:0 2px 8px rgba(21,21,26,.14)}
 .ats-pill{margin-left:auto;display:flex;align-items:center;gap:10px;background:var(--surf);border-radius:999px;padding:6px 16px 6px 10px;cursor:pointer;transition:background .18s;border:1px solid transparent}
 .ats-pill:hover{background:var(--bg);border-color:var(--bdr)}
 .ats-ring{position:relative;width:34px;height:34px;flex-shrink:0}
@@ -50,15 +70,33 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .ats-lbl{font-family:var(--ff-d);font-size:14px;font-weight:600}
 .ats-sub{font-size:11.5px;color:var(--muted)}
 
-/* Pill buttons — fully rounded, black primary */
-.btn-pill{background:var(--ink);color:#fff;border:none;font-family:var(--ff-b);font-size:14.5px;font-weight:600;padding:11px 22px;border-radius:999px;cursor:pointer;transition:transform .12s ease,background .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
-.btn-pill:hover{background:#000}
-.btn-pill:active{transform:scale(.96)}
-.btn-pill:disabled{opacity:.4;cursor:not-allowed;transform:none}
+/* Pill buttons */
+.btn-pill{background:var(--ink);color:#fff;border:none;font-family:var(--ff-b);font-size:14.5px;font-weight:600;padding:11px 22px;border-radius:999px;cursor:pointer;transition:transform .15s cubic-bezier(.34,1.4,.64,1),background .15s,box-shadow .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+.btn-start-over{background:transparent;color:#C0392B;border:1.5px solid #F5C6C0;font-family:var(--ff-b);font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .18s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn-start-over:hover{background:#FFF0EE;border-color:#C0392B;transform:scale(.98)}
+.btn-pill:hover{background:#111;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.btn-pill:active{transform:scale(.95) translateY(0)!important;box-shadow:none}
+.btn-pill:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none}
 .btn-pill svg{width:16px;height:16px}
 .btn-pill-outline{background:transparent;color:var(--ink);border:1.5px solid var(--bdr);font-family:var(--ff-b);font-size:14.5px;font-weight:600;padding:10.5px 20px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn-pill-outline:hover{border-color:var(--ink);background:var(--surf)}
 .btn-pill-outline:active{transform:scale(.96)}
+/* Pane crossfade */
+.pnl{animation:pnlIn .22s cubic-bezier(.4,0,.2,1)}
+@keyframes pnlIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* Skill chip entrance */
+@keyframes chipIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.sk-chip{animation:chipIn .2s cubic-bezier(.34,1.56,.64,1)}
+/* Input field focus lift */
+.fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(21,21,26,.07);transform:translateY(-1px)}
+/* ATS ring animated fill */
+#ats-arc{transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke .4s}
+/* Template card lift */
+.tpl-card:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.1)}
+.tpl-card:active{transform:translateY(-1px)!important;box-shadow:0 4px 10px rgba(0,0,0,.07)!important}
+/* Export option interactive */
+.export-opt{border:1.5px solid var(--bdr);border-radius:16px;padding:16px 18px;cursor:pointer;margin-bottom:10px;transition:all .18s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:14px}
+.export-opt:hover{border-color:var(--ink);background:var(--surf);transform:translateX(3px)}
 .btn-pill-sm{background:var(--ink);color:#fff;border:none;border-radius:999px;font-family:var(--ff-b);font-size:13.5px;font-weight:600;padding:8px 16px;cursor:pointer;transition:transform .12s,background .15s;white-space:nowrap}
 .btn-pill-sm:hover{background:#000}
 .btn-pill-sm:active{transform:scale(.94)}
@@ -161,6 +199,11 @@ a:focus-visible,[tabindex]:focus-visible{
 .ats-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 .ats-tip-box{border-radius:14px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.55}
 .ats-disclaimer-box{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.ats-methodology{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.ats-meth-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.ats-meth-grid{display:flex;flex-direction:column;gap:6px}
+.ats-meth-row{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--muted)}
+.ats-meth-pts{font-family:var(--ff-m);font-size:11px;font-weight:600;color:var(--ac);min-width:34px;flex-shrink:0}
 .weak-word-hit{background:#FCF6EC;border:1px solid #F2DCA8;border-radius:12px;padding:11px 14px;margin-bottom:8px}
 .weak-word-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 .weak-word-flag{font-family:var(--ff-m);font-size:13px;font-weight:600;color:#8A5E0A;background:#FBF1DE;padding:2px 8px;border-radius:6px}
@@ -195,9 +238,6 @@ a:focus-visible,[tabindex]:focus-visible{
 .ai-write-all{width:100%;justify-content:center;margin-top:4px}
 
 /* ── EXPORT MODAL ── */
-.export-opt{border:1.5px solid var(--bdr);border-radius:16px;padding:16px 18px;cursor:pointer;margin-bottom:10px;transition:all .15s;display:flex;align-items:center;gap:14px}
-.export-opt:hover{border-color:var(--ink);background:var(--surf)}
-.export-opt.sel{border-color:var(--ink);background:var(--surf)}
 .export-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .export-icon svg{width:20px;height:20px}
 .export-info{flex:1}
@@ -670,6 +710,22 @@ a:focus-visible,[tabindex]:focus-visible{
 </head>
 <body>
 
+<!-- ONBOARDING OVERLAY -->
+<div id="onb-overlay">
+  <div class="onb-backdrop" id="onb-backdrop"></div>
+  <div class="onb-spotlight" id="onb-spotlight"></div>
+  <div class="onb-card" id="onb-card">
+    <div class="onb-step" id="onb-step">Step 1 of 5</div>
+    <div class="onb-title" id="onb-title"></div>
+    <div class="onb-body" id="onb-body"></div>
+    <div class="onb-actions">
+      <button class="onb-next" id="onb-next">Next →</button>
+      <button class="onb-skip" onclick="endOnboarding()">Skip tour</button>
+      <div class="onb-dots" id="onb-dots"></div>
+    </div>
+  </div>
+</div>
+
 <!-- DESKTOP-ONLY GATE — shown via CSS below on screens under 1024px wide -->
 <div id="mobile-gate">
   <div class="gate-card">
@@ -689,11 +745,10 @@ a:focus-visible,[tabindex]:focus-visible{
 <div class="bar">
  <div class="bar-inner">
   <div class="logo">cv<span>craft</span>.ai</div>
-  <button class="btn-pill-outline" onclick="confirmStartOver()" title="Clear this CV and start a new one" style="padding:7px 14px;font-size:12.5px">Start Over</button>
   <div class="tabs">
     <button class="tab on" onclick="swTab('build',this)">Build</button>
     <button class="tab" onclick="swTab('jd',this)">JD Match</button>
-    <button class="tab" onclick="swTab('templates',this)">Templates</button>
+    <button class="tab" id="tab-templates" onclick="swTab('templates',this)">Templates</button>
     <button class="tab" onclick="swTab('ats',this)">ATS Score</button>
   </div>
   <div class="ats-pill" role="button" tabindex="0" aria-label="View ATS score details" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
@@ -710,9 +765,13 @@ a:focus-visible,[tabindex]:focus-visible{
       <div class="ats-sub">Live score</div>
     </div>
   </div>
-  <button class="btn-pill" onclick="openExport()">
+  <button class="btn-pill" id="btn-export-pdf" onclick="openExport()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     Export PDF
+  </button>
+  <button class="btn-start-over" onclick="confirmStartOver()" title="Clear and start a new CV">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    Start Over
   </button>
  </div>
 </div>
@@ -757,7 +816,7 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="sec">
       <div class="lbl">Experience</div>
       <div id="exp-list"></div>
-      <button class="btn-add" onclick="addExp()">+ Add Experience</button>
+      <button class="btn-add" id="add-exp-btn" onclick="addExp()">+ Add Experience</button>
     </div>
 
     <div class="sec">
@@ -854,6 +913,21 @@ a:focus-visible,[tabindex]:focus-visible{
   <div class="pnl" id="pnl-ats">
     <div class="sec">
       <div class="lbl">Score Breakdown</div>
+      <div class="ats-methodology">
+        <div class="ats-meth-title">How this score is calculated</div>
+        <div class="ats-meth-grid">
+          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Full name present</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Valid email</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">12pts</span><span>Professional summary (80+ chars)</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">15pts</span><span>At least one experience entry</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">10pts</span><span>3+ achievement bullets</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">10pts</span><span>5+ skills listed</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Quantified results (numbers)</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Education section</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">5pts</span><span>Strong action verbs</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">14pts</span><span>Bonus: phone, location, LinkedIn, certs, languages, work auth</span></div>
+        </div>
+      </div>
       <div id="ats-bd"><div style="padding:18px;text-align:center;font-size:14.5px;color:var(--muted)">Fill in your CV to see a full breakdown</div></div>
     </div>
     <div class="sec">
@@ -1794,14 +1868,22 @@ function upATS(){
 }
 
 // ── CV RENDER ──
+function linkURL(val){
+  if(!val)return val;
+  const url=val.match(/^https?:\/\//)?val:'https://'+val;
+  return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;text-underline-offset:2px">${val}</a>`;
+}
+
 function getData(){
+  const liRaw=v('f-li')||'linkedin.com/in/yourprofile';
   return{
     nm:v('f-name')||'Your Name',
     ti:v('f-title')||'Professional Title',
     em:v('f-email')||'email@example.com',
     ph:v('f-phone')||'+1 (555) 000-0000',
     lo:v('f-loc')||'City, Country',
-    li:v('f-li')||'linkedin.com/in/yourprofile',
+    li:liRaw,
+    liLink:linkURL(liRaw),
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
     certs,langs,
     workauth:v('f-workauth'),
@@ -1829,7 +1911,7 @@ function additionalInfoHTML(d,sectionLabelClass,bodyClass){
 const TPL={
   classic:d=>`<div class="classic">
     <div class="classic-nm">${d.nm}</div>
-    <div class="classic-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join(' | ')}</div>
+    <div class="classic-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' | ')}</div>
     <div class="classic-hr"></div>
     <div class="classic-sl">Summary</div>
     <p class="classic-sum">${d.sum}</p>
@@ -1845,7 +1927,7 @@ const TPL={
       <div class="nova-nm">${d.nm}</div>
       <div class="nova-ti">${d.ti}</div>
       <div class="nova-sl" style="color:${AC}">Contact</div>
-      ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
+      ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
@@ -1858,7 +1940,7 @@ const TPL={
   apex:d=>`<div class="apex">
     <div class="apex-h">
       <div class="apex-nm">${d.nm}</div><div class="apex-tg">${d.ti}</div>
-      <div class="apex-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="apex-c">${c}</div>`).join('')}</div>
+      <div class="apex-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="apex-c">${c}</div>`).join('')}</div>
     </div>
     <div class="apex-bd">
       <div class="apex-mn">
@@ -1876,7 +1958,7 @@ const TPL={
   prism:d=>`<div class="prism">
     <div class="prism-top">
       <div><div class="prism-nm">${d.nm}</div><div class="prism-ti">${d.ti}</div></div>
-      <div class="prism-cts">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="prism-ct">${c}</span>`).join('')}</div>
+      <div class="prism-cts">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="prism-ct">${c}</span>`).join('')}</div>
     </div>
     <div class="prism-bd">
       <div>
@@ -1893,7 +1975,7 @@ const TPL={
   strand:d=>`<div class="strand">
     <div class="strand-nm">${d.nm}</div>
     <div class="strand-tg">${d.ti}</div>
-    <div class="strand-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="strand-c">${c}</span>`).join('')}</div>
+    <div class="strand-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="strand-c">${c}</span>`).join('')}</div>
     <div style="font-size:13px;color:#4D4D5E;line-height:1.75;margin:17px 0;border-left:2.5px solid ${AC};padding-left:14px">${d.sum}</div>
     <div class="strand-bd">
       <div>
@@ -1911,7 +1993,7 @@ const TPL={
     <div class="folio-body">
       <div class="folio-top">
         <div><div class="folio-nm">${d.nm}</div><div class="folio-ti">${d.ti}</div></div>
-        <div class="folio-ct-blk">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="folio-ct">${c}</span>`).join('')}</div>
+        <div class="folio-ct-blk">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="folio-ct">${c}</span>`).join('')}</div>
       </div>
       <p class="folio-sum">${d.sum}</p>
       <div class="folio-grid">
@@ -1930,7 +2012,7 @@ const TPL={
     <div class="zenith-top">
       <div class="zenith-nm">${d.nm}</div>
       <div class="zenith-ti">${d.ti}</div>
-      <div class="zenith-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="zenith-c">${c}</span>`).join('')}</div>
+      <div class="zenith-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="zenith-c">${c}</span>`).join('')}</div>
     </div>
     <p class="zenith-sum">${d.sum}</p>
     <div class="zenith-cols">
@@ -1947,7 +2029,7 @@ const TPL={
   carbon:d=>`<div class="carbon">
     <div class="carbon-top">
       <div><div class="carbon-nm">${d.nm}</div><div class="carbon-ti">${d.ti}</div></div>
-      <div class="carbon-cts">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="carbon-ct">${c}</span>`).join('')}</div>
+      <div class="carbon-cts">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="carbon-ct">${c}</span>`).join('')}</div>
     </div>
     <p class="carbon-sum" style="border-color:${AC}">${d.sum}</p>
     <div class="carbon-bd">
@@ -1967,7 +2049,7 @@ const TPL={
     <div class="pulse-h" style="border-color:${AC}">
       <div class="pulse-top">
         <div><div class="pulse-nm">${d.nm}</div><div class="pulse-ti">${d.ti}</div>
-          <div class="pulse-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="pulse-c">${c}</span>`).join('')}</div>
+          <div class="pulse-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="pulse-c">${c}</span>`).join('')}</div>
         </div>
         <div class="pulse-mets">
           <div class="pulse-met"><div class="pulse-met-v" style="color:${AC}">${d.exps.length}</div><div class="pulse-met-l">Roles</div></div>
@@ -1995,7 +2077,7 @@ const TPL={
       <div class="merid-ti">${d.ti}</div>
       <div class="merid-div"></div>
       <div class="merid-sl">Contact</div>
-      ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="merid-cr">${c}</div>`).join('')}
+      ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="merid-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${d.skills.map(s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
     </div>
@@ -2014,7 +2096,7 @@ const TPL={
           <div class="axis-meta-row">${d.em}</div>
           <div class="axis-meta-row">${d.ph}</div>
           <div class="axis-meta-row">${d.lo}</div>
-          ${d.li?`<div class="axis-meta-row">${d.li}</div>`:''}
+          ${d.li?`<div class="axis-meta-row">${d.liLink}</div>`:''}
         </div>
       </div>
       <p class="axis-sum">${d.sum}</p>
@@ -2031,7 +2113,7 @@ const TPL={
       <div class="mono-nm">${d.nm}</div>
       <div class="mono-ti">${d.ti}</div>
       <div class="mono-rule" style="background:${AC}"></div>
-      <div class="mono-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="mono-c">${c}</span>`).join('')}</div>
+      <div class="mono-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="mono-c">${c}</span>`).join('')}</div>
     </div>
     <div class="mono-body">
       <p class="mono-sum">${d.sum}</p>
@@ -2044,7 +2126,7 @@ const TPL={
   lattice:d=>`<div class="lattice">
     <div class="lat-h">
       <div><div class="lat-nm">${d.nm}</div><div class="lat-ti">${d.ti}</div></div>
-      <div class="lat-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="lat-c">${c}</span>`).join('')}</div>
+      <div class="lat-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="lat-c">${c}</span>`).join('')}</div>
     </div>
     <div class="lat-divider"></div>
     <div class="lat-body">
@@ -2064,7 +2146,7 @@ const TPL={
       <div class="aur-h-content">
         <div class="aur-nm">${d.nm}</div>
         <div class="aur-ti">${d.ti}</div>
-        <div class="aur-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="aur-c">${c}</span>`).join('')}</div>
+        <div class="aur-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="aur-c">${c}</span>`).join('')}</div>
       </div>
     </div>
     <div class="aur-body">
@@ -2079,7 +2161,7 @@ const TPL={
     <div class="bcn-h" style="background:${AC}">
       <div class="bcn-nm">${d.nm}</div>
       <div class="bcn-ti">${d.ti}</div>
-      <div class="bcn-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span>${c}</span>`).join('')}</div>
+      <div class="bcn-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span>${c}</span>`).join('')}</div>
     </div>
     <div class="bcn-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75">${d.sum}</p>
@@ -2095,7 +2177,7 @@ const TPL={
       <div class="csc-nm">${d.nm}</div>
       <div class="csc-ti">${d.ti}</div>
       <div class="csc-sl">Contact</div>
-      ${[d.em,d.ph,d.lo,d.li].map(c=>`<div class="csc-cr">${c}</div>`).join('')}
+      ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="csc-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="csc-sl">Skills</div><div>${d.skills.map(s=>`<span class="csc-sk-pill">${s}</span>`).join('')}</div>`:''}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="csc-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="csc-cr">${t}</div>`).join('')}`:''}
     </div>
@@ -2111,7 +2193,7 @@ const TPL={
       <div class="vtx-shape" style="background:${AC}"></div>
       <div class="vtx-nm">${d.nm}</div>
       <div class="vtx-ti" style="color:${AC}">${d.ti}</div>
-      <div class="vtx-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join('  ·  ')}</div>
+      <div class="vtx-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
     </div>
     <div class="vtx-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
@@ -2124,7 +2206,7 @@ const TPL={
   harbor:d=>`<div class="harbor">
     <div class="hbr-nm">${d.nm}</div>
     <div class="hbr-ti">${d.ti}</div>
-    <div class="hbr-cs">${[d.em,d.ph,d.lo,d.li].map(c=>`<span class="hbr-c">${c}</span>`).join('')}</div>
+    <div class="hbr-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="hbr-c">${c}</span>`).join('')}</div>
     <p class="hbr-sum">${d.sum}</p>
     ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="hbr-sl" style="background:${AC}">Education</div>${d.edus.map(e=>`<div class="hbr-edu-row entry-card"><div><div class="hbr-edu-d">${e.d}</div><div class="hbr-edu-s">${e.s}</div></div><div class="hbr-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
@@ -2135,7 +2217,7 @@ const TPL={
   spectrum:d=>`<div class="spectrum">
     <div class="spc-nm">${d.nm}</div>
     <div class="spc-ti">${d.ti}</div>
-    <div class="spc-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join(' · ')}</div>
+    <div class="spc-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' · ')}</div>
     <p class="spc-sum">${d.sum}</p>
     ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${d.skills.map((s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
     ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
@@ -2148,7 +2230,7 @@ const TPL={
   origin:d=>`<div class="origin">
     <div class="org-nm">${d.nm}</div>
     <div class="org-ti">${d.ti}</div>
-    <div class="org-cs">${[d.em,d.ph,d.lo,d.li].filter(Boolean).join(' • ')}</div>
+    <div class="org-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' • ')}</div>
     <div class="org-hr"></div>
     <p class="org-sum">${d.sum}</p>
     ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
@@ -2232,33 +2314,45 @@ async function doExport(){
       }
 
       // ── Real multi-page pagination ──
-      // Slice the tall capture into standard A4-size pages (794×1123px) instead
-      // of one oversized non-standard page. Each cut snaps to the start of any
-      // entry it would otherwise land inside, so a job or degree never gets
-      // sliced in half across two pages — same protected-element list used by
-      // the print stylesheet's break-inside:avoid rules.
+      // Slice the tall canvas into A4-sized pages. Cut points snap to the
+      // nearest safe gap between entries so a job or degree is never split.
       const PAGE_W=794,PAGE_H=1123;
-      const protectedSel='.entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,.zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,.mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu';
-      const cloneTop=clone.getBoundingClientRect().top;
+      const protectedSel='.entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,.zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,.mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu,.bcn-ex,.csc-ex,.vtx-ex,.hbr-ex,.spc-ex,.org-ex';
+
+      // offsetTop traversal: reliable even for absolutely-positioned off-screen elements
+      function elTop(el){
+        let t=0,node=el;
+        while(node&&node!==clone){t+=node.offsetTop||0;node=node.offsetParent;}
+        return t;
+      }
+
       const blocks=[...clone.querySelectorAll(protectedSel)].map(el=>{
-        const r=el.getBoundingClientRect();
-        return{top:(r.top-cloneTop)*SCALE,bottom:(r.bottom-cloneTop)*SCALE};
-      });
+        const top=elTop(el)*SCALE;
+        const bottom=top+(el.offsetHeight||0)*SCALE;
+        return{top,bottom};
+      }).filter(b=>b.bottom>b.top); // skip zero-height elements
+
       const pageHeightPx=PAGE_H*SCALE;
+      const MARGIN=18*SCALE; // breathing room — don't cut right at the start of an entry
       const totalH=canvas.height;
       const cuts=[0];
       let pos=0;
       while(pos<totalH-1){
         let target=Math.min(pos+pageHeightPx,totalH);
         if(target<totalH){
+          // Find any protected block that straddles the proposed cut point
           const collision=blocks.find(b=>b.top<target&&b.bottom>target);
-          if(collision&&collision.top>pos&&(collision.bottom-collision.top)<pageHeightPx){
-            target=collision.top;
+          if(collision){
+            const snapTo=collision.top-MARGIN;
+            // Only snap back if there's room (don't get stuck in an infinite loop)
+            if(snapTo>pos+(pageHeightPx*0.3)){
+              target=snapTo;
+            }
           }
         }
-        if(target<=pos)target=pos+pageHeightPx; // safety: never get stuck
-        cuts.push(target);
-        pos=target;
+        if(target<=pos)target=pos+pageHeightPx; // never stall
+        cuts.push(Math.min(target,totalH));
+        pos=cuts[cuts.length-1];
       }
 
       const{jsPDF}=window.jspdf;
@@ -2337,6 +2431,103 @@ function fallbackCopy(text,done){
 }
 
 // ── INIT ──
+// ── ONBOARDING TOUR ──
+const ONB_KEY='cvcraftai-onboarded-v1';
+const ONB_STEPS=[
+  {
+    target:'#f-name',
+    anchor:'bottom',
+    title:'Start with your basics',
+    body:'Fill in your name, job title, email, and contact details. These become the header of every template automatically.'
+  },
+  {
+    target:'#add-exp-btn',
+    anchor:'bottom',
+    title:'Add your experience',
+    body:'Click "Add Experience" to add each role. Write 2–3 bullet points per job — the AI can help you rewrite them with stronger phrasing.'
+  },
+  {
+    target:'#sk-inp',
+    anchor:'bottom',
+    title:'Add your skills',
+    body:'Type a skill and press Enter to add it. Skills are displayed in the CV and directly boost your ATS score.'
+  },
+  {
+    target:'#tab-templates',
+    anchor:'bottom',
+    title:'Pick a template',
+    body:'Switch to the Templates tab to choose from 20 designs. Use the category chips to filter — change your choice any time without losing your data.'
+  },
+  {
+    target:'#btn-export-pdf',
+    anchor:'bottom',
+    title:'Download when ready',
+    body:'Click Export PDF to download. Your work is automatically saved in this browser, so you can close the tab and come back later.'
+  }
+];
+
+let onbStep=0;
+
+function startOnboarding(){
+  if(localStorage.getItem(ONB_KEY))return;
+  onbStep=0;
+  gi('onb-overlay').classList.add('active');
+  gi('onb-backdrop').classList.add('visible');
+  renderOnbStep();
+}
+
+function endOnboarding(){
+  localStorage.setItem(ONB_KEY,'1');
+  gi('onb-overlay').classList.remove('active');
+  gi('onb-backdrop').classList.remove('visible');
+  gi('onb-spotlight').style.cssText='';
+  gi('onb-card').style.cssText='';
+}
+
+function renderOnbStep(){
+  const step=ONB_STEPS[onbStep];
+  const total=ONB_STEPS.length;
+  gi('onb-step').textContent=`Step ${onbStep+1} of ${total}`;
+  gi('onb-title').textContent=step.title;
+  gi('onb-body').textContent=step.body;
+  gi('onb-next').textContent=onbStep===total-1?'Get started ✓':'Next →';
+  gi('onb-next').onclick=()=>{
+    if(onbStep<total-1){onbStep++;renderOnbStep();}
+    else endOnboarding();
+  };
+  gi('onb-dots').innerHTML=ONB_STEPS.map((_,i)=>
+    `<div class="onb-dot${i===onbStep?' on':''}"></div>`).join('');
+  positionOnbStep(step);
+}
+
+function positionOnbStep(step){
+  const tgt=document.querySelector(step.target);
+  const card=gi('onb-card');
+  const spot=gi('onb-spotlight');
+  if(!tgt){
+    // No target: centre the card, no spotlight
+    spot.style.cssText='display:none';
+    card.style.cssText='top:50%;left:50%;transform:translate(-50%,-50%)';
+    return;
+  }
+  const r=tgt.getBoundingClientRect();
+  const PAD=8;
+  spot.style.cssText=`left:${r.left-PAD}px;top:${r.top-PAD}px;width:${r.width+PAD*2}px;height:${r.height+PAD*2}px;border-radius:14px;box-shadow:0 0 0 9999px rgba(10,10,15,.52)`;
+
+  // Position card below or above the target
+  const cardW=290,vw=window.innerWidth,vh=window.innerHeight;
+  let left=r.left,top;
+  if(step.anchor==='bottom'){
+    top=r.bottom+PAD+14;
+    if(top+220>vh)top=r.top-220-PAD;
+  }else{
+    top=r.top-220-PAD;
+    if(top<10)top=r.bottom+PAD+14;
+  }
+  left=Math.min(Math.max(left,12),vw-cardW-12);
+  card.style.cssText=`left:${left}px;top:${top}px;width:${cardW}px`;
+}
+
 function init(){
   loadDraft();
   buildTplCatRow();
@@ -2353,6 +2544,9 @@ function init(){
   rCV();
   if(localStorage.getItem(DRAFT_KEY)&&(v('f-name')||skills.length||exps.length)){
     toast('Restored your last draft','ok',2500);
+  } else {
+    // New user — start tour after UI finishes painting
+    setTimeout(startOnboarding, 600);
   }
 }
 
@@ -2361,7 +2555,11 @@ document.addEventListener('keydown',e=>{
     e.preventDefault();
     e.target.click();
   }
+  if(e.key==='Escape'&&gi('onb-overlay').classList.contains('active')){
+    endOnboarding();
+  }
 });
+gi('onb-backdrop').addEventListener('click',endOnboarding);
 
 document.querySelectorAll('input.fi,textarea.fi').forEach(el=>{
   el.addEventListener('input',()=>{rCV();upATS();});
