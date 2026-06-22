@@ -288,7 +288,11 @@ a:focus-visible,[tabindex]:focus-visible{
   margin:0;
 }
 @media print{
-  .bar,.pnl,.pnl-r,.ws-outer{display:none!important}
+  /* Hide ALL app chrome — the gate, onboarding, modals, toasts, and the off-screen capture zone */
+  .bar,.pnl,.pnl-r,.ws-outer,
+  #mobile-gate,#onb-overlay,#export-modal,#toast,#pdf-render-zone{
+    display:none!important;
+  }
   html,body{width:210mm;height:auto;overflow:visible;background:#fff;margin:0;padding:0}
   #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff;width:210mm}
   /* Keep each entry intact — never split one job/degree across two pages */
@@ -303,9 +307,11 @@ a:focus-visible,[tabindex]:focus-visible{
   .bcn-sl,.csc-ml,.vtx-sl,.hbr-sl,.spc-sl,.org-sl{
     break-after:avoid;page-break-after:avoid;
   }
+  /* Ensure mobile responsiveness breakpoints don't re-activate during print */
+  .paper{overflow:visible!important;min-height:unset!important}
 }
 #print-target{display:none}
-#pdf-render-zone{position:absolute;top:0;left:-9999px;width:794px;overflow:visible}
+#pdf-render-zone{position:fixed;top:0;left:-820px;width:794px;overflow:visible;z-index:-1}
 
 /* ══════════════════════
    TEMPLATE STYLES
@@ -1512,6 +1518,17 @@ async function aiWriteExperience(modalEl){
   btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Writing…';
   out.style.display='block';
   out.innerHTML='<div class="ai-stream-preview" id="ai-bullet-stream" style="font-size:13px;color:var(--muted);line-height:1.7;min-height:40px;white-space:pre-wrap"></div>';
+  const prompt=`Write 3-4 resume bullet points for this role. Output ONLY the bullet points, one per line, no numbering, no bullet characters, no preamble, no markdown — plain lines ready to paste into a CV.
+
+Job title: ${t}
+Company: ${co||'(not specified)'}
+${jt?`Target role this person is applying for: ${jt}\n`:''}${existing?`They already have these draft notes — refine and expand on the substance, do not just repeat them verbatim: ${existing}\n`:''}
+Rules:
+- Start every line with a strong action verb (Led, Built, Reduced, Drove, Designed, Launched, Increased — vary them, don't repeat the same verb twice).
+- Include a real, plausible number or metric in at least half the lines (%, $, time saved, team size, scale) — but only if it would be plausible for this role; do not invent absurd numbers.
+- Never use these clichés: leveraged, utilized, synergy, dynamic, passionate, results-driven, detail-oriented, team player, hardworking, proven track record, spearheaded.
+- Write like a specific human describing real work, not a marketing summary. Short, concrete, declarative sentences.
+- No adjectives that carry no information ("highly", "extremely", "successfully").`;
   try{
     let raw='';
     await callAIStream(prompt,500,(text)=>{
@@ -2507,38 +2524,37 @@ async function doExport(){
       const PAGE_W=794,PAGE_H=1123;
       const protectedSel='.entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,.zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,.mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu,.bcn-ex,.csc-ex,.vtx-ex,.hbr-ex,.spc-ex,.org-ex';
 
-      // offsetTop traversal: reliable even for absolutely-positioned off-screen elements
-      function elTop(el){
-        let t=0,node=el;
-        while(node&&node!==clone){t+=node.offsetTop||0;node=node.offsetParent;}
-        return t;
-      }
-
+      // Use getBoundingClientRect relative to the clone's own rect.
+      // The clone is rendered off-screen to the left at a fixed position,
+      // so its rect has a consistent top/left and all child rects are absolute.
+      const cloneRect=clone.getBoundingClientRect();
       const blocks=[...clone.querySelectorAll(protectedSel)].map(el=>{
-        const top=elTop(el)*SCALE;
-        const bottom=top+(el.offsetHeight||0)*SCALE;
-        return{top,bottom};
-      }).filter(b=>b.bottom>b.top); // skip zero-height elements
+        const r=el.getBoundingClientRect();
+        const top=(r.top-cloneRect.top)*SCALE;
+        const bottom=(r.bottom-cloneRect.top)*SCALE;
+        return{top:Math.max(0,top),bottom:Math.max(0,bottom)};
+      }).filter(b=>b.bottom>b.top+2); // ignore zero-height or near-zero elements
 
       const pageHeightPx=PAGE_H*SCALE;
-      const MARGIN=18*SCALE; // breathing room — don't cut right at the start of an entry
+      const MARGIN=30*SCALE; // visible breathing room before each snapped entry
       const totalH=canvas.height;
       const cuts=[0];
       let pos=0;
       while(pos<totalH-1){
         let target=Math.min(pos+pageHeightPx,totalH);
         if(target<totalH){
-          // Find any protected block that straddles the proposed cut point
+          // Find any protected block that a proposed cut would slice through
           const collision=blocks.find(b=>b.top<target&&b.bottom>target);
           if(collision){
             const snapTo=collision.top-MARGIN;
-            // Only snap back if there's room (don't get stuck in an infinite loop)
-            if(snapTo>pos+(pageHeightPx*0.3)){
+            // Only snap back if there's enough content on the current page (avoid zero-height pages)
+            if(snapTo>pos+(pageHeightPx*0.25)){
               target=snapTo;
             }
+            // If the entry is taller than a full page, allow the cut (nothing we can do)
           }
         }
-        if(target<=pos)target=pos+pageHeightPx; // never stall
+        if(target<=pos)target=pos+pageHeightPx; // safety: never stall
         cuts.push(Math.min(target,totalH));
         pos=cuts[cuts.length-1];
       }
