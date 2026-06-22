@@ -2647,56 +2647,67 @@ async function doExport(){
       const PAGE_W=794,PAGE_H=1123;
       const protectedSel='.entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,.zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,.mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu,.bcn-ex,.csc-ex,.vtx-ex,.hbr-ex,.spc-ex,.org-ex';
 
-      // Use getBoundingClientRect relative to the clone's own rect.
-      // The clone is rendered off-screen to the left at a fixed position,
-      // so its rect has a consistent top/left and all child rects are absolute.
+      // TOP_PAD: white space reserved at the top of every continuation page (page 2+).
+      // Page 1 is left as-is — the CV's own internal padding handles that.
+      // 36px at CSS scale = 72 canvas pixels at SCALE=2, matching a normal document margin.
+      const TOP_PAD_CSS=36; // px in CSS (document) units
+      const TOP_PAD=TOP_PAD_CSS*SCALE; // canvas pixels
+
       const cloneRect=clone.getBoundingClientRect();
       const blocks=[...clone.querySelectorAll(protectedSel)].map(el=>{
         const r=el.getBoundingClientRect();
         const top=(r.top-cloneRect.top)*SCALE;
         const bottom=(r.bottom-cloneRect.top)*SCALE;
         return{top:Math.max(0,top),bottom:Math.max(0,bottom)};
-      }).filter(b=>b.bottom>b.top+2); // ignore zero-height or near-zero elements
+      }).filter(b=>b.bottom>b.top+2);
 
       const pageHeightPx=PAGE_H*SCALE;
-      const MARGIN=30*SCALE; // visible breathing room before each snapped entry
+      // For page 1 we use the full height; for continuation pages we subtract
+      // TOP_PAD so that the white margin at the top doesn't push content off the bottom.
+      const contPageHeightPx=pageHeightPx-TOP_PAD;
+      const MARGIN=30*SCALE;
       const totalH=canvas.height;
       const cuts=[0];
       let pos=0;
+      let pageIdx=0;
       while(pos<totalH-1){
-        let target=Math.min(pos+pageHeightPx,totalH);
+        const availH=pageIdx===0?pageHeightPx:contPageHeightPx;
+        let target=Math.min(pos+availH,totalH);
         if(target<totalH){
-          // Find any protected block that a proposed cut would slice through
           const collision=blocks.find(b=>b.top<target&&b.bottom>target);
           if(collision){
             const snapTo=collision.top-MARGIN;
-            // Only snap back if there's enough content on the current page (avoid zero-height pages)
-            if(snapTo>pos+(pageHeightPx*0.25)){
+            if(snapTo>pos+(availH*0.25)){
               target=snapTo;
             }
-            // If the entry is taller than a full page, allow the cut (nothing we can do)
           }
         }
-        if(target<=pos)target=pos+pageHeightPx; // safety: never stall
+        if(target<=pos)target=pos+availH;
         cuts.push(Math.min(target,totalH));
         pos=cuts[cuts.length-1];
+        pageIdx++;
       }
 
       const{jsPDF}=window.jspdf;
       let pdf=null;
       for(let i=0;i<cuts.length-1;i++){
+        const isFirst=i===0;
         const sliceTop=cuts[i],sliceBottom=Math.min(cuts[i+1],totalH);
         const sliceHpx=sliceBottom-sliceTop;
         if(sliceHpx<=0)continue;
+
+        // For continuation pages, add TOP_PAD white pixels above the content slice
+        const padTop=isFirst?0:TOP_PAD;
         const pageCanvas=document.createElement('canvas');
         pageCanvas.width=canvas.width;
-        pageCanvas.height=sliceHpx;
+        pageCanvas.height=sliceHpx+padTop;
         const pctx=pageCanvas.getContext('2d');
         pctx.fillStyle='#ffffff';
         pctx.fillRect(0,0,pageCanvas.width,pageCanvas.height);
-        pctx.drawImage(canvas,0,sliceTop,canvas.width,sliceHpx,0,0,canvas.width,sliceHpx);
+        // Draw the content slice starting at y=padTop, leaving white space above
+        pctx.drawImage(canvas,0,sliceTop,canvas.width,sliceHpx,0,padTop,canvas.width,sliceHpx);
         const imgData=pageCanvas.toDataURL('image/jpeg',0.98);
-        const imgHInPdfPx=sliceHpx/SCALE;
+        const imgHInPdfPx=(sliceHpx+padTop)/SCALE;
         if(!pdf){
           pdf=new jsPDF({unit:'px',format:[PAGE_W,PAGE_H],orientation:'portrait'});
         }else{
