@@ -76,6 +76,17 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .btn-pill{background:var(--ink);color:#fff;border:none;font-family:var(--ff-b);font-size:14.5px;font-weight:600;padding:11px 22px;border-radius:999px;cursor:pointer;transition:transform .15s cubic-bezier(.34,1.4,.64,1),background .15s,box-shadow .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
 .btn-start-over{background:transparent;color:#C0392B;border:1.5px solid #F5C6C0;font-family:var(--ff-b);font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .18s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 .btn-start-over:hover{background:#FFF0EE;border-color:#C0392B;transform:scale(.98)}
+.bar-menu-wrap{position:relative}
+.bar-menu-btn{background:transparent;border:1.5px solid var(--bdr);border-radius:999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;color:var(--muted)}
+.bar-menu-btn:hover{background:var(--surf);border-color:var(--ink);color:var(--ink)}
+.bar-menu-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.14);z-index:300;min-width:188px;display:none}
+.bar-menu-dropdown.open{display:block;animation:pnlIn .18s cubic-bezier(.4,0,.2,1)}
+.bar-menu-section{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:6px 10px 4px}
+.bar-menu-item{width:100%;background:none;border:none;border-radius:9px;padding:9px 10px;font-family:var(--ff-b);font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s;text-align:left}
+.bar-menu-item:hover{background:var(--surf)}
+.bar-menu-item-danger{color:#C0392B}
+.bar-menu-item-danger:hover{background:#FFF0EE}
+.bar-menu-divider{height:1px;background:var(--bdr);margin:4px 0}
 .btn-pill:hover{background:#111;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.22)}
 .btn-pill:active{transform:scale(.95) translateY(0)!important;box-shadow:none}
 .btn-pill:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none}
@@ -143,6 +154,12 @@ a:focus-visible,[tabindex]:focus-visible{
 
 /* ── JD MATCHER ── */
 .jd-match-bar{height:8px;border-radius:999px;background:#ECECE8;overflow:hidden;margin:11px 0 6px}
+.jd-empty-state{text-align:center;padding:22px 16px 16px;border:1.5px dashed var(--bdr);border-radius:14px;margin-bottom:14px}
+.jd-empty-title{font-family:var(--ff-d);font-size:15px;font-weight:700;color:var(--ink);margin:12px 0 14px}
+.jd-empty-items{text-align:left;display:inline-flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.jd-empty-item{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:7px}
+.jd-empty-tick{color:var(--ac);font-weight:700;flex-shrink:0}
+.jd-empty-cta{font-size:12.5px;color:var(--muted);font-style:italic}
 .jd-match-fill{height:100%;border-radius:999px;background:var(--ink);transition:width .6s cubic-bezier(.4,0,.2,1)}
 .jd-match-pct{font-family:var(--ff-d);font-size:16px;font-weight:700;color:var(--ink)}
 .jd-missing{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
@@ -244,7 +261,10 @@ a:focus-visible,[tabindex]:focus-visible{
 .export-icon svg{width:20px;height:20px}
 .export-info{flex:1}
 .export-info-t{font-size:15px;font-weight:600;color:var(--ink)}
-.export-info-s{font-size:13px;color:var(--muted);margin-top:3px}
+.export-info-s{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5}
+.export-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;vertical-align:middle;margin-left:6px;white-space:nowrap}
+.export-badge-best{background:#DEF4EA;color:#0E6B49}
+.export-badge-warn{background:#FFF3CD;color:#92610A}
 
 /* ── AI LOADING ── */
 .ai-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);display:inline-block;animation:bd .8s infinite;margin:0 1.5px}
@@ -260,14 +280,21 @@ a:focus-visible,[tabindex]:focus-visible{
 .toast-icon{width:16px;height:16px;flex-shrink:0}
 
 /* ── PRINT ── */
+/* Suppress all browser-generated print headers/footers (URL, date, page numbers).
+   This is the standard CSS mechanism — it works in Chrome, Edge, Firefox, and Safari.
+   Without this, every printed PDF shows the page title and URL in the margin. */
+@page{
+  size:A4 portrait;
+  margin:0;
+}
 @media print{
-  .bar,.pnl,.pnl-r{display:none!important}
-  body{overflow:visible;height:auto}
-  #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff}
+  .bar,.pnl,.pnl-r,.ws-outer{display:none!important}
+  html,body{width:210mm;height:auto;overflow:visible;background:#fff;margin:0;padding:0}
+  #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff;width:210mm}
   /* Keep each entry intact — never split one job/degree across two pages */
   .entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,
   .zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,
-  .mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu{
+  .mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu,.bcn-ex,.csc-ex,.vtx-ex,.hbr-ex,.spc-ex,.org-ex{
     break-inside:avoid;page-break-inside:avoid;
   }
   /* Keep a section heading attached to the content that follows it */
@@ -772,10 +799,28 @@ a:focus-visible,[tabindex]:focus-visible{
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     Export PDF
   </button>
-  <button class="btn-start-over" onclick="confirmStartOver()" title="Clear and start a new CV">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-    Start Over
-  </button>
+  <div class="bar-menu-wrap">
+    <button class="bar-menu-btn" id="bar-menu-btn" onclick="toggleBarMenu()" title="Backup, restore, or start over">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    </button>
+    <div class="bar-menu-dropdown" id="bar-menu-dropdown">
+      <div class="bar-menu-section">Data backup</div>
+      <button class="bar-menu-item" onclick="backupCV();closeBarMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Save backup file
+      </button>
+      <button class="bar-menu-item" onclick="gi('restore-input').click();closeBarMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Restore from backup
+      </button>
+      <div class="bar-menu-divider"></div>
+      <button class="bar-menu-item bar-menu-item-danger" onclick="confirmStartOver();closeBarMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Start over
+      </button>
+    </div>
+  </div>
+  <input type="file" id="restore-input" accept=".json" style="display:none" onchange="restoreCV(this)">
  </div>
 </div>
 
@@ -868,7 +913,17 @@ a:focus-visible,[tabindex]:focus-visible{
   <div class="pnl" id="pnl-jd">
     <div class="sec">
       <div class="lbl">Paste Job Description</div>
-      <textarea class="fi" id="jd-text" placeholder="Paste the full job description here. We'll extract keywords and show what matches — and what's missing — from your CV." rows="8" oninput="runJDMatch()"></textarea>
+      <div class="jd-empty-state" id="jd-empty-hint">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <div class="jd-empty-title">Match your CV to a job posting</div>
+        <div class="jd-empty-items">
+          <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>Finds keywords in the JD your CV is missing</div>
+          <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>Scores how well your CV matches the role</div>
+          <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>AI gap analysis tells you exactly what to fix</div>
+        </div>
+        <div class="jd-empty-cta">Paste any job description below to start</div>
+      </div>
+      <textarea class="fi" id="jd-text" placeholder="Paste the full job description here…" rows="7" oninput="runJDMatch();if(this.value.trim())gi('jd-empty-hint').style.display='none';else gi('jd-empty-hint').style.display=''"></textarea>
     </div>
     <div id="jd-results" style="display:none">
       <div class="sec">
@@ -965,29 +1020,35 @@ a:focus-visible,[tabindex]:focus-visible{
   <div class="modal-bg" onclick="if(event.target===this)closeExport()">
     <div class="modal">
       <div class="modal-title">Export Your CV</div>
-      <div class="export-opt sel" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
-        <div class="export-icon" style="background:#FBEAEA;color:#E14B4B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+
+      <!-- Print is now PRIMARY — produces real text PDF, ATS-safe, no image layer -->
+      <div class="export-opt sel" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
+        <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
         <div class="export-info">
-          <div class="export-info-t">PDF — Best for ATS</div>
-          <div class="export-info-s">Clean, parseable. Recommended for job applications.</div>
+          <div class="export-info-t">Save as PDF <span class="export-badge export-badge-best">✓ Real text — ATS safe</span></div>
+          <div class="export-info-s">Opens print dialog → choose "Save as PDF". Produces a proper text-layer PDF that ATS systems can parse and recruiters can search. Headers and page numbers are suppressed automatically.</div>
         </div>
       </div>
-      <div class="export-opt" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
-        <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div>
+
+      <!-- Image PDF — honest label, secondary option -->
+      <div class="export-opt" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
+        <div class="export-icon" style="background:#FFF7ED;color:#C2790A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
         <div class="export-info">
-          <div class="export-info-t">Print / Save as PDF</div>
-          <div class="export-info-s">Opens browser print dialog. Use "Save as PDF".</div>
+          <div class="export-info-t">Download as Image PDF <span class="export-badge export-badge-warn">⚠ Image only</span></div>
+          <div class="export-info-s">Saves a pixel-perfect visual snapshot. Text is not selectable or searchable — some ATS systems cannot read this format. Use for sharing as an attachment where visual appearance matters more than parsing.</div>
         </div>
       </div>
+
       <div class="export-opt" id="opt-html" role="button" tabindex="0" onclick="selExport('html',this)">
         <div class="export-icon" style="background:#F4F4FF;color:#4F5BD5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Download HTML</div>
-          <div class="export-info-s">Full self-contained file you can open anywhere.</div>
+          <div class="export-info-s">Self-contained file you can open or edit anywhere.</div>
         </div>
       </div>
+
       <div class="modal-btns">
-        <button class="btn-pill" id="btn-do-export" onclick="doExport()" style="flex:1;justify-content:center">Download PDF</button>
+        <button class="btn-pill" id="btn-do-export" onclick="doExport()" style="flex:1;justify-content:center">Save as PDF</button>
         <button class="btn-pill-outline" onclick="closeExport()">Cancel</button>
       </div>
     </div>
@@ -1004,7 +1065,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
 <script>
 // ── STATE ──
-let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], AC='#4F5BD5', exportSel='pdf';
+let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], AC='#4F5BD5', exportSel='print';
 
 // ── AUTOSAVE ──
 // Saves the whole form to localStorage so a refresh, crash, or closed tab
@@ -1047,6 +1108,84 @@ function confirmStartOver(){
     clearDraft();
     location.reload();
   }
+}
+
+// ── BAR MENU ──
+function toggleBarMenu(){
+  const d=gi('bar-menu-dropdown');
+  d.classList.toggle('open');
+}
+function closeBarMenu(){
+  gi('bar-menu-dropdown').classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.bar-menu-wrap'))closeBarMenu();
+});
+
+// ── BACKUP & RESTORE ──
+function backupCV(){
+  const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
+  const FIELD_IDS_EXPORT=['f-name','f-title','f-email','f-phone','f-loc','f-li','f-sum','f-workauth'];
+  const fields={};
+  FIELD_IDS_EXPORT.forEach(id=>{const el=gi(id);if(el)fields[id]=el.value;});
+  const refsEl=gi('f-refs');
+  const data={
+    version:1,
+    savedAt:new Date().toISOString(),
+    fields,
+    refs:refsEl?refsEl.checked:false,
+    skills,exps,edus,certs,langs,CT,AC
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`${name}-cvcraftai-backup.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Backup saved — keep this file safe','ok',3000);
+}
+
+function restoreCV(input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.version||!data.fields){
+        toast('This file doesn\'t look like a CVCraft backup','err');
+        return;
+      }
+      if(!confirm('This will replace your current CV with the backup. Continue?')){
+        input.value='';
+        return;
+      }
+      // Restore all fields
+      const FIELD_IDS_IMPORT=['f-name','f-title','f-email','f-phone','f-loc','f-li','f-sum','f-workauth'];
+      FIELD_IDS_IMPORT.forEach(id=>{const el=gi(id);if(el&&data.fields[id]!==undefined)el.value=data.fields[id];});
+      const refsEl=gi('f-refs');
+      if(refsEl&&data.refs!==undefined)refsEl.checked=data.refs;
+      if(Array.isArray(data.skills))skills=data.skills;
+      if(Array.isArray(data.exps))exps=data.exps;
+      if(Array.isArray(data.edus))edus=data.edus;
+      if(Array.isArray(data.certs))certs=data.certs;
+      if(Array.isArray(data.langs))langs=data.langs;
+      if(data.CT)CT=data.CT;
+      if(data.AC){AC=data.AC;document.documentElement.style.setProperty('--ac',AC);}
+      // Re-render everything
+      renderSk();renderExpList();renderEduList();renderCertList();renderLangList();
+      buildTplCatRow();buildTplGrid();rCV();upATS();
+      saveDraft();
+      toast('CV restored from backup','ok',2500);
+    }catch(err){
+      toast('Could not read that file — make sure it\'s a CVCraft backup','err');
+    }
+    input.value='';
+  };
+  reader.readAsText(file);
 }
 const SL=[90,78,85,70,92,65,88,75,82];
 
@@ -1147,6 +1286,52 @@ function bls(desc,cls){
 
 // Single entry point for all AI calls — routes through the serverless proxy at /api/ai
 // so the Anthropic API key never reaches the browser and calls don't get blocked by CORS.
+// ── AI CALLS ──
+// callAIStream: streams the response, calling onChunk(text) as each token arrives.
+// Returns the full accumulated text when done.
+// Falls back to the non-streaming path gracefully if streaming fails.
+async function callAIStream(prompt,maxTokens=1200,onChunk){
+  const r=await fetch('/api/ai',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt,max_tokens:maxTokens,stream:true})
+  });
+  if(!r.ok){
+    const data=await r.json().catch(()=>({}));
+    throw new Error(data?.error||`Request failed (${r.status})`);
+  }
+  // If the server doesn't support streaming (shouldn't happen, but defensive)
+  const ct=r.headers.get('content-type')||'';
+  if(!ct.includes('text/event-stream')){
+    const data=await r.json();
+    const text=data.text||'';
+    if(onChunk)onChunk(text);
+    return text;
+  }
+  const reader=r.body.getReader();
+  const decoder=new TextDecoder();
+  let full='';
+  while(true){
+    const{done,value}=await reader.read();
+    if(done)break;
+    const chunk=decoder.decode(value,{stream:true});
+    // SSE format: lines starting with "data: "
+    for(const line of chunk.split('\n')){
+      if(!line.startsWith('data:'))continue;
+      const payload=line.slice(5).trim();
+      if(payload==='[DONE]')break;
+      try{
+        const obj=JSON.parse(payload);
+        const delta=obj?.delta?.text||obj?.text||'';
+        if(delta){full+=delta;if(onChunk)onChunk(full);}
+      }catch(_){}
+    }
+  }
+  return full;
+}
+
+// callAI: non-streaming, returns full text. Used where the whole response is
+// needed before rendering (e.g. parsing structured output like scorecard JSON).
 async function callAI(prompt,maxTokens=1200){
   const r=await fetch('/api/ai',{
     method:'POST',
@@ -1326,21 +1511,15 @@ async function aiWriteExperience(modalEl){
   btn.disabled=true;
   btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Writing…';
   out.style.display='block';
-  out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
-  const prompt=`Write 3-4 resume bullet points for this role. Output ONLY the bullet points, one per line, no numbering, no bullet characters, no preamble, no markdown — plain lines ready to paste into a CV.
-
-Job title: ${t}
-Company: ${co||'(not specified)'}
-${jt?`Target role this person is applying for: ${jt}\n`:''}${existing?`They already have these draft notes — refine and expand on the substance, do not just repeat them verbatim: ${existing}\n`:''}
-Rules:
-- Start every line with a strong action verb (Led, Built, Reduced, Drove, Designed, Launched, Increased — vary them, don't repeat the same verb twice).
-- Include a real, plausible number or metric in at least half the lines (%, $, time saved, team size, scale) — but only if it would be plausible for this role; do not invent absurd numbers.
-- Never use these clichés: leveraged, utilized, synergy, dynamic, passionate, results-driven, detail-oriented, team player, hardworking, proven track record, spearheaded.
-- Write like a specific human describing real work, not a marketing summary. Short, concrete, declarative sentences.
-- No adjectives that carry no information ("highly", "extremely", "successfully").`;
+  out.innerHTML='<div class="ai-stream-preview" id="ai-bullet-stream" style="font-size:13px;color:var(--muted);line-height:1.7;min-height:40px;white-space:pre-wrap"></div>';
   try{
-    const tx=await callAI(prompt,500);
-    const lines=tx.split('\n').map(l=>l.trim().replace(/^[-•*\d.)\s]+/,'')).filter(Boolean);
+    let raw='';
+    await callAIStream(prompt,500,(text)=>{
+      raw=text;
+      const preview=gi('ai-bullet-stream');
+      if(preview)preview.textContent=text;
+    });
+    const lines=raw.split('\n').map(l=>l.trim().replace(/^[-•*\d.)\s]+/,'')).filter(Boolean);
     out.innerHTML=`<div class="ai-write-lbl">Suggested bullets — click to use, or copy individually</div>
       ${lines.map((l,i)=>`<div class="ai-write-line" data-text="${esc(l)}">
         <span>${l}</span>
@@ -1398,8 +1577,14 @@ Rules:
 - Plain, declarative sentences written in standard CV style with the "I" dropped — start directly with what they do or have done.
 - Each summary roughly 35-55 words, substantial enough to read as a real paragraph, not a one-liner.`;
   try{
-    const tx=await callAI(prompt,350);
-    const opts=tx.split(/\n?---\n?/).map(s=>s.trim()).filter(Boolean);
+    let raw='';
+    out.innerHTML='<div class="ai-stream-preview" id="ai-sum-stream" style="font-size:13px;color:var(--muted);line-height:1.7;min-height:40px;white-space:pre-wrap"></div>';
+    await callAIStream(prompt,350,(text)=>{
+      raw=text;
+      const preview=gi('ai-sum-stream');
+      if(preview)preview.textContent=text;
+    });
+    const opts=raw.split(/\n?---\n?/).map(s=>s.trim()).filter(Boolean);
     out.innerHTML=`<div class="ai-write-lbl">Suggested summaries — click to use</div>
       ${opts.map(o=>`<div class="ai-write-line" style="align-items:flex-start" data-text="${esc(o)}">
         <span>${o}</span>
@@ -2257,7 +2442,7 @@ function selExport(mode,el){
   exportSel=mode;
   document.querySelectorAll('.export-opt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel');
-  const labels={pdf:'Download PDF',print:'Open Print Dialog',html:'Download HTML'};
+  const labels={pdf:'Download Image PDF',print:'Save as PDF',html:'Download HTML'};
   gi('btn-do-export').textContent=labels[mode];
 }
 
@@ -2521,6 +2706,22 @@ function renderOnbStep(){
   gi('onb-dots').innerHTML=ONB_STEPS.map((_,i)=>
     `<div class="onb-dot${i===onbStep?' on':''}" style="${i===onbStep?'background:'+s.accent:''}"></div>`).join('');
 }
+
+// ── ERROR TELEMETRY ──
+// Catches unhandled errors and stores them locally so they're visible during debugging.
+// Access the log from the browser console: JSON.parse(localStorage.getItem('cvcraftai-errors'))
+const ERR_KEY='cvcraftai-errors';
+function logError(type,msg,source){
+  try{
+    const entry={type,msg:String(msg).slice(0,300),source:String(source||'').slice(0,200),ts:new Date().toISOString()};
+    const existing=JSON.parse(localStorage.getItem(ERR_KEY)||'[]');
+    existing.unshift(entry);
+    localStorage.setItem(ERR_KEY,JSON.stringify(existing.slice(0,20)));
+    console.warn('[CVCraft error logged]',entry);
+  }catch(_){}
+}
+window.addEventListener('error',e=>logError('js',e.message,e.filename+':'+e.lineno));
+window.addEventListener('unhandledrejection',e=>logError('promise',e.reason?.message||String(e.reason),'promise'));
 
 function init(){
   loadDraft();
