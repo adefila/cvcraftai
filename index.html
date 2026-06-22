@@ -889,6 +889,12 @@ a:focus-visible,[tabindex]:focus-visible{
     </div>
 
     <div class="sec">
+      <div class="lbl">Projects <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(optional — great for portfolios, side work &amp; open source)</span></div>
+      <div id="proj-list"></div>
+      <button class="btn-add" onclick="addProj()">+ Add Project</button>
+    </div>
+
+    <div class="sec">
       <div class="lbl">Certifications &amp; Licenses</div>
       <div id="cert-list"></div>
       <button class="btn-add" onclick="addCert()">+ Add Certification</button>
@@ -989,7 +995,7 @@ a:focus-visible,[tabindex]:focus-visible{
           <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Quantified results (numbers)</span></div>
           <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Education section</span></div>
           <div class="ats-meth-row"><span class="ats-meth-pts">5pts</span><span>Strong action verbs</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">14pts</span><span>Bonus: phone, location, LinkedIn, certs, languages, work auth</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts">14pts</span><span>Bonus: phone, location, LinkedIn, certs, languages, work auth, projects</span></div>
         </div>
       </div>
       <div id="ats-bd"><div style="padding:18px;text-align:center;font-size:14.5px;color:var(--muted)">Fill in your CV to see a full breakdown</div></div>
@@ -1071,7 +1077,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
 <script>
 // ── STATE ──
-let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], AC='#4F5BD5', exportSel='print';
+let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], projs=[], AC='#4F5BD5', exportSel='print';
 
 // ── AUTOSAVE ──
 // Saves the whole form to localStorage so a refresh, crash, or closed tab
@@ -1087,7 +1093,7 @@ function saveDraft(){
       const fields={};
       FIELD_IDS.forEach(id=>{const el=gi(id);if(el)fields[id]=el.value;});
       const refsEl=gi('f-refs');
-      const draft={fields,refs:refsEl?refsEl.checked:false,skills,exps,edus,certs,langs,CT,AC,savedAt:Date.now()};
+      const draft={fields,refs:refsEl?refsEl.checked:false,skills,exps,edus,certs,langs,projs,CT,AC,savedAt:Date.now()};
       localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
     }catch(e){/* storage full or unavailable — fail silently, don't block the UI */}
   },400);
@@ -1103,6 +1109,7 @@ function loadDraft(){
   if(Array.isArray(draft.edus))edus=draft.edus;
   if(Array.isArray(draft.certs))certs=draft.certs;
   if(Array.isArray(draft.langs))langs=draft.langs;
+  if(Array.isArray(draft.projs))projs=draft.projs;
   if(draft.CT)CT=draft.CT;
   if(draft.AC){AC=draft.AC;document.documentElement.style.setProperty('--ac',AC);}
 }
@@ -1140,7 +1147,7 @@ function backupCV(){
     savedAt:new Date().toISOString(),
     fields,
     refs:refsEl?refsEl.checked:false,
-    skills,exps,edus,certs,langs,CT,AC
+    skills,exps,edus,certs,langs,projs,CT,AC
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -1179,10 +1186,11 @@ function restoreCV(input){
       if(Array.isArray(data.edus))edus=data.edus;
       if(Array.isArray(data.certs))certs=data.certs;
       if(Array.isArray(data.langs))langs=data.langs;
+      if(Array.isArray(data.projs))projs=data.projs;
       if(data.CT)CT=data.CT;
       if(data.AC){AC=data.AC;document.documentElement.style.setProperty('--ac',AC);}
       // Re-render everything
-      renderSk();renderExpList();renderEduList();renderCertList();renderLangList();
+      renderSk();renderExpList();renderEduList();renderCertList();renderLangList();renderProjList();
       buildTplCatRow();buildTplGrid();rCV();upATS();
       saveDraft();
       toast('CV restored from backup','ok',2500);
@@ -1699,6 +1707,71 @@ function renderEduList(){
     </div>`).join('');
 }
 
+// ── PROJECTS ──
+function renderProjList(){
+  const el=gi('proj-list');
+  if(!el)return;
+  el.innerHTML=projs.map((p,i)=>`
+    <div class="ei ei-editable">
+      <div class="ei-t">${esc(p.nm)}${p.yr?' ('+p.yr+')':''}</div>
+      <div class="ei-s">${p.url?'<span style="color:var(--ac)">🔗 '+esc(p.url)+'</span>':''}</div>
+      <div class="ei-actions">
+        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-rm" onclick="projs.splice(${i},1);renderProjList();rCV();upATS();toast('Project removed')" title="Remove">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function addProj(editIdx){
+  const isEdit=typeof editIdx==='number';
+  const p=isEdit?projs[editIdx]:{nm:'',url:'',desc:'',stack:'',yr:''};
+  const modalEl=mkModal(`
+    <div class="modal-title">${isEdit?'Edit':'Add'} Project</div>
+    <div class="fg">
+      <div>
+        <label class="date-lbl">Project name <span style="color:var(--err)">*</span></label>
+        <input class="fi" id="proj-nm" placeholder="e.g. Open Source Dashboard, Personal Portfolio" value="${esc(p.nm)}">
+      </div>
+      <div>
+        <label class="date-lbl">Live URL / GitHub link <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <input class="fi" id="proj-url" placeholder="e.g. github.com/you/project  or  yourproject.com" value="${esc(p.url)}" type="url" inputmode="url">
+        <div style="font-size:11.5px;color:var(--muted);margin-top:5px">Renders as a clickable link in the CV preview and as visible text in the PDF so ATS parsers and human reviewers both see it.</div>
+      </div>
+      <div>
+        <label class="date-lbl">Description <span style="font-weight:400;color:var(--muted)">(1–2 sentences)</span></label>
+        <textarea class="fi" id="proj-desc" rows="2" placeholder="What did you build, what problem did it solve, what was the outcome?">${esc(p.desc)}</textarea>
+      </div>
+      <div>
+        <label class="date-lbl">Tech stack / tools <span style="font-weight:400;color:var(--muted)">(comma-separated, optional)</span></label>
+        <input class="fi" id="proj-stack" placeholder="e.g. React, Node.js, PostgreSQL, Vercel" value="${esc(p.stack)}">
+      </div>
+      <div>
+        <label class="date-lbl">Year <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+        <input class="fi" id="proj-yr" placeholder="e.g. 2024" value="${esc(p.yr)}" style="width:120px">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-pill" id="proj-save-btn" style="flex:1;justify-content:center">Save Project</button>
+      <button class="btn-pill-outline" id="proj-cancel-btn">Cancel</button>
+    </div>`);
+  gi('proj-save-btn').onclick=()=>saveProj(modalEl,editIdx);
+  gi('proj-cancel-btn').onclick=()=>modalEl.remove();
+  setTimeout(()=>gi('proj-nm')?.focus(),60);
+}
+
+function saveProj(modalEl,editIdx){
+  const nm=v('proj-nm').trim();
+  if(!nm){toast('Please enter a project name','err');return;}
+  let url=v('proj-url').trim();
+  // Normalise URL — add https:// if missing a protocol so it renders as a real link
+  if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
+  const rec={nm,url,desc:v('proj-desc').trim(),stack:v('proj-stack').trim(),yr:v('proj-yr').trim()};
+  if(typeof editIdx==='number'){projs[editIdx]=rec;}else{projs.push(rec);}
+  modalEl.remove();
+  renderProjList();rCV();upATS();saveDraft();
+  toast(typeof editIdx==='number'?'Project updated':'Project added','ok');
+}
+
 function addCert(editIdx){
   const isEdit=typeof editIdx==='number';
   const c=isEdit?certs[editIdx]:{name:'',issuer:'',year:''};
@@ -1979,6 +2052,7 @@ function scanWeakWords(){
   const fields=[
     {label:'Summary',text:v('f-sum')},
     ...exps.map((e,i)=>({label:`Experience: ${e.t||'Untitled role'}`,text:e.d})),
+    ...projs.map((p,i)=>({label:`Project: ${p.nm||'Untitled project'}`,text:p.desc})),
   ];
   const hits=[];
   fields.forEach(f=>{
@@ -2030,6 +2104,7 @@ function upATS(){
   if(exps.some(e=>e.d&&actionVerbs.test(e.d))){sc+=5;checks.push({l:'Uses strong action verbs',ok:true})}else if(exps.length){checks.push({l:'Start bullets with strong action verbs (Led, Built, Drove)',ok:false})}
   if(v('f-li')){sc+=3;checks.push({l:'LinkedIn / portfolio link added',ok:true})}
   if(certs.length){sc+=4;checks.push({l:`${certs.length} certification(s) listed`,ok:true})}
+  if(projs.length){sc+=3;checks.push({l:`${projs.length} project(s) listed`,ok:true})}
   if(langs.length){sc+=2;checks.push({l:`${langs.length} language(s) listed`,ok:true})}
   if(v('f-workauth')){sc+=3;checks.push({l:'Work authorization stated',ok:true})}else{checks.push({l:'Consider adding work authorization status — some ATS filters reject applications without it',ok:false})}
 
@@ -2090,7 +2165,7 @@ function getData(){
     li:liRaw,
     liLink:linkURL(liRaw),
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
-    certs,langs,
+    certs,langs,projs,
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
     skills,exps,edus
@@ -2102,6 +2177,24 @@ function certsLine(certs){
 }
 function langsLine(langs){
   return langs.map(l=>`${l.name} (${l.level})`).join(' • ');
+}
+// projsHTML: renders the Projects section for a template.
+// sectionLabelClass: the template's section heading class (e.g. 'classic-sl')
+// cardClass: an entry-card class so print pagination respects project blocks
+// accentColor: the current accent hex for tech stack chips
+function projsHTML(d,sectionLabelClass,cardClass,accentColor){
+  if(!d.projs||!d.projs.length)return'';
+  const items=d.projs.map(p=>`
+    <div class="${cardClass}" style="margin-bottom:13px">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <span style="font-size:13.5px;font-weight:700;color:var(--ink)">${esc(p.nm)}</span>
+        ${p.yr?`<span style="font-size:10.5px;color:var(--muted);font-family:var(--ff-m)">${esc(p.yr)}</span>`:''}
+        ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:${accentColor||'var(--ac)'};text-decoration:underline;text-underline-offset:2px;word-break:break-all">${esc(p.url.replace(/^https?:\/\//,''))}</a>`:''}
+      </div>
+      ${p.desc?`<div style="font-size:12.5px;color:#3D3D4E;line-height:1.6;margin-top:3px">${esc(p.desc)}</div>`:''}
+      ${p.stack?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px">${p.stack.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:${accentColor||'var(--ac)'}18;color:${accentColor||'var(--ac)'}">${esc(s)}</span>`).join('')}</div>`:''}
+    </div>`).join('');
+  return`<div class="${sectionLabelClass}">Projects</div>${items}`;
 }
 function additionalInfoHTML(d,sectionLabelClass,bodyClass){
   const rows=[];
@@ -2123,7 +2216,7 @@ const TPL={
     ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skills.join(' • ')}</div>`:''}
-    ${additionalInfoHTML(d,'classic-sl','classic-sum')}
+    ${projsHTML(d,'classic-sl','classic-ex',AC)}${additionalInfoHTML(d,'classic-sl','classic-sum')}
   </div>`,
 
   nova:d=>`<div class="nova">
@@ -2134,7 +2227,7 @@ const TPL={
       <div class="nova-sl" style="color:${AC}">Contact</div>
       ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
-      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
+      ${projsHTML(d,'nova-sl','nova-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="nova-mn">
       <div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Profile</div><p style="font-size:13px;color:#4D4D5E;line-height:1.7">${d.sum}</p></div>
@@ -2156,7 +2249,7 @@ const TPL={
       </div>
       <div class="apex-sb">
         ${d.skills.length?`<div class="apex-sl" style="color:${AC}">Skills</div>${d.skills.map(s=>`<div class="apex-ch" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="apex-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`<strong>Certifications:</strong> ${certsLine(d.certs)}`,d.langs.length&&`<strong>Languages:</strong> ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'apex-sl','entry-card',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="apex-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`<strong>Certifications:</strong> ${certsLine(d.certs)}`,d.langs.length&&`<strong>Languages:</strong> ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2173,7 +2266,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="prism-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="prism-ski"><span>${s}</span><div style="display:flex;gap:3px">${[1,2,3,4,5].map(j=>`<div class="pd${SL[i%SL.length]/20>=j?' f':''}"></div>`).join('')}</div></div>`).join('')}`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="prism-sl" style="color:${AC}">Additional Info</div><div style="font-size:11px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certs: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References on request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'prism-sl','entry-card',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="prism-sl" style="color:${AC}">Additional Info</div><div style="font-size:11px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certs: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References on request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2189,7 +2282,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Skills</div>${d.skills.map((s,i)=>`<div class="strand-skb"><div class="strand-skn">${s}</div><div class="strand-skt"><div class="strand-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Additional Info</div><div style="font-size:11.5px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'strand-sl','strand-ti',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Additional Info</div><div style="font-size:11.5px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2208,7 +2301,7 @@ const TPL={
         </div>
         <div>
           ${d.skills.length?`<div class="folio-sl">Skills</div><div>${d.skills.map(s=>`<div class="folio-pill" style="color:${AC};border-color:${AC}">${s}</div>`).join('')}</div>`:''}
-          ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="folio-sl" style="margin-top:17px">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+          ${projsHTML(d,'folio-sl','folio-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="folio-sl" style="margin-top:17px">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
         </div>
       </div>
     </div></div>`,
@@ -2227,7 +2320,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Skills &amp; Expertise</div><div>${d.skills.map(s=>`<div class="zenith-sk">${s}</div>`).join('')}</div>`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:18px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'zenith-sl','zenith-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:18px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2244,7 +2337,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="carbon-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="carbon-sk"><div class="carbon-skn">${s}</div><div class="carbon-skt"><div class="carbon-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="carbon-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:#A0A0C4;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'carbon-sl','carbon-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="carbon-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:#A0A0C4;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2271,7 +2364,7 @@ const TPL={
       </div>
       <div class="pulse-sb">
         ${d.skills.length?`<div class="pulse-sl" style="color:${AC}">Tech Stack</div><div>${d.skills.map(s=>`<div class="pulse-tag" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}</div>`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'pulse-sl','pulse-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`;
   },
@@ -2284,7 +2377,7 @@ const TPL={
       <div class="merid-sl">Contact</div>
       ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="merid-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${d.skills.map(s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
-      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
+      ${projsHTML(d,'merid-sl','merid-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="merid-main">
       <div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">01</div>Profile</div>
@@ -2310,7 +2403,7 @@ const TPL={
       ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">02</div><div class="axis-sec-title">Education</div></div>${d.edus.map(e=>`<div class="axis-grid-row"><div class="axis-date">${e.y||''}</div><div><div class="axis-et">${e.d}</div><div class="axis-em" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${d.skills.map(s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
-      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">04</div><div class="axis-sec-title">Additional Info</div></div><p class="axis-sum" style="margin:0 0 18px">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</p>`:''}
+      ${projsHTML(d,'axis-sec-title','axis-grid-row',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">04</div><div class="axis-sec-title">Additional Info</div></div><p class="axis-sum" style="margin:0 0 18px">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</p>`:''}
     </div></div>`,
 
   monolith:d=>`<div class="monolith">
@@ -2325,7 +2418,7 @@ const TPL={
       ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.e].filter(Boolean).join(' — ')}</div>${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="mono-ex"><div class="mono-et">${e.d}</div><div class="mono-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">03</span>Skills</div><div class="mono-sk-row">${d.skills.map(s=>`<div class="mono-sk-item" style="border-color:${AC}">${s}</div>`).join('')}</div>`:''}
-      ${additionalInfoHTML(d,'mono-sl','mono-sum')}
+      ${projsHTML(d,'mono-sl','mono-ex',AC)}${additionalInfoHTML(d,'mono-sl','mono-sum')}
     </div></div>`,
 
   lattice:d=>`<div class="lattice">
@@ -2342,7 +2435,7 @@ const TPL={
       <div>
         ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${d.skills.map(s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
         ${d.edus.length?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="lat-edu-card"><div class="lat-edu-d">${e.d}</div><div class="lat-edu-s">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
-        ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'lat-sl','lat-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2359,7 +2452,7 @@ const TPL={
       ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="aur-edu"><div class="aur-edu-d">${e.d}</div><div class="aur-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${d.skills.map(s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
-      ${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
+      ${projsHTML(d,'aur-sl','aur-ex',AC)}${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
     </div></div>`,
 
   beacon:d=>`<div class="beacon">
@@ -2373,7 +2466,7 @@ const TPL={
       ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="bcn-sl" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="bcn-edu-row entry-card"><div><div class="bcn-edu-d">${e.d}</div><div class="bcn-edu-s">${e.s}</div></div><div class="bcn-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="bcn-sl" style="border-color:${AC}">Skills</div><div class="bcn-sk-row">${d.skills.map(s=>`<div class="bcn-sk-chip">${s}</div>`).join('')}</div>`:''}
-      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="bcn-sl" style="border-color:${AC}">Additional Info</div><div class="bcn-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+      ${projsHTML(d,'bcn-sl','bcn-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="bcn-sl" style="border-color:${AC}">Additional Info</div><div class="bcn-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
 
   cascade:d=>`<div class="cascade">
@@ -2384,7 +2477,7 @@ const TPL={
       <div class="csc-sl">Contact</div>
       ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="csc-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="csc-sl">Skills</div><div>${d.skills.map(s=>`<span class="csc-sk-pill">${s}</span>`).join('')}</div>`:''}
-      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="csc-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="csc-cr">${t}</div>`).join('')}`:''}
+      ${projsHTML(d,'csc-sl','csc-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="csc-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="csc-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="csc-mn">
       <div class="csc-ml" style="border-color:${AC}">Profile</div>
@@ -2405,7 +2498,7 @@ const TPL={
       ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="vtx-edu-row entry-card"><div class="vtx-edu-d">${e.d}</div><div class="vtx-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Skills</div><div class="vtx-sk-row">${d.skills.map(s=>`<div class="vtx-sk-chip" style="background:${AC}">${s}</div>`).join('')}</div>`:''}
-      ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+      ${projsHTML(d,'vtx-sl','vtx-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
 
   harbor:d=>`<div class="harbor">
@@ -2416,7 +2509,7 @@ const TPL={
     ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="hbr-sl" style="background:${AC}">Education</div>${d.edus.map(e=>`<div class="hbr-edu-row entry-card"><div><div class="hbr-edu-d">${e.d}</div><div class="hbr-edu-s">${e.s}</div></div><div class="hbr-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="hbr-sl" style="background:${AC}">Skills</div><div class="hbr-sk-row">${d.skills.map(s=>`<div class="hbr-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
-    ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="hbr-sl" style="background:${AC}">Additional Info</div><div class="hbr-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+    ${projsHTML(d,'hbr-sl','hbr-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="hbr-sl" style="background:${AC}">Additional Info</div><div class="hbr-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
 
   spectrum:d=>`<div class="spectrum">
@@ -2428,7 +2521,7 @@ const TPL={
     ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${(d.edus.length||d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-foot">
       <div>${d.edus.length?`<div class="spc-sl">Education</div>${d.edus.map(e=>`<div class="spc-edu-row entry-card"><div class="spc-edu-d">${e.d}</div><div class="spc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}</div>
-      <div>${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-sl">Additional Info</div><div class="spc-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}</div>
+      <div>${projsHTML(d,'spc-sl','spc-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-sl">Additional Info</div><div class="spc-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}</div>
     </div>`:''}
   </div>`,
 
@@ -2441,7 +2534,7 @@ const TPL={
     ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="org-edu-row entry-card"><div class="org-edu-d">${e.d}, ${e.s}</div><div class="org-edu-s">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">03</span>Skills</div><div class="org-sk-row">${d.skills.map(s=>`<div class="org-sk-chip">${s}</div>`).join('')}</div>`:''}
-    ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">04</span>Additional Info</div><div class="org-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+    ${projsHTML(d,'org-sl','org-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">04</span>Additional Info</div><div class="org-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
 };
 
@@ -2745,6 +2838,9 @@ function init(){
   buildTplGrid();
   buildColorGrid();
   renderSk();
+  renderExpList();
+  renderEduList();
+  renderProjList();
   renderCertList();
   renderLangList();
   gi('ats-tips').innerHTML=ATS_TIPS.map(t=>`
