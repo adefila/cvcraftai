@@ -179,7 +179,15 @@ a:focus-visible,[tabindex]:focus-visible{
 .btn-add:hover{border-color:var(--ink);color:var(--ink);border-style:solid}
 
 /* ── EXPERIENCE ITEMS ── */
-.ei{background:var(--surf);border-radius:14px;padding:13px 15px;margin-bottom:8px;position:relative;transition:background .15s}
+.ei{background:var(--surf);border-radius:14px;padding:13px 15px 13px 40px;margin-bottom:8px;position:relative;transition:background .15s,transform .12s,box-shadow .12s}
+/* Drag handle — 6-dot grip (2 columns × 3 rows) */
+.ei-drag{position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:grab;color:var(--muted);opacity:.35;transition:opacity .15s;display:grid;grid-template-columns:1fr 1fr;gap:2.5px;padding:4px 3px;width:14px}
+.ei-drag:hover,.ei:hover .ei-drag{opacity:.8}
+.ei-drag:active{cursor:grabbing}
+.ei-drag span{display:block;width:3px;height:3px;border-radius:50%;background:currentColor}
+/* Dragging state */
+.ei.dragging{opacity:.4;transform:scale(.98)}
+.ei.drag-over{border:2px dashed var(--ac);background:var(--card)}
 .ei.ei-editable{padding-right:78px}
 .ei:hover{background:#F0EFEB}
 .ei-t{font-size:15px;font-weight:600;color:var(--ink)}
@@ -217,6 +225,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .ats-check:last-child{border-bottom:none}
 .ats-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 .ats-tip-box{border-radius:14px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.55}
+.ats-tip-inline{font-size:11.5px;color:var(--muted);line-height:1.55;padding:8px 12px;background:var(--surf);border-left:2.5px solid var(--ac);border-radius:0 8px 8px 0;margin-bottom:12px}
 .ats-disclaimer-box{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.6;display:flex;gap:10px;align-items:flex-start}
 .ats-methodology{background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:14px 16px;margin-bottom:14px}
 .ats-meth-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
@@ -321,9 +330,14 @@ a:focus-visible,[tabindex]:focus-visible{
 .proj-card:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .proj-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .proj-card-nm{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
+/* Title as a clickable link — inherits nm styling, adds subtle underline on hover */
+.proj-card-link{text-decoration:none;color:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1.3}
+.proj-card-link:hover{text-decoration:underline;text-underline-offset:2px}
+.proj-card-ext{opacity:0;transition:opacity .15s;flex-shrink:0}
+.proj-card-link:hover .proj-card-ext{opacity:.6}
 .proj-card-yr{font-family:var(--ff-m);font-size:10px;color:var(--muted);flex-shrink:0;white-space:nowrap}
-.proj-card-url{display:inline-flex;align-items:center;gap:4px;font-size:11px;line-height:1.4;margin-bottom:4px;word-break:break-all}
-.proj-card-url svg{flex-shrink:0;opacity:.7}
+/* Bare domain — visible for ATS parsers, muted for humans */
+.proj-card-domain{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--muted);margin-bottom:4px;line-height:1.4}
 .proj-card-desc{font-size:12px;color:#3D3D4E;line-height:1.65;margin-bottom:5px}
 .proj-card-stack{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .proj-card-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;line-height:1.6}
@@ -905,6 +919,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
     <div class="sec">
       <div class="lbl">Projects <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(optional — great for portfolios, side work &amp; open source)</span></div>
+      <div class="ats-tip-inline">ATS parsers read project names, descriptions, and tech stack keywords. Include real tools and outcomes in the description to match job keywords.</div>
       <div id="proj-list"></div>
       <button class="btn-add" onclick="addProj()">+ Add Project</button>
     </div>
@@ -1698,28 +1713,78 @@ function saveEdu(modalEl,editIdx){
   toast(typeof editIdx==='number'?'Education updated':'Education added','ok');
 }
 
+// ── DRAG TO REORDER ──
+// Generic handler: attach to any list container whose items map 1:1 to an array.
+// Uses the HTML5 drag API (no library needed). Works for exps, edus, projs.
+function makeDraggable(containerId,arr,renderFn,afterFn){
+  const container=gi(containerId);
+  if(!container)return;
+  let dragIdx=null;
+  container.querySelectorAll('.ei[draggable]').forEach((el,i)=>{
+    el.addEventListener('dragstart',e=>{
+      dragIdx=i;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',i); // required for Firefox
+    });
+    el.addEventListener('dragend',()=>{
+      el.classList.remove('dragging');
+      container.querySelectorAll('.ei').forEach(c=>c.classList.remove('drag-over'));
+      dragIdx=null;
+    });
+    el.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      container.querySelectorAll('.ei').forEach(c=>c.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    });
+    el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));
+    el.addEventListener('drop',e=>{
+      e.preventDefault();
+      const dropIdx=i;
+      el.classList.remove('drag-over');
+      if(dragIdx===null||dragIdx===dropIdx)return;
+      // Reorder the array in place
+      const moved=arr.splice(dragIdx,1)[0];
+      arr.splice(dropIdx,0,moved);
+      dragIdx=null;
+      renderFn();
+      if(afterFn)afterFn();
+    });
+  });
+}
+
+// Drag handle SVG — 6-dot grip (two columns of 3 dots), standard for reorder handles
+const DRAG_HANDLE=`<div class="ei-drag" title="Drag to reorder">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>`;
+
 function renderExpList(){
   gi('exp-list').innerHTML=exps.map((e,i)=>`
-    <div class="ei ei-editable">
+    <div class="ei ei-editable" draggable="true">
+      ${DRAG_HANDLE}
       <div class="ei-t">${e.t}${e.co?' @ '+e.co:''}</div>
       <div class="ei-s">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>
-      <div class="ei-actions">
+      <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
+  makeDraggable('exp-list',exps,renderExpList,()=>{rCV();upATS();runJDMatch();saveDraft();});
 }
 
 function renderEduList(){
   gi('edu-list').innerHTML=edus.map((e,i)=>`
-    <div class="ei ei-editable">
+    <div class="ei ei-editable" draggable="true">
+      ${DRAG_HANDLE}
       <div class="ei-t">${e.d}</div>
       <div class="ei-s">${[e.s,e.y].filter(Boolean).join(' · ')}</div>
-      <div class="ei-actions">
+      <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
+  makeDraggable('edu-list',edus,renderEduList,()=>{rCV();upATS();saveDraft();});
 }
 
 // ── PROJECTS ──
@@ -1727,14 +1792,16 @@ function renderProjList(){
   const el=gi('proj-list');
   if(!el)return;
   el.innerHTML=projs.map((p,i)=>`
-    <div class="ei ei-editable">
+    <div class="ei ei-editable" draggable="true">
+      ${DRAG_HANDLE}
       <div class="ei-t">${esc(p.nm)}${p.yr?' ('+p.yr+')':''}</div>
-      <div class="ei-s">${p.url?'<span style="color:var(--ac)">🔗 '+esc(p.url)+'</span>':''}</div>
-      <div class="ei-actions">
+      <div class="ei-s">${p.url?'<span style="color:var(--ac)">🔗 '+esc(p.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])+'</span>':''}</div>
+      <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="projs.splice(${i},1);renderProjList();rCV();upATS();toast('Project removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
+  makeDraggable('proj-list',projs,renderProjList,()=>{rCV();upATS();saveDraft();});
 }
 
 function addProj(editIdx){
@@ -1821,7 +1888,7 @@ function renderCertList(){
     <div class="ei ei-editable">
       <div class="ei-t">${c.name}</div>
       <div class="ei-s">${[c.issuer,c.year].filter(Boolean).join(' · ')}</div>
-      <div class="ei-actions">
+      <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove">✕</button>
       </div>
@@ -1866,7 +1933,7 @@ function renderLangList(){
     <div class="ei ei-editable">
       <div class="ei-t">${l.name}</div>
       <div class="ei-s">${l.level}</div>
-      <div class="ei-actions">
+      <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove">✕</button>
       </div>
@@ -2211,19 +2278,23 @@ function projsHTML(d,sectionLabelClass,_unused,accentColor,darkMode){
   const chipBgColor=chipBg(accentColor&&accentColor.startsWith('#')?accentColor:'#4F5BD5');
   const descColor=darkMode?'rgba(255,255,255,0.65)':'#3D3D4E';
   const chipColor=darkMode?'rgba(255,255,255,0.9)':ac;
-  const items=d.projs.map(p=>`
+  const items=d.projs.map(p=>{
+    // Extract bare domain for ATS-visible text (ATS parsers read visible text, not href attrs)
+    let domain='';
+    if(p.url){try{domain=new URL(p.url).hostname.replace(/^www\./,'');}catch(_){domain=p.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0];}}
+    return`
     <div class="proj-card entry-card">
       <div class="proj-card-head">
-        <span class="proj-card-nm" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}</span>
+        ${p.url
+          ?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}<svg class="proj-card-ext" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`
+          :`<span class="proj-card-nm" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}</span>`}
         ${p.yr?`<span class="proj-card-yr">${esc(p.yr)}</span>`:''}
       </div>
-      ${p.url?`<div class="proj-card-url">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${darkMode?'rgba(255,255,255,0.5)':ac}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" style="color:${darkMode?'rgba(255,255,255,0.75)':ac};text-decoration:underline;text-underline-offset:2px">${esc(p.url.replace(/^https?:\/\//,''))}</a>
-      </div>`:''}\
-      ${p.desc?`<div class="proj-card-desc" style="color:${descColor}">${esc(p.desc)}</div>`:''}\
-      ${p.stack?`<div class="proj-card-stack">${p.stack.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span class="proj-card-chip" style="background:${chipBgColor};color:${chipColor}">${esc(s)}</span>`).join('')}</div>`:''}\
-    </div>`).join('');
+      ${domain?`<div class="proj-card-domain" style="color:${darkMode?'rgba(255,255,255,0.45)':'var(--muted)'}"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>${domain}</div>`:''}
+      ${p.desc?`<div class="proj-card-desc" style="color:${descColor}">${esc(p.desc)}</div>`:''}
+      ${p.stack?`<div class="proj-card-stack">${p.stack.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span class="proj-card-chip" style="background:${chipBgColor};color:${chipColor}">${esc(s)}</span>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
   return`<div class="${sectionLabelClass}">Projects</div>${items}`;
 }
 function additionalInfoHTML(d,sectionLabelClass,bodyClass){
