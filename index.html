@@ -330,11 +330,11 @@ a:focus-visible,[tabindex]:focus-visible{
 .proj-card:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .proj-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:2px}
 .proj-card-nm{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
-/* Title as a clickable link — inherits nm styling, adds subtle underline on hover */
-.proj-card-link{text-decoration:none;color:inherit;display:inline-flex;align-items:center;gap:4px;line-height:1.3}
-.proj-card-link:hover{text-decoration:underline;text-underline-offset:2px}
-.proj-card-ext{opacity:0;transition:opacity .15s;flex-shrink:0}
-.proj-card-link:hover .proj-card-ext{opacity:.6}
+/* Link title: accent colour + permanent underline + always-visible arrow = unambiguously clickable */
+.proj-card-link{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;color:var(--ac);display:inline-flex;align-items:center;gap:5px;line-height:1.3;transition:opacity .15s}
+.proj-card-link:hover{opacity:.75}
+.proj-card-ext{opacity:.7;flex-shrink:0;transition:opacity .15s}
+.proj-card-link:hover .proj-card-ext{opacity:1}
 .proj-card-yr{font-family:var(--ff-m);font-size:10px;color:var(--muted);flex-shrink:0;white-space:nowrap}
 /* Bare domain line removed — link is embedded in the title */
 .proj-card-desc{font-size:12px;color:#3D3D4E;line-height:1.65;margin-bottom:5px}
@@ -2281,7 +2281,7 @@ function projsHTML(d,sectionLabelClass,_unused,accentColor,darkMode){
     <div class="proj-card entry-card">
       <div class="proj-card-head">
         ${p.url
-          ?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}<svg class="proj-card-ext" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`
+          ?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link" style="${darkMode?'color:rgba(255,255,255,0.85);text-decoration-color:rgba(255,255,255,0.4)':''}">${esc(p.nm)}<svg class="proj-card-ext" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`
           :`<span class="proj-card-nm" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}</span>`}
         ${p.yr?`<span class="proj-card-yr">${esc(p.yr)}</span>`:''}
       </div>
