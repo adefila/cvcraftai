@@ -314,6 +314,21 @@ a:focus-visible,[tabindex]:focus-visible{
 #pdf-render-zone{position:fixed;top:0;left:-820px;width:794px;overflow:visible;z-index:-1}
 
 /* ══════════════════════
+   PROJECT CARD — shared across all 20 templates
+   Used by projsHTML() helper, injected between Skills and Additional Info
+══════════════════════ */
+.proj-card{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--bdr)}
+.proj-card:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.proj-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.proj-card-nm{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.proj-card-yr{font-family:var(--ff-m);font-size:10px;color:var(--muted);flex-shrink:0;white-space:nowrap}
+.proj-card-url{display:inline-flex;align-items:center;gap:4px;font-size:11px;line-height:1.4;margin-bottom:4px;word-break:break-all}
+.proj-card-url svg{flex-shrink:0;opacity:.7}
+.proj-card-desc{font-size:12px;color:#3D3D4E;line-height:1.65;margin-bottom:5px}
+.proj-card-stack{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.proj-card-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;line-height:1.6}
+
+/* ══════════════════════
    TEMPLATE STYLES
 ══════════════════════ */
 .nova{display:flex;min-height:920px}
@@ -767,7 +782,7 @@ a:focus-visible,[tabindex]:focus-visible{
   <div class="gate-card">
     <div class="logo" style="margin-bottom:22px">cv<span>craft</span>.ai</div>
     <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:18px">
-      <rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+      <rect x="2" y="4" width="20" height="13" rx="2" fill="var(--ac)" opacity=".15"/><rect x="2" y="4" width="20" height="13" rx="2" stroke="var(--ac)" stroke-width="1.6" fill="none"/><line x1="8" y1="21" x2="16" y2="21" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="11" r="2" fill="var(--ac)" opacity=".4"/>
     </svg>
     <div class="gate-title">Best on a bigger screen</div>
     <p class="gate-body">CVCraft AI's builder needs more room than a phone or tablet screen can give it — the live preview, template panel, and editor are all designed to sit side by side.</p>
@@ -802,26 +817,26 @@ a:focus-visible,[tabindex]:focus-visible{
     </div>
   </div>
   <button class="btn-pill" id="btn-export-pdf" onclick="openExport()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5" fill="rgba(255,255,255,0.15)"/><path d="M12 4v11M8 11l4 5 4-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="17" width="14" height="2" rx="1" fill="#fff" opacity=".7"/></svg>
     Export PDF
   </button>
   <div class="bar-menu-wrap">
     <button class="bar-menu-btn" id="bar-menu-btn" onclick="toggleBarMenu()" title="Backup, restore, or start over">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
     </button>
     <div class="bar-menu-dropdown" id="bar-menu-dropdown">
       <div class="bar-menu-section">Data backup</div>
       <button class="bar-menu-item" onclick="backupCV();closeBarMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M12 3v12M8 11l4 5 4-5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/></svg>
         Save backup file
       </button>
       <button class="bar-menu-item" onclick="gi('restore-input').click();closeBarMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M12 21V9M8 13l4-5 4 5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/></svg>
         Restore from backup
       </button>
       <div class="bar-menu-divider"></div>
       <button class="bar-menu-item bar-menu-item-danger" onclick="confirmStartOver();closeBarMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="11" x2="10" y2="17" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/><line x1="14" y1="11" x2="14" y2="17" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/></svg>
         Start over
       </button>
     </div>
@@ -926,7 +941,7 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="sec">
       <div class="lbl">Paste Job Description</div>
       <div class="jd-empty-state" id="jd-empty-hint">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" opacity=".15"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.6" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <div class="jd-empty-title">Match your CV to a job posting</div>
         <div class="jd-empty-items">
           <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>Finds keywords in the JD your CV is missing</div>
@@ -1008,7 +1023,7 @@ a:focus-visible,[tabindex]:focus-visible{
       <div class="lbl">ATS Best Practices</div>
       <div id="ats-tips" style="margin-bottom:14px"></div>
       <div class="ats-disclaimer-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".1"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="16" x2="12" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>
         <span>This score models well-documented ATS mechanics — keyword matching, parseable structure, standard section headers, quantified achievements. It is not a simulation of any specific company's (Google, Amazon, Apple, Meta, or otherwise) internal hiring algorithm, which is proprietary and not publicly disclosed.</span>
       </div>
     </div>
@@ -1035,7 +1050,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
       <!-- Print is now PRIMARY — produces real text PDF, ATS-safe, no image layer -->
       <div class="export-opt sel" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
-        <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" opacity=".15"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.6" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Save as PDF <span class="export-badge export-badge-best">✓ Real text — ATS safe</span></div>
           <div class="export-info-s">Opens print dialog → choose "Save as PDF". Produces a proper text-layer PDF that ATS systems can parse and recruiters can search. Headers and page numbers are suppressed automatically.</div>
@@ -1044,7 +1059,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
       <!-- Image PDF — honest label, secondary option -->
       <div class="export-opt" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
-        <div class="export-icon" style="background:#FFF7ED;color:#C2790A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+        <div class="export-icon" style="background:#FFF7ED;color:#C2790A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" opacity=".12"/><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="8.5" cy="8.5" r="2" fill="currentColor" opacity=".5"/><polyline points="21 15 15 9 5 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Download as Image PDF <span class="export-badge export-badge-warn">⚠ Image only</span></div>
           <div class="export-info-s">Saves a pixel-perfect visual snapshot. Text is not selectable or searchable — some ATS systems cannot read this format. Use for sharing as an attachment where visual appearance matters more than parsing.</div>
@@ -1052,7 +1067,7 @@ a:focus-visible,[tabindex]:focus-visible{
       </div>
 
       <div class="export-opt" id="opt-html" role="button" tabindex="0" onclick="selExport('html',this)">
-        <div class="export-icon" style="background:#F4F4FF;color:#4F5BD5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <div class="export-icon" style="background:#F4F4FF;color:#4F5BD5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="12" cy="9" r="5" fill="currentColor" opacity=".15"/><path d="M9 6.5l-2 2.5 2 2.5M15 6.5l2 2.5-2 2.5M11 6l2 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Download HTML</div>
           <div class="export-info-s">Self-contained file you can open or edit anywhere.</div>
@@ -1362,8 +1377,8 @@ async function callAI(prompt,maxTokens=1200){
 function toast(msg,type='default',dur=3000){
   const t=gi('toast');
   const icons={
-    ok:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-    err:'<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    ok:'<svg class="toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4ADE80" opacity=".2"/><circle cx="12" cy="12" r="10" fill="none" stroke="#4ADE80" stroke-width="1.5"/><polyline points="8 12 11 15 16 9" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+    err:'<svg class="toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#F87171" opacity=".2"/><circle cx="12" cy="12" r="10" fill="none" stroke="#F87171" stroke-width="1.5"/><line x1="15" y1="9" x2="9" y2="15" stroke="#F87171" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="9" x2="15" y2="15" stroke="#F87171" stroke-width="2" stroke-linecap="round"/></svg>',
     default:''
   };
   t.innerHTML=(icons[type]||'')+`<span>${msg}</span>`;
@@ -1523,7 +1538,7 @@ async function aiWriteExperience(modalEl){
   const existing=v('ex-d');
   const jt=v('ai-jt');
   btn.disabled=true;
-  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Writing…';
+  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
   out.style.display='block';
   out.innerHTML='<div class="ai-stream-preview" id="ai-bullet-stream" style="font-size:13px;color:var(--muted);line-height:1.7;min-height:40px;white-space:pre-wrap"></div>';
   const prompt=`Write 3-4 resume bullet points for this role. Output ONLY the bullet points, one per line, no numbering, no bullet characters, no preamble, no markdown — plain lines ready to paste into a CV.
@@ -1582,7 +1597,7 @@ async function aiWriteSummary(){
   const btn=gi('sum-ai-write-btn'),out=gi('sum-ai-write-out');
   const existing=v('f-sum');
   btn.disabled=true;
-  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Writing…';
+  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
   out.style.display='block';
   out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   const expLine=exps.length?exps.map(e=>`${e.t} at ${e.co}${e.d?' — '+e.d.split('\n')[0]:''}`).join('; '):'(none listed yet)';
@@ -1689,7 +1704,7 @@ function renderExpList(){
       <div class="ei-t">${e.t}${e.co?' @ '+e.co:''}</div>
       <div class="ei-s">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>
       <div class="ei-actions">
-        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -1701,7 +1716,7 @@ function renderEduList(){
       <div class="ei-t">${e.d}</div>
       <div class="ei-s">${[e.s,e.y].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions">
-        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -1716,7 +1731,7 @@ function renderProjList(){
       <div class="ei-t">${esc(p.nm)}${p.yr?' ('+p.yr+')':''}</div>
       <div class="ei-s">${p.url?'<span style="color:var(--ac)">🔗 '+esc(p.url)+'</span>':''}</div>
       <div class="ei-actions">
-        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="projs.splice(${i},1);renderProjList();rCV();upATS();toast('Project removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -1807,7 +1822,7 @@ function renderCertList(){
       <div class="ei-t">${c.name}</div>
       <div class="ei-s">${[c.issuer,c.year].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions">
-        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -1852,7 +1867,7 @@ function renderLangList(){
       <div class="ei-t">${l.name}</div>
       <div class="ei-s">${l.level}</div>
       <div class="ei-actions">
-        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>
+        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -1924,7 +1939,7 @@ async function aiFullAnalysis(){
   const jt=v('ai-jt');
   const btn=gi('btn-ai'),out=gi('ai-out');
   btn.disabled=true;
-  btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Analysing…';
+  btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Analysing…';
   out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
 
   const jd=v('jd-text');
@@ -2025,7 +2040,7 @@ function copyRewrite(btn){
 async function jdAIAnalysis(){
   const btn=gi('btn-jd-ai'),out=gi('jd-ai-out');
   btn.disabled=true;
-  btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Analysing…';
+  btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Analysing…';
   out.style.display='block';
   out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   const jd=v('jd-text').slice(0,1500);
@@ -2182,17 +2197,32 @@ function langsLine(langs){
 // sectionLabelClass: the template's section heading class (e.g. 'classic-sl')
 // cardClass: an entry-card class so print pagination respects project blocks
 // accentColor: the current accent hex for tech stack chips
-function projsHTML(d,sectionLabelClass,cardClass,accentColor){
+// projsHTML: renders the Projects section for a template.
+// sectionLabelClass: the template section heading class (e.g. 'classic-sl')
+// accentColor: current accent hex — drives URL link colour and chip tints
+// darkMode: pass true for dark-background sidebar templates so colours flip
+function projsHTML(d,sectionLabelClass,_unused,accentColor,darkMode){
   if(!d.projs||!d.projs.length)return'';
+  const ac=accentColor||'var(--ac)';
+  function chipBg(hex){
+    try{const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},0.12)`;}
+    catch(_){return'rgba(79,91,213,0.12)';}
+  }
+  const chipBgColor=chipBg(accentColor&&accentColor.startsWith('#')?accentColor:'#4F5BD5');
+  const descColor=darkMode?'rgba(255,255,255,0.65)':'#3D3D4E';
+  const chipColor=darkMode?'rgba(255,255,255,0.9)':ac;
   const items=d.projs.map(p=>`
-    <div class="${cardClass}" style="margin-bottom:13px">
-      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-        <span style="font-size:13.5px;font-weight:700;color:var(--ink)">${esc(p.nm)}</span>
-        ${p.yr?`<span style="font-size:10.5px;color:var(--muted);font-family:var(--ff-m)">${esc(p.yr)}</span>`:''}
-        ${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:${accentColor||'var(--ac)'};text-decoration:underline;text-underline-offset:2px;word-break:break-all">${esc(p.url.replace(/^https?:\/\//,''))}</a>`:''}
+    <div class="proj-card entry-card">
+      <div class="proj-card-head">
+        <span class="proj-card-nm" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}</span>
+        ${p.yr?`<span class="proj-card-yr">${esc(p.yr)}</span>`:''}
       </div>
-      ${p.desc?`<div style="font-size:12.5px;color:#3D3D4E;line-height:1.6;margin-top:3px">${esc(p.desc)}</div>`:''}
-      ${p.stack?`<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:5px">${p.stack.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:${accentColor||'var(--ac)'}18;color:${accentColor||'var(--ac)'}">${esc(s)}</span>`).join('')}</div>`:''}
+      ${p.url?`<div class="proj-card-url">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${darkMode?'rgba(255,255,255,0.5)':ac}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" style="color:${darkMode?'rgba(255,255,255,0.75)':ac};text-decoration:underline;text-underline-offset:2px">${esc(p.url.replace(/^https?:\/\//,''))}</a>
+      </div>`:''}\
+      ${p.desc?`<div class="proj-card-desc" style="color:${descColor}">${esc(p.desc)}</div>`:''}\
+      ${p.stack?`<div class="proj-card-stack">${p.stack.split(',').map(s=>s.trim()).filter(Boolean).map(s=>`<span class="proj-card-chip" style="background:${chipBgColor};color:${chipColor}">${esc(s)}</span>`).join('')}</div>`:''}\
     </div>`).join('');
   return`<div class="${sectionLabelClass}">Projects</div>${items}`;
 }
@@ -2227,7 +2257,7 @@ const TPL={
       <div class="nova-sl" style="color:${AC}">Contact</div>
       ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
-      ${projsHTML(d,'nova-sl','nova-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
+      ${projsHTML(d,'nova-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="nova-mn">
       <div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Profile</div><p style="font-size:13px;color:#4D4D5E;line-height:1.7">${d.sum}</p></div>
@@ -2337,7 +2367,7 @@ const TPL={
       </div>
       <div>
         ${d.skills.length?`<div class="carbon-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="carbon-sk"><div class="carbon-skn">${s}</div><div class="carbon-skt"><div class="carbon-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
-        ${projsHTML(d,'carbon-sl','carbon-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="carbon-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:#A0A0C4;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
+        ${projsHTML(d,'carbon-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="carbon-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:#A0A0C4;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
 
@@ -2377,7 +2407,7 @@ const TPL={
       <div class="merid-sl">Contact</div>
       ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="merid-cr">${c}</div>`).join('')}
       ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${d.skills.map(s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
-      ${projsHTML(d,'merid-sl','merid-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
+      ${projsHTML(d,'merid-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="merid-main">
       <div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">01</div>Profile</div>
@@ -2807,7 +2837,7 @@ function renderOnbStep(){
   gi('onb-title').textContent=s.title;
   gi('onb-body').textContent=s.body;
   gi('onb-next').textContent=onbStep===total-1?'Get started ✓':'Next →';
-  gi('onb-next').style.background=s.accent;
+  gi('onb-next').style.background='';
   gi('onb-next').onclick=()=>{
     if(onbStep<total-1){onbStep++;renderOnbStep();}
     else endOnboarding();
