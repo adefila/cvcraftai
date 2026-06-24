@@ -138,6 +138,9 @@ a:focus-visible,[tabindex]:focus-visible{
 
 /* ── AI SECTION ── */
 .ai-sec{padding:18px 22px;background:linear-gradient(180deg,#F4F4FF 0%,#F9F9FC 100%);border-bottom:1px solid #E6E5F7}
+.ai-check-box{background:linear-gradient(180deg,#F4F4FF 0%,#F9F9FC 100%);border:1.5px solid #E6E5F7;border-radius:16px;padding:18px 20px}
+.ai-check-title{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.ai-check-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px}
 .ai-lbl{font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ac);margin-bottom:11px;display:flex;align-items:center;gap:6px}
 .ai-row{display:flex;flex-direction:column;gap:9px}
 .ai-out{font-size:14.5px;color:#33345E;background:#fff;border:1px solid #E6E5F7;border-radius:12px;padding:14px 16px;margin-top:11px;line-height:1.65;min-height:40px}
@@ -258,7 +261,8 @@ a:focus-visible,[tabindex]:focus-visible{
 
 /* ── AI WRITE (inside experience modal) ── */
 .ai-write-btn{width:100%;justify-content:center;display:flex;align-items:center;gap:7px;color:var(--ac);border-color:#D8D6F5}
-.ai-write-btn:hover{background:#F4F4FF;border-color:var(--ac)}
+.ai-write-btn:hover:not(:disabled){background:#F4F4FF;border-color:var(--ac)}
+.ai-write-btn:disabled{opacity:.4;cursor:not-allowed;color:var(--muted);border-color:var(--bdr)}
 .ai-write-out{margin-top:10px;background:#F9F9FF;border:1px solid #E6E5F7;border-radius:12px;padding:12px 13px}
 .ai-write-lbl{font-size:11.5px;font-weight:600;color:var(--ac);text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px}
 .ai-write-line{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid #ECEBF7;border-radius:9px;padding:9px 11px;margin-bottom:6px}
@@ -864,22 +868,29 @@ a:focus-visible,[tabindex]:focus-visible{
 
   <!-- BUILD PANEL -->
   <div class="pnl active" id="pnl-build">
-    <div class="ai-sec">
-      <div class="ai-lbl">✦ AI Analysis</div>
-      <div class="ai-row">
-        <input class="fi" id="ai-jt" placeholder="Target role (e.g. Senior Product Designer)">
-        <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Analyse &amp; Enhance ✦</button>
-      </div>
-      <div class="ai-out" id="ai-out">Enter your target role, then run analysis. One AI pass reviews your summary, experience, and skills together — covering rewrite suggestions, missing keywords, and a reasoned quality score — so nothing contradicts itself across tabs.</div>
-      <div class="ai-disclaimer">ⓘ CVCraft AI reasons live over your actual CV text. This models documented ATS mechanics (keyword matching, parseable structure) — not any specific company's proprietary algorithm, which isn't public.</div>
-    </div>
 
     <div class="sec">
       <div class="lbl">Personal Info</div>
       <div class="fg">
         <div class="row2">
           <input class="fi" id="f-name" placeholder="Full Name" oninput="rCV()">
-          <input class="fi" id="f-title" placeholder="Job Title" oninput="rCV()">
+          <input class="fi" id="f-title" placeholder="Job Title" oninput="rCV()" list="role-suggestions" autocomplete="off">
+          <datalist id="role-suggestions">
+            <option>Software Engineer</option><option>Senior Software Engineer</option><option>Full Stack Developer</option><option>Frontend Developer</option><option>Backend Developer</option><option>Mobile Developer</option><option>iOS Developer</option><option>Android Developer</option>
+            <option>Product Manager</option><option>Senior Product Manager</option><option>Lead Product Manager</option><option>Associate Product Manager</option>
+            <option>UX Designer</option><option>UI Designer</option><option>UI/UX Designer</option><option>Product Designer</option><option>Senior Product Designer</option><option>Lead Product Designer</option><option>Visual Designer</option><option>Brand Designer</option><option>Graphic Designer</option><option>Motion Designer</option>
+            <option>Data Scientist</option><option>Data Analyst</option><option>Data Engineer</option><option>Machine Learning Engineer</option><option>AI Engineer</option><option>Business Intelligence Analyst</option>
+            <option>DevOps Engineer</option><option>Cloud Engineer</option><option>Site Reliability Engineer</option><option>Infrastructure Engineer</option><option>Platform Engineer</option>
+            <option>Framer Developer</option><option>Webflow Developer</option><option>WordPress Developer</option><option>Shopify Developer</option>
+            <option>Marketing Manager</option><option>Digital Marketing Manager</option><option>Content Marketing Manager</option><option>Growth Manager</option><option>SEO Manager</option><option>Social Media Manager</option>
+            <option>Project Manager</option><option>Programme Manager</option><option>Scrum Master</option><option>Agile Coach</option>
+            <option>Operations Manager</option><option>Business Analyst</option><option>Strategy Consultant</option><option>Management Consultant</option>
+            <option>Sales Manager</option><option>Account Executive</option><option>Account Manager</option><option>Customer Success Manager</option>
+            <option>Engineering Manager</option><option>Director of Engineering</option><option>VP of Engineering</option><option>CTO</option>
+            <option>Head of Design</option><option>Director of Product</option><option>VP of Product</option><option>CPO</option>
+            <option>HR Manager</option><option>Talent Acquisition Specialist</option><option>Recruiter</option>
+            <option>Finance Manager</option><option>Financial Analyst</option><option>Accountant</option>
+          </datalist>
         </div>
         <div class="row2">
           <input class="fi" id="f-email" placeholder="Email address" oninput="rCV()">
@@ -940,12 +951,46 @@ a:focus-visible,[tabindex]:focus-visible{
       <div class="fg">
         <div>
           <label class="date-lbl">Work authorization</label>
-          <input class="fi" id="f-workauth" placeholder="e.g. Authorized to work in the US" oninput="rCV()">
+          <select class="fi" id="f-workauth" onchange="rCV()" style="cursor:pointer">
+            <option value="">Select authorization status…</option>
+            <option>Authorized to work in the US</option>
+            <option>US Citizen</option>
+            <option>US Permanent Resident (Green Card)</option>
+            <option>Requires H-1B Sponsorship</option>
+            <option>Requires OPT / CPT Sponsorship</option>
+            <option>Authorized to work in the UK</option>
+            <option>UK Citizen</option>
+            <option>UK Skilled Worker Visa</option>
+            <option>Authorized to work in Canada</option>
+            <option>Canadian Citizen</option>
+            <option>Authorized to work in Australia</option>
+            <option>Authorized to work in EU (No Sponsorship Required)</option>
+            <option>Authorized to work in Nigeria</option>
+            <option>Open to Relocation</option>
+            <option>Remote Only</option>
+          </select>
         </div>
         <label class="present-check">
           <input type="checkbox" id="f-refs" onchange="rCV()">
           <span>Include "References available upon request"</span>
         </label>
+      </div>
+    </div>
+
+    <!-- AI CHECK — at the bottom, after all content is filled in -->
+    <div class="sec" style="border-bottom:none;padding-top:0">
+      <div class="ai-check-box">
+        <div class="ai-check-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ac)" opacity=".15"/><circle cx="12" cy="12" r="10" stroke="var(--ac)" stroke-width="1.5"/><path d="M8 12l3 3 5-5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          AI Polish Check
+        </div>
+        <p class="ai-check-desc">Once your CV is filled in, run a full check. AI will review your grammar, flag weak phrasing, spot ATS issues, and suggest improvements — one pass across everything.</p>
+        <div>
+          <input class="fi" id="ai-jt" placeholder="Target role (optional — e.g. Senior Product Designer)" style="margin-bottom:10px">
+          <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Run AI Check ✦</button>
+        </div>
+        <div class="ai-out" id="ai-out"></div>
+        <div class="ai-disclaimer" id="ai-disclaimer-box" style="display:none">ⓘ CVCraft AI reasons over your actual CV text. This models documented ATS mechanics — not any specific company's proprietary algorithm.</div>
       </div>
     </div>
   </div>
@@ -1531,8 +1576,8 @@ function addExp(editIdx){
         <input type="checkbox" id="ex-present" ${ex.present?'checked':''} onchange="document.getElementById('ex-e').disabled=this.checked;if(this.checked)document.getElementById('ex-e').value=''">
         <span>I currently work here</span>
       </label>
-      <textarea class="fi" id="ex-d" rows="4" placeholder="Key achievements — one per line. Use numbers: 'Increased revenue by 40%'">${esc(ex.d)}</textarea>
-      <button class="btn-pill-outline ai-write-btn" id="ex-ai-write-btn" type="button">✦ Write with AI</button>
+      <textarea class="fi" id="ex-d" rows="4" placeholder="Key achievements — one per line. Use numbers: 'Increased revenue by 40%'" oninput="const b=gi('ex-ai-write-btn');if(b)b.disabled=!this.value.trim()">${esc(ex.d)}</textarea>
+      <button class="btn-pill-outline ai-write-btn" id="ex-ai-write-btn" type="button" ${!ex.d?'disabled':''} title="${!ex.d?'Type some experience notes first, then AI will help rewrite them':''}">✦ Write with AI</button>
       <div class="ai-write-out" id="ex-ai-write-out" style="display:none"></div>
     </div>
     <div class="modal-btns">
@@ -1806,6 +1851,9 @@ function renderProjList(){
 function addProj(editIdx){
   const isEdit=typeof editIdx==='number';
   const p=isEdit?projs[editIdx]:{nm:'',url:'',desc:'',stack:'',yr:''};
+  // Parse existing stack into array for the tag UI
+  let stackTags=p.stack?p.stack.split(',').map(s=>s.trim()).filter(Boolean):[];
+
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Project</div>
     <div class="fg">
@@ -1816,37 +1864,69 @@ function addProj(editIdx){
       <div>
         <label class="date-lbl">Live URL / GitHub link <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
         <input class="fi" id="proj-url" placeholder="e.g. github.com/you/project  or  yourproject.com" value="${esc(p.url)}" type="url" inputmode="url">
-        <div style="font-size:11.5px;color:var(--muted);margin-top:5px">Renders as a clickable link in the CV preview and as visible text in the PDF so ATS parsers and human reviewers both see it.</div>
       </div>
       <div>
         <label class="date-lbl">Description <span style="font-weight:400;color:var(--muted)">(1–2 sentences)</span></label>
         <textarea class="fi" id="proj-desc" rows="2" placeholder="What did you build, what problem did it solve, what was the outcome?">${esc(p.desc)}</textarea>
       </div>
       <div>
-        <label class="date-lbl">Tech stack / tools <span style="font-weight:400;color:var(--muted)">(comma-separated, optional)</span></label>
-        <input class="fi" id="proj-stack" placeholder="e.g. React, Node.js, PostgreSQL, Vercel" value="${esc(p.stack)}">
+        <label class="date-lbl">Tech stack / tools <span style="font-weight:400;color:var(--muted)">(press Enter to add each)</span></label>
+        <div class="sk-wrap" id="proj-stack-wrap" style="min-height:40px">
+          ${stackTags.map((t,i)=>`<span class="sk-chip" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();})()" type="button">×</button></span>`).join('')}
+          <input class="sk-inp" id="proj-stack-inp" placeholder="e.g. Framer, React, Figma…" autocomplete="off">
+        </div>
       </div>
-      <div>
-        <label class="date-lbl">Year <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-        <input class="fi" id="proj-yr" placeholder="e.g. 2024" value="${esc(p.yr)}" style="width:120px">
+      <div style="display:flex;gap:12px;align-items:flex-end">
+        <div style="flex:0 0 130px">
+          <label class="date-lbl">Year <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+          <input class="fi" id="proj-yr" type="number" min="1990" max="2099" step="1" placeholder="${new Date().getFullYear()}" value="${esc(p.yr)}">
+        </div>
       </div>
     </div>
     <div class="modal-btns">
       <button class="btn-pill" id="proj-save-btn" style="flex:1;justify-content:center">Save Project</button>
       <button class="btn-pill-outline" id="proj-cancel-btn">Cancel</button>
     </div>`);
-  gi('proj-save-btn').onclick=()=>saveProj(modalEl,editIdx);
+
+  // Wire up Enter key to add chips in the stack input
+  const stackInp=gi('proj-stack-inp');
+  if(stackInp){
+    stackInp.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===','){
+        e.preventDefault();
+        const val=stackInp.value.trim().replace(/,$/,'');
+        if(!val)return;
+        const wrap=gi('proj-stack-wrap');
+        const chip=document.createElement('span');
+        const idx=Date.now();
+        chip.className='sk-chip';
+        chip.id='pst-'+idx;
+        chip.innerHTML=`${esc(val)}<button class="sk-rm" type="button">×</button>`;
+        chip.querySelector('.sk-rm').onclick=()=>chip.remove();
+        wrap.insertBefore(chip,stackInp);
+        stackInp.value='';
+      }
+    });
+  }
+
+  gi('proj-save-btn').onclick=()=>{
+    // Collect all chips currently in the wrap as the stack array
+    const chips=[...gi('proj-stack-wrap').querySelectorAll('.sk-chip')].map(c=>c.textContent.replace('×','').trim()).filter(Boolean);
+    // Also grab anything still typed but not confirmed
+    const pending=(gi('proj-stack-inp')?.value||'').trim();
+    if(pending)chips.push(pending);
+    saveProj(modalEl,editIdx,chips.join(', '));
+  };
   gi('proj-cancel-btn').onclick=()=>modalEl.remove();
   setTimeout(()=>gi('proj-nm')?.focus(),60);
 }
 
-function saveProj(modalEl,editIdx){
+function saveProj(modalEl,editIdx,stackOverride){
   const nm=v('proj-nm').trim();
   if(!nm){toast('Please enter a project name','err');return;}
   let url=v('proj-url').trim();
-  // Normalise URL — add https:// if missing a protocol so it renders as a real link
   if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
-  const rec={nm,url,desc:v('proj-desc').trim(),stack:v('proj-stack').trim(),yr:v('proj-yr').trim()};
+  const rec={nm,url,desc:v('proj-desc').trim(),stack:stackOverride!==undefined?stackOverride:v('proj-stack').trim(),yr:v('proj-yr').trim()};
   if(typeof editIdx==='number'){projs[editIdx]=rec;}else{projs.push(rec);}
   modalEl.remove();
   renderProjList();rCV();upATS();saveDraft();
@@ -2045,7 +2125,7 @@ Rules for the IMPROVEMENTS and REWRITE sections:
 
   try{
     const tx=await callAI(prompt,1200);
-    if(!tx){out.innerHTML='<span style="color:var(--err);font-size:14px">No response. Try again.</span>';btn.disabled=false;btn.innerHTML='Analyse &amp; Enhance ✦';return;}
+    if(!tx){out.innerHTML='<span style="color:var(--err);font-size:14px">No response. Try again.</span>';btn.disabled=false;const disc=gi('ai-disclaimer-box');if(disc)disc.style.display='';btn.innerHTML='Run AI Check ✦';return;}
 
     const scoreMatch=tx.match(/SCORE:\s*(\d+)/i);
     const impMatch=tx.match(/IMPROVEMENTS:\s*([\s\S]*?)(?=REWRITE:|KEYWORDS:|$)/i);
@@ -2089,7 +2169,7 @@ Rules for the IMPROVEMENTS and REWRITE sections:
     out.innerHTML=`<span style="color:var(--err);font-size:14px">${(err&&err.message)||'AI request failed. Check your connection and try again.'}</span>`;
   }
   btn.disabled=false;
-  btn.innerHTML='Analyse &amp; Enhance ✦';
+  const disc=gi('ai-disclaimer-box');if(disc)disc.style.display='';btn.innerHTML='Run AI Check ✦';
 }
 
 function copyRewrite(btn){
