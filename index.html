@@ -183,6 +183,9 @@ a:focus-visible,[tabindex]:focus-visible{
 /* ── SKILL TAGS ── */
 .sk-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
 .sk-tag{background:var(--surf);border:1.5px solid var(--bdr);border-radius:999px;font-size:14px;font-weight:500;padding:6px 8px 6px 13px;display:flex;align-items:center;gap:6px;transition:border-color .15s}
+/* Inline Add button — same height as .fi inputs (padding:12px) so they sit flush */
+.btn-add-inline{background:var(--ink);color:#fff;border:none;border-radius:999px;font-family:var(--ff-b);font-size:14.5px;font-weight:600;padding:12px 20px;cursor:pointer;transition:transform .12s,background .15s;white-space:nowrap;flex-shrink:0}
+.btn-add-inline:hover{background:#111}
 .sk-tag:hover{border-color:#D0CFC9}
 .sk-tag button{border:none;background:#fff;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:0;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .sk-tag button:hover{color:#fff;background:var(--err)}
@@ -977,7 +980,7 @@ a:focus-visible,[tabindex]:focus-visible{
           <option>SEO</option><option>Google Analytics</option><option>A/B Testing</option><option>Content Strategy</option><option>Copywriting</option>
           <option>Leadership</option><option>Stakeholder Management</option><option>Communication</option><option>Problem Solving</option><option>Data Analysis</option>
         </datalist>
-        <button class="btn-pill-sm" style="flex-shrink:0" onclick="addSk()">Add</button>
+        <button class="btn-add-inline" onclick="addSk()">Add</button>
       </div>
     </div>
 
@@ -1947,10 +1950,13 @@ function addProj(editIdx){
         <textarea class="fi" id="proj-desc" rows="2" placeholder="What did you build, what problem did it solve, what was the outcome?">${esc(p.desc)}</textarea>
       </div>
       <div>
-        <label class="date-lbl">Tech stack / tools <span style="font-weight:400;color:var(--muted)">(press Enter to add each)</span></label>
-        <div class="sk-wrap" id="proj-stack-wrap" style="min-height:40px">
-          ${stackTags.map((t,i)=>`<span class="sk-chip" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();})()" type="button">×</button></span>`).join('')}
-          <input class="sk-inp" id="proj-stack-inp" placeholder="e.g. Framer, React, Figma…" autocomplete="off">
+        <label class="date-lbl">Tech stack / tools <span style="font-weight:400;color:var(--muted)">(press Enter or Add to tag each)</span></label>
+        <div class="sk-tags" id="proj-stack-tags" style="margin-bottom:${stackTags.length?'11px':'0'};min-height:${stackTags.length?'auto':'0'}">
+          ${stackTags.map((t,i)=>`<span class="sk-tag" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();const wrap=document.getElementById('proj-stack-tags');if(!wrap.children.length)wrap.style.marginBottom='0';})()" type="button">×</button></span>`).join('')}
+        </div>
+        <div class="sk-row">
+          <input class="fi" id="proj-stack-inp" placeholder="e.g. Framer, React, Figma…" autocomplete="off" style="flex:1" list="skill-suggestions">
+          <button class="btn-add-inline" id="proj-stack-add-btn" type="button">Add</button>
         </div>
       </div>
       <div>
@@ -1963,30 +1969,40 @@ function addProj(editIdx){
       <button class="btn-pill-outline" id="proj-cancel-btn">Cancel</button>
     </div>`);
 
-  // Wire up Enter key to add chips in the stack input
+  // Wire up Enter key and Add button to add chips in the stack input
+  function addStackChip(){
+    const inp=gi('proj-stack-inp');
+    if(!inp)return;
+    const val=inp.value.trim().replace(/,$/,'');
+    if(!val)return;
+    const wrap=gi('proj-stack-tags');
+    const chip=document.createElement('span');
+    const idx=Date.now();
+    chip.className='sk-tag';
+    chip.id='pst-'+idx;
+    chip.innerHTML=`${esc(val)}<button class="sk-rm" type="button">×</button>`;
+    chip.querySelector('.sk-rm').onclick=()=>{chip.remove();if(!wrap.children.length)wrap.style.marginBottom='0';};
+    wrap.style.marginBottom='11px';
+    wrap.appendChild(chip);
+    inp.value='';
+    inp.focus();
+  }
+
   const stackInp=gi('proj-stack-inp');
   if(stackInp){
     stackInp.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===','){
-        e.preventDefault();
-        const val=stackInp.value.trim().replace(/,$/,'');
-        if(!val)return;
-        const wrap=gi('proj-stack-wrap');
-        const chip=document.createElement('span');
-        const idx=Date.now();
-        chip.className='sk-chip';
-        chip.id='pst-'+idx;
-        chip.innerHTML=`${esc(val)}<button class="sk-rm" type="button">×</button>`;
-        chip.querySelector('.sk-rm').onclick=()=>chip.remove();
-        wrap.insertBefore(chip,stackInp);
-        stackInp.value='';
-      }
+      if(e.key==='Enter'||e.key===','){e.preventDefault();addStackChip();}
     });
   }
+  const stackAddBtn=gi('proj-stack-add-btn');
+  if(stackAddBtn){stackAddBtn.onclick=addStackChip;}
 
   gi('proj-save-btn').onclick=()=>{
-    // Collect all chips currently in the wrap as the stack array
-    const chips=[...gi('proj-stack-wrap').querySelectorAll('.sk-chip')].map(c=>c.textContent.replace('×','').trim()).filter(Boolean);
+    // Collect all chips from the tags area
+    const chips=[...gi('proj-stack-tags').querySelectorAll('.sk-tag')].map(c=>{
+      const rm=c.querySelector('.sk-rm');
+      return c.textContent.replace(rm?rm.textContent:'×','').trim();
+    }).filter(Boolean);
     // Also grab anything still typed but not confirmed
     const pending=(gi('proj-stack-inp')?.value||'').trim();
     if(pending)chips.push(pending);
