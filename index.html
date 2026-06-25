@@ -2816,17 +2816,54 @@ const SOCIAL_TYPES={
 function renderSocialLinks(){
   const container=gi('social-links-list');
   if(!container)return;
+  if(!socials.length){
+    container.innerHTML=`<div style="font-size:13px;color:var(--muted);padding:4px 0 8px">No links added yet. Click "+ Add Link" to add LinkedIn, Portfolio, GitHub, or any other profile.</div>`;
+    const btn=gi('add-social-btn');
+    if(btn)btn.style.display='';
+    return;
+  }
   container.innerHTML=socials.map((s,i)=>`
-    <div class="social-link-row">
-      <select class="social-link-type" onchange="socials[${i}].type=this.value;renderSocialLinks();rCV();saveDraft()">
+    <div class="social-link-row" data-idx="${i}">
+      <select class="social-link-type" data-idx="${i}" data-field="type">
         ${Object.entries(SOCIAL_TYPES).map(([k,t])=>`<option value="${k}"${s.type===k?' selected':''}>${t.label}</option>`).join('')}
       </select>
-      <input class="social-link-url" type="url" inputmode="url" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://...'}" value="${esc(s.url)}" oninput="socials[${i}].url=this.value;rCV();saveDraft()">
-      <button class="social-link-rm" onclick="socials.splice(${i},1);renderSocialLinks();rCV();saveDraft()" title="Remove">×</button>
+      <input class="social-link-url" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://...'}" value="${esc(s.url)}">
+      <button class="social-link-rm" data-idx="${i}" title="Remove link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>`).join('');
-  // Hide add button after 4 links
-  const btn=gi('add-social-btn');
-  if(btn)btn.style.display=socials.length>=4?'none':'';
+
+  // Wire up events via delegation — no inline index references so splice doesn't break them
+  container.querySelectorAll('.social-link-type').forEach(sel=>{
+    sel.addEventListener('change',()=>{
+      const idx=+sel.dataset.idx;
+      if(socials[idx])socials[idx].type=sel.value;
+      // Update placeholder without full re-render
+      const row=sel.closest('.social-link-row');
+      const inp=row?.querySelector('.social-link-url');
+      if(inp)inp.placeholder=SOCIAL_TYPES[sel.value]?.placeholder||'https://...';
+      rCV();saveDraft();
+    });
+  });
+  container.querySelectorAll('.social-link-url').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const idx=+inp.dataset.idx;
+      if(socials[idx])socials[idx].url=inp.value;
+      rCV();saveDraft();
+    });
+  });
+  container.querySelectorAll('.social-link-rm').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=+btn.dataset.idx;
+      socials.splice(idx,1);
+      renderSocialLinks();
+      rCV();upATS();saveDraft();
+      toast('Link removed');
+    });
+  });
+
+  const addBtn=gi('add-social-btn');
+  if(addBtn)addBtn.style.display=socials.length>=4?'none':'';
 }
 
 function addSocialLink(){
@@ -2850,35 +2887,36 @@ function linkURL(val){
 }
 
 function buildSocialLinksHTML(accentColor){
-  // Returns embedded labeled links like "LinkedIn" and "Portfolio" — not raw URLs
-  // The label is the visible text; the URL is in the href (ATS reads visible text)
-  if(!socials.length){
+  const ac=accentColor||'var(--ac)';
+  const links=socials.filter(s=>s.url.trim()).map(s=>{
+    const url=s.url.match(/^https?:\/\//)?s.url:'https://'+s.url;
+    const label=SOCIAL_TYPES[s.type]?.label||'Link';
+    return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600;font-style:normal">${label}</a>`;
+  });
+  if(!links.length){
     // Backwards compat: check old f-li field
     const raw=v('f-li');
     if(raw){
       const url=raw.match(/^https?:\/\//)?raw:'https://'+raw;
-      return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${accentColor||'inherit'};text-decoration:underline;text-underline-offset:2px;font-weight:600">LinkedIn</a>`;
+      return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600">LinkedIn</a>`;
     }
     return'';
   }
-  return socials.filter(s=>s.url.trim()).map(s=>{
-    const url=s.url.match(/^https?:\/\//)?s.url:'https://'+s.url;
-    const label=SOCIAL_TYPES[s.type]?.label||'Link';
-    return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${accentColor||'inherit'};text-decoration:underline;text-underline-offset:2px;font-weight:600">${label}</a>`;
-  }).join('<span style="margin:0 4px;opacity:.4">·</span>');
+  // Join with styled separator — single string safe to drop anywhere as HTML
+  return links.join('<span aria-hidden="true" style="margin:0 5px;opacity:.35;font-weight:400">·</span>');
 }
 
 function getData(){
   const liRaw=socials.find(s=>s.url.trim())?.url||v('f-li')||'';
-  const liUrl=liRaw.match(/^https?:\/\//)?liRaw:'https://'+liRaw;
   return{
     nm:v('f-name')||'Your Name',
     ti:v('f-title')||'Professional Title',
     em:v('f-email')||'email@example.com',
     ph:v('f-phone')||'+1 (555) 000-0000',
     lo:v('f-loc')||'City, Country',
-    li:liRaw, // plain text for ATS scoring
-    liLink:buildSocialLinksHTML(), // embedded labeled links for templates (no accent)
+    li:liRaw,
+    liLink:buildSocialLinksHTML(AC),           // for light templates — uses accent colour
+    liLinkDark:buildSocialLinksHTML('rgba(255,255,255,0.85)'), // for dark-bg templates
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
     certs,langs,projs,socials,
     workauth:v('f-workauth'),
@@ -2937,7 +2975,7 @@ function additionalInfoHTML(d,sectionLabelClass,bodyClass){
 const TPL={
   classic:d=>`<div class="classic">
     <div class="classic-nm">${d.nm}</div>
-    <div class="classic-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' | ')}</div>
+    <div class="classic-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' | ')}${d.liLink?' | '+d.liLink:''}</div>
     <div class="classic-hr"></div>
     <div class="classic-sl">Summary</div>
     <p class="classic-sum">${d.sum}</p>
@@ -2953,7 +2991,7 @@ const TPL={
       <div class="nova-nm">${d.nm}</div>
       <div class="nova-ti">${d.ti}</div>
       <div class="nova-sl" style="color:${AC}">Contact</div>
-      ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="nova-cr">${c}</div>`).join('')}
+      ${[d.em,d.ph,d.lo].map(c=>`<div class="nova-cr">${c}</div>`).join('')}${d.liLinkDark?'<div class="nova-cr">'+d.liLinkDark+'</div>':''}
       ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
       ${projsHTML(d,'nova-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
@@ -3055,7 +3093,7 @@ const TPL={
   carbon:d=>`<div class="carbon">
     <div class="carbon-top">
       <div><div class="carbon-nm">${d.nm}</div><div class="carbon-ti">${d.ti}</div></div>
-      <div class="carbon-cts">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="carbon-ct">${c}</span>`).join('')}</div>
+      <div class="carbon-cts">${[d.em,d.ph,d.lo].map(c=>`<span class="carbon-ct">${c}</span>`).join('')}${d.liLinkDark?'<span class="carbon-ct">'+d.liLinkDark+'</span>':''}</div>
     </div>
     <p class="carbon-sum" style="border-color:${AC}">${d.sum}</p>
     <div class="carbon-bd">
@@ -3103,7 +3141,7 @@ const TPL={
       <div class="merid-ti">${d.ti}</div>
       <div class="merid-div"></div>
       <div class="merid-sl">Contact</div>
-      ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="merid-cr">${c}</div>`).join('')}
+      ${[d.em,d.ph,d.lo].map(c=>`<div class="merid-cr">${c}</div>`).join('')}${d.liLinkDark?'<div class="merid-cr">'+d.liLinkDark+'</div>':''}
       ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${d.skills.map(s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'merid-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
     </div>
@@ -3219,7 +3257,7 @@ const TPL={
       <div class="vtx-shape" style="background:${AC}"></div>
       <div class="vtx-nm">${d.nm}</div>
       <div class="vtx-ti" style="color:${AC}">${d.ti}</div>
-      <div class="vtx-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+      <div class="vtx-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
     </div>
     <div class="vtx-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
@@ -3243,7 +3281,7 @@ const TPL={
   spectrum:d=>`<div class="spectrum">
     <div class="spc-nm">${d.nm}</div>
     <div class="spc-ti">${d.ti}</div>
-    <div class="spc-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' · ')}</div>
+    <div class="spc-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' · ')}${d.liLink?' · '+d.liLink:''}</div>
     <p class="spc-sum">${d.sum}</p>
     ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${d.skills.map((s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
     ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
@@ -3256,7 +3294,7 @@ const TPL={
   origin:d=>`<div class="origin">
     <div class="org-nm">${d.nm}</div>
     <div class="org-ti">${d.ti}</div>
-    <div class="org-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' • ')}</div>
+    <div class="org-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' • ')}${d.liLink?' • '+d.liLink:''}</div>
     <div class="org-hr"></div>
     <p class="org-sum">${d.sum}</p>
     ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
@@ -3268,7 +3306,7 @@ const TPL={
   dusk:d=>`<div class="dusk">
     <div class="dusk-h"><div class="dusk-h-bg" style="background:linear-gradient(135deg,${AC} 0%,${AC}BB 60%,${AC}77 100%)"></div>
       <div class="dusk-nm">${d.nm}</div><div class="dusk-ti">${d.ti}</div>
-      <div class="dusk-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).map(c=>`<span>${c}</span>`).join('')}</div>
+      <div class="dusk-cs">${[d.em,d.ph,d.lo].filter(Boolean).map(c=>`<span>${c}</span>`).join('')}${d.liLink?'<span>'+d.liLink+'</span>':''}</div>
     </div>
     <div class="dusk-body">
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>`:''}
@@ -3281,7 +3319,7 @@ const TPL={
 
   split:d=>`<div class="split">
     <div class="split-nm">${d.nm}</div><div class="split-ti">${d.ti}</div>
-    <div class="split-cs" style="border-color:${AC}">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join(' · ')}</div>
+    <div class="split-cs" style="border-color:${AC}">${[d.em,d.ph,d.lo].filter(Boolean).join(' · ')}${d.liLink?' · '+d.liLink:''}</div>
     ${d.sum?`<p class="split-sum">${d.sum}</p>`:''}
     <div class="split-cols">
       <div class="split-col">
@@ -3297,7 +3335,7 @@ const TPL={
 
   serif:d=>`<div class="serif">
     <div class="serif-nm">${d.nm}</div><div class="serif-ti">${d.ti}</div>
-    <div class="serif-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+    <div class="serif-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
     ${d.sum?`<p class="serif-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="serif-sl">Experience</div>${d.exps.map(e=>`<div class="serif-ex entry-card"><div class="serif-et">${e.t} — ${e.co}</div><div class="serif-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="serif-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="serif-edu-d">${e.d}</div><div class="serif-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
@@ -3319,7 +3357,7 @@ const TPL={
 
   slate:d=>`<div class="slate">
     <div class="slate-nm">${d.nm}</div><div class="slate-ti">${d.ti}</div>
-    <div class="slate-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+    <div class="slate-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLinkDark:''}</div>
     ${d.sum?`<p class="slate-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="slate-sl">Experience</div>${d.exps.map(e=>`<div class="slate-ex entry-card"><div class="slate-eh"><div class="slate-et">${e.t}</div><div class="slate-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="slate-ec">${e.co}</div>${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="slate-bl">${b}</div>`).join(''):''}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="slate-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="slate-edu-d">${e.d}</div><div class="slate-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
@@ -3332,7 +3370,7 @@ const TPL={
     <div class="chr-spine"><div class="chr-logo">CVCraft</div><div class="chr-yr">${new Date().getFullYear()}</div></div>
     <div class="chr-body">
       <div class="chr-nm">${d.nm}</div><div class="chr-ti" style="color:${AC}">${d.ti}</div>
-      <div class="chr-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+      <div class="chr-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
       ${d.sum?`<p class="chr-sum">${d.sum}</p>`:''}
       ${d.exps.length?`<div class="chr-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="chr-ex entry-card"><div class="chr-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join('\n')}</div><div class="chr-main"><div class="chr-et">${e.t}</div><div class="chr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="chr-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:9px"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
@@ -3346,7 +3384,7 @@ const TPL={
       <div class="pro-av" style="background:${AC}">${ini()}</div>
       <div class="pro-info">
         <div class="pro-nm">${d.nm}</div><div class="pro-ti">${d.ti}</div>
-        <div class="pro-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+        <div class="pro-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
       </div>
     </div>
     <div class="pro-body">
@@ -3367,7 +3405,7 @@ const TPL={
   edge:d=>`<div class="edge">
     <div class="edge-body">
       <div class="edge-nm">${d.nm}</div><div class="edge-ti">${d.ti}</div>
-      <div class="edge-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+      <div class="edge-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
       ${d.sum?`<div class="edge-sum" style="border-color:${AC};color:#3D3D4E;font-size:13px;line-height:1.75;margin:18px 0">${d.sum}</div>`:''}
       ${d.exps.length?`<div class="edge-sl">Experience</div>${d.exps.map(e=>`<div class="edge-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="edge-et">${e.t}</div><div class="edge-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="edge-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="edge-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="edge-edu-d">${e.d}</div><div class="edge-edu-s">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
@@ -3392,7 +3430,7 @@ const TPL={
   blade:d=>`<div class="blade">
     <div class="blade-h"><div class="blade-h-bg" style="background:linear-gradient(135deg,${AC} 0%,${AC}DD 100%)"></div>
       <div class="blade-nm">${d.nm}</div><div class="blade-ti">${d.ti}</div>
-      <div class="blade-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).map(c=>`<span>${c}</span>`).join(' · ')}</div>
+      <div class="blade-cs">${[d.em,d.ph,d.lo].filter(Boolean).map(c=>`<span>${c}</span>`).join(' · ')}${d.liLink?' · <span>'+d.liLinkDark+'</span>':''}</div>
     </div>
     <div class="blade-body">
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin:14px 0">${d.sum}</p>`:''}
@@ -3405,7 +3443,7 @@ const TPL={
 
   neon:d=>`<div class="neon">
     <div class="neon-nm">${d.nm}</div><div class="neon-ti">${d.ti}</div>
-    <div class="neon-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+    <div class="neon-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLinkDark:''}</div>
     ${d.sum?`<p class="neon-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="neon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="neon-ex entry-card"><div class="neon-eh"><div class="neon-et">${e.t}</div><div class="neon-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="neon-ec">${e.co}</div>${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="neon-bl" style="opacity:.6">${b}</div>`).join(''):''}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="neon-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="neon-edu-d">${e.d}</div><div class="neon-edu-s">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
@@ -3416,7 +3454,7 @@ const TPL={
 
   frost:d=>`<div class="frost">
     <div class="frost-nm">${d.nm}</div><div class="frost-ti">${d.ti}</div>
-    <div class="frost-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+    <div class="frost-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
     <div class="frost-div" style="background:${AC}"></div>
     ${d.sum?`<p class="frost-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="frost-sl">Experience</div>${d.exps.map(e=>`<div class="frost-ex entry-card" style="margin-bottom:18px"><div class="frost-eh"><div class="frost-et">${e.t}</div><div class="frost-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="frost-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
@@ -3429,7 +3467,7 @@ const TPL={
   anchor:d=>`<div class="anchor">
     <div class="anchor-flag"><span>${d.nm||'Curriculum Vitae'}</span><span>${new Date().getFullYear()}</span></div>
     <div class="anchor-nm">${d.nm}</div><div class="anchor-ti">${d.ti}</div>
-    <div class="anchor-cs">${[d.em,d.ph,d.lo,d.liLink].filter(Boolean).join('  ·  ')}</div>
+    <div class="anchor-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
     <div class="anchor-cols">
       <div class="anchor-main">
         ${d.sum?`<div class="anchor-sum" style="border-color:${AC}">${d.sum}</div>`:''}
