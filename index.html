@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -298,7 +299,20 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-intro{display:flex;gap:13px;align-items:flex-start;margin-bottom:16px}
 .sim-intro-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px}
 .sim-intro-body{font-size:13px;color:var(--muted);line-height:1.6}
+.sim-source-row{display:flex;gap:8px;margin-bottom:4px}
+.sim-source-btn{flex:1;background:var(--card);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 12px;font-family:var(--ff-b);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px}
+.sim-source-btn:hover{border-color:var(--ac);color:var(--ac)}
+.sim-source-btn.active{background:#EEEEFF;border-color:var(--ac);color:var(--ac)}
+.sim-upload-drop{border:2px dashed var(--bdr);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;margin-top:10px}
+.sim-upload-drop:hover{border-color:var(--ac);background:#FAFAFF}
+.sim-upload-text{font-size:14px;font-weight:600;color:var(--ink);margin-top:10px}
+.sim-upload-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.sim-upload-status{background:#DEF4EA;border-radius:10px;padding:10px 14px;font-size:13px;color:#0E6B49;display:flex;align-items:center;gap:8px;margin-top:8px}
+.select-fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;-webkit-appearance:none;appearance:none;padding-right:40px;cursor:pointer}
 .sim-role-row{display:flex;gap:10px}
+.sim-improvement{align-items:flex-start!important}
+.sim-apply-btn{margin-left:auto;flex-shrink:0;background:#F3EEFF;color:#7C3AED;border:1.5px solid #D4C4FF;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:5px 11px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sim-apply-btn:hover{background:#7C3AED;color:#fff;border-color:#7C3AED}
 .sim-out{background:#fff;border-radius:14px;padding:16px 18px;margin-top:14px;border:1.5px solid var(--bdr)}
 .sim-persona{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
 .sim-persona-av{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:#EEF0FF}
@@ -1214,19 +1228,41 @@ a:focus-visible,[tabindex]:focus-visible{
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="18" fill="var(--ac)" opacity=".1"/><circle cx="18" cy="13" r="5" fill="var(--ac)"/><path d="M6 30c0-6 5-10 12-10s12 4 12 10" fill="var(--ac)" opacity=".6"/></svg>
           <div>
             <div class="sim-intro-title">What would a recruiter actually think?</div>
-            <div class="sim-intro-body">Claude takes the role of a senior recruiter and reads your CV exactly as they would — cold, with no context, for the first time. You'll get their unfiltered first impression, what they'd question, and whether they'd move forward.</div>
+            <div class="sim-intro-body">Claude takes the role of a recruiter and reads your CV cold — exactly as they would for the first time. Unfiltered first impression, red flags, strengths, and a clear move-forward / pass decision.</div>
           </div>
         </div>
-        <div class="sim-role-row">
-          <input class="fi" id="sim-role" placeholder="Target role (e.g. Senior UX Designer, Product Manager)" style="flex:1">
-          <select class="fi" id="sim-exp-level" style="width:160px;padding-right:36px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;-webkit-appearance:none;appearance:none">
-            <option value="junior">Junior recruiter</option>
-            <option value="senior" selected>Senior recruiter</option>
-            <option value="headhunter">Headhunter / exec search</option>
-            <option value="hiring">Hiring manager</option>
+        <!-- Source toggle -->
+        <div class="sim-source-row">
+          <button class="sim-source-btn active" id="sim-src-form" onclick="simSetSource('form')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Use my CV data
+          </button>
+          <button class="sim-source-btn" id="sim-src-upload" onclick="simSetSource('upload')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload a CV
+          </button>
+        </div>
+        <!-- Upload zone -->
+        <div id="sim-upload-zone" style="display:none">
+          <div class="sim-upload-drop" id="sim-upload-drop" onclick="gi('sim-cv-file').click()">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 12 15 15"/></svg>
+            <div class="sim-upload-text">Click to upload your CV</div>
+            <div class="sim-upload-sub">PDF, DOCX or TXT · text will be extracted automatically</div>
+          </div>
+          <div class="sim-upload-status" id="sim-upload-status" style="display:none"></div>
+          <input type="file" id="sim-cv-file" accept=".pdf,.docx,.doc,.txt" style="display:none" onchange="handleSimUpload(this)">
+        </div>
+        <!-- Role + persona — full width stacked -->
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+          <input class="fi" id="sim-role" placeholder="Target role (e.g. Senior UX Designer, Product Manager)" list="role-suggestions" autocomplete="off">
+          <select class="fi select-fi" id="sim-exp-level">
+            <option value="junior">👩‍💼  Junior Recruiter — by the book, follows the JD closely</option>
+            <option value="senior" selected>👔  Senior Recruiter — pattern matching, direct and honest</option>
+            <option value="headhunter">🎯  Executive Headhunter — very high bar, cares about narrative</option>
+            <option value="hiring">🔬  Hiring Manager — wants evidence of real results, not polish</option>
           </select>
         </div>
-        <button class="btn-pill" id="sim-btn" onclick="runRecruiterSim()" style="width:100%;justify-content:center;margin-top:10px">
+        <button class="btn-pill" id="sim-btn" onclick="runRecruiterSim()" style="width:100%;justify-content:center;margin-top:12px">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-5 3.5-8 8-8s8 3 8 8" fill="currentColor" opacity=".5"/><path d="M18 3l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
           Run Recruiter Simulation
         </button>
@@ -2688,7 +2724,189 @@ const SIM_PERSONAS={
   hiring:{name:'Jamie L.',role:'Hiring Manager (Technical)',emoji:'🔬',style:'cares about actual skills and outcomes, not polish — looks for evidence of real results'},
 };
 
+// ── RECRUITER SIMULATION UPLOAD ──
+let simSourceMode='form';
+let simUploadedCVText='';
+
+function simSetSource(mode){
+  simSourceMode=mode;
+  gi('sim-src-form').classList.toggle('active',mode==='form');
+  gi('sim-src-upload').classList.toggle('active',mode==='upload');
+  gi('sim-upload-zone').style.display=mode==='upload'?'block':'none';
+  simUploadedCVText='';
+  const status=gi('sim-upload-status');
+  if(status)status.style.display='none';
+}
+
+async function handleSimUpload(input){
+  const file=input.files[0];
+  if(!file)return;
+  const status=gi('sim-upload-status');
+  const drop=gi('sim-upload-drop');
+  if(status){status.style.display='flex';status.style.background='#F4F4FF';status.style.color='var(--muted)';status.textContent='Reading file…';}
+  try{
+    let text='';
+    if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')){
+      text=await extractPDFText(file);
+    }else{
+      text=await file.text();
+    }
+    if(!text||text.trim().length<50){
+      if(status){status.style.background='#FBEAEA';status.style.color='#9A2E2E';status.textContent='Could not extract enough text. Try a different file or paste the text manually.';}
+      return;
+    }
+    simUploadedCVText=text;
+    if(status){
+      status.style.display='flex';status.style.background='#DEF4EA';status.style.color='#0E6B49';
+      status.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> "${esc(file.name)}" ready — ${Math.round(text.length/5)} words extracted`;
+    }
+    drop.innerHTML=`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1AA371" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="sim-upload-text" style="color:#1AA371">${esc(file.name)}</div><div class="sim-upload-sub">Click to change file</div>`;
+  }catch(err){
+    if(status){status.style.display='flex';status.style.background='#FBEAEA';status.style.color='#9A2E2E';status.textContent='Error reading file: '+err.message;}
+  }
+  input.value='';
+}
+
+async function extractPDFText(file){
+  if(typeof pdfjsLib==='undefined')throw new Error('PDF reader not loaded yet — try again in a moment');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const ab=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+  let text='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const content=await page.getTextContent();
+    text+=content.items.map(it=>it.str).join(' ')+'\n';
+  }
+  return text;
+}
+
+async function applySimSuggestionToSummary(suggestion){
+  const currentSum=v('f-sum');
+  if(!currentSum){toast('Add a summary first','err');return;}
+  toast('Rewriting summary…','default',8000);
+  const prompt=`Rewrite this professional CV summary incorporating the following improvement.
+
+Current summary: ${currentSum}
+Improvement needed: ${suggestion}
+
+Output ONLY the improved summary — 2-3 sentences, no preamble, no quotes, no explanation. Specific and concrete, no clichés.`;
+  try{
+    let result='';
+    await callAIStream(prompt,200,(text)=>{result=text;});
+    const sf=gi('f-sum');
+    if(sf&&result.trim()){
+      sf.value=result.trim();
+      rCV();upATS();saveDraft();
+      toast('Summary updated — check the preview','ok',2500);
+      swTab('build',document.querySelector('.tab'));
+    }
+  }catch(e){toast('Could not apply suggestion','err');}
+}
+
+function simApplyImprovement(suggestion){
+  const targetsTitle=/title|role|position|headline|job title/i.test(suggestion);
+  if(targetsTitle){
+    const tf=gi('f-title');
+    if(tf){
+      swTab('build',document.querySelector('.tab'));
+      setTimeout(()=>{tf.scrollIntoView({behavior:'smooth',block:'center'});tf.focus();tf.style.boxShadow='0 0 0 3px rgba(124,58,237,.3)';tf.style.borderColor='#7C3AED';setTimeout(()=>{tf.style.boxShadow='';tf.style.borderColor='';},2500);},300);
+      toast('Job title field highlighted — update it based on the suggestion','default',3500);
+    }
+  }else{
+    applySimSuggestionToSummary(suggestion);
+  }
+}
+
 async function runRecruiterSim(){
+  const d=getData();
+  const role=gi('sim-role')?.value.trim()||d.ti;
+  const expLevel=gi('sim-exp-level')?.value||'senior';
+  const persona=SIM_PERSONAS[expLevel];
+  const btn=gi('sim-btn'),out=gi('sim-out');
+
+  if(simSourceMode==='upload'&&!simUploadedCVText){toast('Upload a CV file first','err');return;}
+  if(simSourceMode==='form'&&(!d.nm||d.nm==='Your Name'||!exps.length)){toast('Fill in your name and at least one experience entry first','err');return;}
+
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Simulating recruiter…`;
+  out.style.display='block';
+  out.innerHTML=`<div class="sim-persona"><div class="sim-persona-av">${persona.emoji}</div><div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div><div style="margin-left:auto;font-size:12px;color:var(--muted)">Reading…</div></div><div id="sim-stream" style="font-size:14px;color:var(--muted);line-height:1.7;min-height:40px;white-space:pre-wrap"></div>`;
+
+  let cvText;
+  if(simSourceMode==='upload'&&simUploadedCVText){
+    cvText=simUploadedCVText.slice(0,6000);
+  }else{
+    const gaps=detectCareerGaps();
+    const gapNote=gaps.length?`\nNOTE — Career gaps: ${gaps.map(g=>`${g.from}–${g.to} (${g.months}mo)`).join(', ')}`:'';
+    cvText=`NAME: ${d.nm}\nTITLE: ${d.ti}\nCONTACT: ${d.em} | ${d.ph} | ${d.lo}\nSOCIAL: ${socials.filter(s=>s.url).map(s=>`${SOCIAL_TYPES[s.type]?.label}: ${s.url}`).join(', ')||'None'}\nSUMMARY: ${d.sum||'None'}\nEXPERIENCE:\n${exps.map(e=>`- ${e.t} at ${e.co||'[no employer]'} (${e.s||'?'} – ${e.present?'Present':e.e||'?'})\n  ${e.d?e.d.split('\n').filter(Boolean).map(b=>'  • '+b).join('\n'):'  No bullets'}`).join('\n')}\nEDUCATION: ${edus.map(e=>`${e.d} at ${e.s} (${e.y||'?'})`).join('; ')||'None'}\nSKILLS: ${skills.join(', ')||'None'}\nCERTS: ${certs.map(c=>c.name).join(', ')||'None'}\nLANGUAGES: ${langs.map(l=>`${l.name} (${l.level})`).join(', ')||'None'}\nPROJECTS: ${projs.map(p=>p.nm).join(', ')||'None'}\nWORK AUTH: ${d.workauth||'Not stated'}${gapNote}`.trim();
+  }
+
+  const isFormMode=simSourceMode==='form';
+  const prompt=`You are ${persona.name}, a ${persona.role}. Reviewing style: ${persona.style}.
+
+You received this CV${role?` for the role of ${role}`:''}. Read it as you would in real life — cold, first time, about 8 seconds before deciding.
+
+CV:
+${cvText}
+
+Reply in this EXACT format:
+
+FIRST IMPRESSION (1-2 sentences — gut reaction in the first 3 seconds):
+
+RED FLAGS (bullets — things making you hesitate. If none, say "None identified."):
+
+STRENGTHS (bullets — what genuinely stands out):
+
+WHAT I'D ASK ON A CALL (1-2 specific questions):
+
+SUGGESTED IMPROVEMENTS (bullets — concrete highest-impact changes the candidate should make):
+
+DECISION:
+[Write exactly one: "Move forward — scheduling a call" / "Maybe — needs more context" / "Pass — here's why"]
+One sentence explaining why.
+
+Be a real recruiter. React honestly.`;
+
+  try{
+    let raw='';
+    await callAIStream(prompt,1000,(text)=>{
+      raw=text;
+      const el=gi('sim-stream');
+      if(el)el.textContent=text;
+    });
+    out.innerHTML=renderSimOutput(raw,persona,isFormMode);
+  }catch(err){
+    out.innerHTML=`<div style="color:var(--err);font-size:13.5px">Simulation failed. ${err?.message||'Try again.'}</div>`;
+  }
+  btn.disabled=false;
+  btn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-5 3.5-8 8-8s8 3 8 8" fill="currentColor" opacity=".5"/><path d="M18 3l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Run Again`;
+}
+
+function renderSimOutput(raw,persona,canApply=false){
+  const sect=(label)=>{
+    const labels='FIRST IMPRESSION|RED FLAGS|STRENGTHS|WHAT I\'D ASK ON A CALL|SUGGESTED IMPROVEMENTS|DECISION';
+    const re=new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[:\\s]*([\\s\\S]*?)(?='+labels.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|$)','i');
+    const m=raw.match(re);return m?m[1].trim():'';
+  };
+  const impression=sect('FIRST IMPRESSION'),redFlags=sect('RED FLAGS'),strengths=sect('STRENGTHS');
+  const questions=sect("WHAT I'D ASK ON A CALL"),improvements=sect('SUGGESTED IMPROVEMENTS'),decisionRaw=sect('DECISION');
+  const moveForward=/move forward/i.test(decisionRaw),maybe=/maybe/i.test(decisionRaw);
+  const decBg=moveForward?'#DEF4EA':maybe?'#FFF3CD':'#FBEAEA';
+  const decCol=moveForward?'#0E6B49':maybe?'#92610A':'#9A2E2E';
+  const decIcon=moveForward?'✅':maybe?'🤔':'❌';
+  const bullets=(text,dot)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
+    .map(l=>`<div class="sim-point"><div class="sim-point-dot" style="background:${dot}"></div><span>${l}</span></div>`).join('');
+  const improvementBullets=(text)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
+    .map((l,i)=>`<div class="sim-point sim-improvement"><div class="sim-point-dot" style="background:#7C3AED"></div><span>${l}</span>${canApply?`<button class="sim-apply-btn" onclick="simApplyImprovement('${l.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Apply</button>`:''}</div>`).join('');
+  return`<div class="sim-persona"><div class="sim-persona-av">${persona.emoji}</div><div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div></div>
+  ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${impression}"</p>`:''}
+  ${redFlags?`<div class="sim-section-head">⚠ Red Flags</div>${bullets(redFlags,'#E14B4B')}`:''}
+  ${strengths?`<div class="sim-section-head">✓ Strengths</div>${bullets(strengths,'#1AA371')}`:''}
+  ${questions?`<div class="sim-section-head">Questions I'd Ask</div>${bullets(questions,'#4F5BD5')}`:''}
+  ${improvements?`<div class="sim-section-head">💡 Suggested Improvements${canApply?' <span style="font-size:10.5px;font-weight:400;color:var(--muted)">(click Apply to update your CV)</span>':''}</div>${improvementBullets(improvements)}`:''}
+  ${decisionRaw?`<div class="sim-decision" style="background:${decBg};color:${decCol}">${decIcon} ${decisionRaw}</div>`:''}`;
+}
   const d=getData();
   const role=gi('sim-role')?.value.trim()||d.ti;
   const expLevel=gi('sim-exp-level')?.value||'senior';
@@ -2698,121 +2916,6 @@ async function runRecruiterSim(){
   if(!d.nm||d.nm==='Your Name'||!exps.length){
     toast('Fill in your name and at least one experience entry first','err');return;
   }
-  btn.disabled=true;
-  btn.innerHTML=`<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Simulating recruiter…`;
-  out.style.display='block';
-  out.innerHTML=`<div class="sim-persona">
-    <div class="sim-persona-av">${persona.emoji}</div>
-    <div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div>
-  </div>
-  <div id="sim-stream" style="font-size:14px;color:var(--muted);line-height:1.7;min-height:40px"></div>`;
-
-  // Build the full CV text for the prompt
-  const cvText=`
-NAME: ${d.nm}
-TITLE: ${d.ti}
-CONTACT: ${d.em} | ${d.ph} | ${d.lo}
-SOCIAL: ${socials.map(s=>`${SOCIAL_TYPES[s.type]?.label}: ${s.url}`).join(', ')||'None listed'}
-SUMMARY: ${d.sum||'None'}
-EXPERIENCE:
-${exps.map(e=>`- ${e.t} at ${e.co||'[no company]'} (${e.s||'?'} – ${e.present?'Present':e.e||'?'})
-  ${e.d?e.d.split('\n').filter(Boolean).map(b=>'  • '+b).join('\n'):'  No bullets'}`).join('\n')}
-EDUCATION: ${edus.map(e=>`${e.d} at ${e.s} (${e.y||'?'})`).join('; ')||'None'}
-SKILLS: ${skills.join(', ')||'None listed'}
-CERTIFICATIONS: ${certs.map(c=>c.name).join(', ')||'None'}
-LANGUAGES: ${langs.map(l=>`${l.name} (${l.level})`).join(', ')||'None'}
-PROJECTS: ${projs.map(p=>p.nm).join(', ')||'None'}
-WORK AUTH: ${d.workauth||'Not stated'}`.trim();
-
-  const gaps=detectCareerGaps();
-  const gapNote=gaps.length?`\nNOTE: Career gaps detected: ${gaps.map(g=>`${g.from}–${g.to} (${g.months} months)`).join(', ')}`:'';
-
-  const prompt=`You are ${persona.name}, a ${persona.role}. Your reviewing style: ${persona.style}.
-
-You have just received this CV${role?` for the role of ${role}`:''}. Read it exactly as you would in real life — cold, no context, for the first time. You have about 8 seconds before deciding whether to read further.
-
-CV TEXT:
-${cvText}${gapNote}
-
-Respond in this EXACT format (use these exact section headers, no markdown, no stars):
-
-FIRST IMPRESSION (1-2 sentences — your gut reaction in the first 3 seconds):
-
-RED FLAGS (bullet list — things that would make you hesitate or reject. Be honest and direct. If there are none, say "None identified."):
-
-STRENGTHS (bullet list — things that genuinely stand out and would make you want to read on):
-
-WHAT I'D WANT TO KNOW MORE ABOUT (1-2 specific questions you'd ask if you called them):
-
-DECISION:
-[Write exactly one of: "Move forward — scheduling a call" / "Maybe — needs more context" / "Pass — here's why"]
-Then one sentence explaining why.
-
-Be a real recruiter. Don't be diplomatic if the CV has real problems. Don't be harsh if it doesn't. React the way you actually would.`;
-
-  try{
-    let raw='';
-    await callAIStream(prompt,800,(text)=>{
-      raw=text;
-      const el=gi('sim-stream');
-      if(el)el.textContent=text;
-    });
-    // Parse and render as structured card
-    out.innerHTML=renderSimOutput(raw,persona);
-  }catch(err){
-    out.innerHTML=`<div style="color:var(--err);font-size:13.5px">Simulation failed. ${err?.message||'Try again.'}</div>`;
-  }
-  btn.disabled=false;
-  btn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-5 3.5-8 8-8s8 3 8 8" fill="currentColor" opacity=".5"/><path d="M18 3l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Run Again`;
-}
-
-function renderSimOutput(raw,persona){
-  // Parse the structured sections from the AI response
-  const sect=(label)=>{
-    const re=new RegExp(label+'[:\\s]*([\\s\\S]*?)(?=FIRST IMPRESSION:|RED FLAGS:|STRENGTHS:|WHAT I\'D|DECISION:|$)','i');
-    const m=raw.match(re);
-    return m?m[1].trim():'';
-  };
-  const impression=sect('FIRST IMPRESSION');
-  const redFlags=sect('RED FLAGS');
-  const strengths=sect('STRENGTHS');
-  const questions=sect("WHAT I'D WANT TO KNOW MORE ABOUT");
-  const decisionRaw=sect('DECISION');
-  const moveForward=/move forward/i.test(decisionRaw);
-  const maybe=/maybe/i.test(decisionRaw);
-  const pass=/pass/i.test(decisionRaw);
-  const decisionColor=moveForward?'#DEF4EA':maybe?'#FFF3CD':'#FBEAEA';
-  const decisionTextColor=moveForward?'#0E6B49':maybe?'#92610A':'#9A2E2E';
-  const decisionIcon=moveForward?'✅':maybe?'🤔':'❌';
-
-  const fmtBullets=(text,dotColor)=>text.split('\n')
-    .map(l=>l.replace(/^[-•*]\s*/,'').trim()).filter(Boolean)
-    .map(l=>`<div class="sim-point"><div class="sim-point-dot" style="background:${dotColor}"></div><span>${l}</span></div>`)
-    .join('');
-
-  return`<div class="sim-persona">
-    <div class="sim-persona-av">${persona.emoji}</div>
-    <div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div>
-  </div>
-  ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${impression}"</p>`:''}
-  ${redFlags?`<div class="sim-section-head">⚠ Red Flags</div>${fmtBullets(redFlags,'#E14B4B')}`:''}
-  ${strengths?`<div class="sim-section-head">✓ Strengths</div>${fmtBullets(strengths,'#1AA371')}`:''}
-  ${questions?`<div class="sim-section-head">Questions I'd Ask</div>${fmtBullets(questions,'#4F5BD5')}`:''}
-  ${decisionRaw?`<div class="sim-decision" style="background:${decisionColor};color:${decisionTextColor}">${decisionIcon} ${decisionRaw}</div>`:''}`;
-}
-// Social link type definitions
-const SOCIAL_TYPES={
-  linkedin:{label:'LinkedIn',icon:'in',placeholder:'linkedin.com/in/yourname'},
-  portfolio:{label:'Portfolio',icon:'🔗',placeholder:'yourportfolio.com'},
-  github:{label:'GitHub',icon:'GH',placeholder:'github.com/yourname'},
-  behance:{label:'Behance',icon:'Bē',placeholder:'behance.net/yourname'},
-  dribbble:{label:'Dribbble',icon:'⚽',placeholder:'dribbble.com/yourname'},
-  twitter:{label:'Twitter/X',icon:'𝕏',placeholder:'twitter.com/yourname'},
-  youtube:{label:'YouTube',icon:'▶',placeholder:'youtube.com/@yourname'},
-  website:{label:'Website',icon:'🌐',placeholder:'yourwebsite.com'},
-  other:{label:'Other',icon:'🔗',placeholder:'your-link.com'},
-};
-
 function renderSocialLinks(){
   const container=gi('social-links-list');
   if(!container)return;
