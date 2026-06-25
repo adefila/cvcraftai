@@ -65,12 +65,22 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
 .tab:hover{color:var(--ink);background:rgba(21,21,26,.05)}
 .tab.on{background:var(--ink);color:#fff;box-shadow:0 2px 8px rgba(21,21,26,.14)}
-.score-pills{margin-left:auto;display:flex;align-items:center;gap:0;background:var(--surf);border-radius:999px;padding:5px 14px 5px 8px;cursor:pointer;transition:background .18s;border:1px solid transparent}
-.score-pills:hover{background:var(--bg);border-color:var(--bdr)}
+/* ── Compact score badge in the bar ── */
+.score-badge{margin-left:auto;display:inline-flex;align-items:center;gap:0;background:var(--surf);border:1.5px solid var(--bdr);border-radius:999px;padding:0;cursor:pointer;transition:all .18s;overflow:hidden;height:38px}
+.score-badge:hover{background:var(--bg);border-color:var(--ink)}
+.score-badge-prob{display:flex;align-items:center;gap:6px;padding:0 12px;height:100%}
+.score-badge-dot{width:8px;height:8px;border-radius:50%;background:#C8C8C0;flex-shrink:0;transition:background .3s}
+.score-badge-prob-lbl{font-family:var(--ff-b);font-size:13px;font-weight:700;transition:color .3s;color:var(--muted)}
+.score-badge-divider{width:1px;height:20px;background:var(--bdr);flex-shrink:0}
+.score-badge-num-group{display:flex;align-items:center;gap:6px;padding:0 12px;height:100%}
+.score-badge-item{display:flex;align-items:baseline;gap:3px}
+.score-badge-key{font-family:var(--ff-b);font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.score-badge-val{font-family:var(--ff-m);font-size:13.5px;font-weight:700;color:var(--ink)}
+.score-badge-sep{font-size:11px;color:var(--bdr)}
+/* Keep the old ats-pill class for any legacy references */
+.ats-pill,.score-pills{margin-left:auto;display:flex;align-items:center;gap:10px;background:var(--surf);border-radius:999px;padding:6px 16px 6px 10px;cursor:pointer;transition:background .18s;border:1px solid transparent}
 .score-pill-item{display:flex;align-items:center;gap:8px;padding:0 10px}
 .score-pill-divider{width:1px;height:28px;background:var(--bdr);flex-shrink:0}
-.ats-pill{margin-left:auto;display:flex;align-items:center;gap:10px;background:var(--surf);border-radius:999px;padding:6px 16px 6px 10px;cursor:pointer;transition:background .18s;border:1px solid transparent}
-.ats-pill:hover{background:var(--bg);border-color:var(--bdr)}
 .ats-ring{position:relative;width:34px;height:34px;flex-shrink:0}
 .ats-ring svg{transform:rotate(-90deg)}
 .ats-lbl{font-family:var(--ff-d);font-size:14px;font-weight:600}
@@ -918,44 +928,28 @@ a:focus-visible,[tabindex]:focus-visible{
     <button class="tab" id="tab-templates" onclick="swTab('templates',this)">Templates</button>
     <button class="tab" onclick="swTab('ats',this)">ATS Score</button>
   </div>
-  <div class="score-pills" role="button" tabindex="0" aria-label="View score details" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
-    <div class="score-pill-item">
-      <div class="ats-ring">
-        <svg width="34" height="34" viewBox="0 0 34 34">
-          <circle cx="17" cy="17" r="14" fill="none" stroke="#E7E6E2" stroke-width="3.5"/>
-          <circle id="ats-arc" cx="17" cy="17" r="14" fill="none" stroke="#1AA371" stroke-width="3.5"
-            stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round"
-            style="transition:stroke-dashoffset .8s,stroke .4s"/>
-        </svg>
-      </div>
-      <div>
-        <div class="ats-lbl">ATS <span id="ats-num">0</span></div>
-        <div class="ats-sub">Parser score</div>
-      </div>
-    </div>
-    <div class="score-pill-divider"></div>
-    <div class="score-pill-item">
-      <div class="ats-ring">
-        <svg width="34" height="34" viewBox="0 0 34 34">
-          <circle cx="17" cy="17" r="14" fill="none" stroke="#E7E6E2" stroke-width="3.5"/>
-          <circle id="rec-arc" cx="17" cy="17" r="14" fill="none" stroke="#4F5BD5" stroke-width="3.5"
-            stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round"
-            style="transition:stroke-dashoffset .8s,stroke .4s"/>
-        </svg>
-      </div>
-      <div>
-        <div class="ats-lbl">Recruiter <span id="rec-num">0</span></div>
-        <div class="ats-sub">Appeal score</div>
-      </div>
-    </div>
-    <div class="score-pill-divider"></div>
-    <div class="score-pill-item" id="interview-prob-wrap">
-      <div id="interview-prob-dot" style="width:10px;height:10px;border-radius:50%;background:#E7E6E2;flex-shrink:0"></div>
-      <div>
-        <div class="ats-lbl" id="interview-prob-lbl">—</div>
-        <div class="ats-sub">Interview odds</div>
-      </div>
-    </div>
+  <div class="score-badge" role="button" tabindex="0" aria-label="View score details — ATS, Recruiter, Interview Probability" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
+    <span class="score-badge-prob" id="score-badge-prob-wrap">
+      <span class="score-badge-dot" id="interview-prob-dot"></span>
+      <span class="score-badge-prob-lbl" id="interview-prob-lbl">—</span>
+    </span>
+    <span class="score-badge-divider"></span>
+    <span class="score-badge-num-group">
+      <span class="score-badge-item">
+        <span class="score-badge-key">ATS</span>
+        <span class="score-badge-val" id="ats-num">0</span>
+      </span>
+      <span class="score-badge-sep">·</span>
+      <span class="score-badge-item">
+        <span class="score-badge-key">Rec</span>
+        <span class="score-badge-val" id="rec-num">0</span>
+      </span>
+    </span>
+    <!-- Keep hidden arcs for JS compatibility — they animate but aren't shown in the bar -->
+    <svg style="position:absolute;opacity:0;pointer-events:none;width:0;height:0">
+      <circle id="ats-arc" style="transition:stroke-dashoffset .8s,stroke .4s"/>
+      <circle id="rec-arc" style="transition:stroke-dashoffset .8s,stroke .4s"/>
+    </svg>
   </div>
   <button class="btn-pill" id="btn-export-pdf" onclick="openExport()">
     <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5" fill="rgba(255,255,255,0.15)"/><path d="M12 4v11M8 11l4 5 4-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="17" width="14" height="2" rx="1" fill="#fff" opacity=".7"/></svg>
@@ -2554,6 +2548,8 @@ function upATS(){
   const arc=gi('ats-arc');
   if(arc){arc.style.strokeDashoffset=circ-(sc/100)*circ;arc.style.stroke=sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B';}
   gi('ats-num').textContent=sc;
+  const atsNumEl=gi('ats-num');
+  if(atsNumEl)atsNumEl.style.color=sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B';
 
   // ── RECRUITER SCORE (rule-based, instant) ──
   // Measures human appeal: focused title, concrete bullets, complete dates,
@@ -2595,6 +2591,8 @@ function upATS(){
   const rarc=gi('rec-arc');
   if(rarc){rarc.style.strokeDashoffset=circ-(rsc/100)*circ;rarc.style.stroke=rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B';}
   gi('rec-num').textContent=rsc;
+  const recNumEl=gi('rec-num');
+  if(recNumEl)recNumEl.style.color=rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B';
 
   // ── INTERVIEW PROBABILITY ──
   let prob='—',probColor='#9A9880',probBg='#E7E6E2';
@@ -3654,25 +3652,25 @@ const ONB_STEPS=[
     color:'#EEF0FF',
     accent:'#4F5BD5',
     icon:'👤',
-    where:'Left panel → top section',
+    where:'Left panel → Personal Info',
     title:'Start with your basics',
-    body:'Fill in your name, job title, email, phone, and location. These populate the header of every template automatically — get these right first.'
+    body:'Fill in your name, job title, email, phone, and location. These flow into every template automatically — a complete header is one of the top ATS scoring signals.'
   },
   {
     color:'#EEF8F4',
     accent:'#1AA371',
     icon:'💼',
-    where:'Left panel → Experience section',
+    where:'Left panel → Experience',
     title:'Add your work experience',
-    body:'Click "+ Add Experience" to add each role. Aim for 2–3 bullet points per job with numbers and results. The AI Write button can help you sharpen the language.'
+    body:'Add each role with 2–3 bullet points that include numbers and outcomes. Hit "Write with AI" after typing your notes and the AI will sharpen them into strong, ATS-friendly bullets.'
   },
   {
     color:'#FFF5EE',
     accent:'#E07B39',
     icon:'🛠',
-    where:'Left panel → Skills section',
+    where:'Left panel → Skills',
     title:'List your skills',
-    body:'Type a skill and press Enter to add it. Adding 5 or more skills unlocks extra ATS score points and shows up prominently in most templates.'
+    body:'Type a skill and press Enter to add it as a chip. Skills are matched against job descriptions in the JD Match tab — the more relevant ones you add, the better your match score.'
   },
   {
     color:'#F3EEFF',
@@ -3680,15 +3678,15 @@ const ONB_STEPS=[
     icon:'🎨',
     where:'Top bar → Templates tab',
     title:'Pick your template',
-    body:'Open the Templates tab to choose from 20 designs. Filter by category (Minimal, Bold, Technical…) and pick an accent colour. Your data carries across every switch.'
+    body:'Open the Templates tab to browse our full collection of sleek designs across Minimal, Bold, Executive, and more categories. Switch any time — your content carries across instantly.'
   },
   {
     color:'#F0F9FF',
     accent:'#0369A1',
-    icon:'📄',
-    where:'Top bar → Export PDF button',
-    title:'Download when you\'re ready',
-    body:'Click Export PDF in the top bar to download. Your CV is automatically saved in this browser — close the tab and come back any time and it\'ll still be here.'
+    icon:'🎯',
+    where:'Top bar → ATS Score tab',
+    title:'Check your interview odds',
+    body:'The ATS Score tab shows your Parser score, Recruiter score, and Interview Probability — all updating live. Run the Recruiter Simulation to see what a hiring manager would actually think of your CV.'
   }
 ];
 
