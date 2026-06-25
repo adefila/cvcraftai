@@ -65,6 +65,10 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
 .tab:hover{color:var(--ink);background:rgba(21,21,26,.05)}
 .tab.on{background:var(--ink);color:#fff;box-shadow:0 2px 8px rgba(21,21,26,.14)}
+.score-pills{margin-left:auto;display:flex;align-items:center;gap:0;background:var(--surf);border-radius:999px;padding:5px 14px 5px 8px;cursor:pointer;transition:background .18s;border:1px solid transparent}
+.score-pills:hover{background:var(--bg);border-color:var(--bdr)}
+.score-pill-item{display:flex;align-items:center;gap:8px;padding:0 10px}
+.score-pill-divider{width:1px;height:28px;background:var(--bdr);flex-shrink:0}
 .ats-pill{margin-left:auto;display:flex;align-items:center;gap:10px;background:var(--surf);border-radius:999px;padding:6px 16px 6px 10px;cursor:pointer;transition:background .18s;border:1px solid transparent}
 .ats-pill:hover{background:var(--bg);border-color:var(--bdr)}
 .ats-ring{position:relative;width:34px;height:34px;flex-shrink:0}
@@ -245,6 +249,28 @@ a:focus-visible,[tabindex]:focus-visible{
 
 /* ── ATS PANEL ── */
 .ats-check{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+/* Dual score cards */
+.score-dual-row{display:flex;gap:12px;margin-bottom:16px}
+.score-dual-card{flex:1;background:var(--surf);border-radius:16px;padding:16px;text-align:center}
+.score-dual-head{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px}
+.score-dual-num{position:absolute;font-family:var(--ff-d);font-size:14px;font-weight:700}
+.score-dual-lbl{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.score-dual-sub{font-size:11px;color:var(--muted);line-height:1.45}
+/* Interview Probability banner */
+.interview-prob-banner{display:flex;gap:13px;align-items:flex-start;border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.interview-prob-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.interview-prob-head{font-size:14.5px;font-weight:700;margin-bottom:4px}
+.interview-prob-desc{font-size:13px;color:#3D3D4E;line-height:1.55}
+/* Score section headers */
+.score-section-head{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+/* Career gap section */
+.ats-gap-section{background:#FFF9EC;border-radius:14px;padding:14px 16px;margin-top:18px;border:1px solid #F5E6B8}
+.ats-gap-title{font-size:13px;font-weight:700;color:#92610A;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ats-gap-row{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #F5E6B8}
+.ats-gap-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.ats-gap-period{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.ats-gap-months{font-family:var(--ff-m);font-size:11px;color:#92610A;background:#FFE8A0;padding:2px 7px;border-radius:999px;margin-left:6px}
+.ats-gap-tip{font-size:12.5px;color:var(--muted);font-style:italic}
 .ats-check:last-child{border-bottom:none}
 .ats-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 .ats-tip-box{border-radius:14px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:flex-start;gap:11px;font-size:14.5px;line-height:1.55}
@@ -255,6 +281,24 @@ a:focus-visible,[tabindex]:focus-visible{
 .ats-meth-grid{display:flex;flex-direction:column;gap:6px}
 .ats-meth-row{display:flex;align-items:baseline;gap:8px;font-size:12px;color:var(--muted)}
 .ats-meth-pts{font-family:var(--ff-m);font-size:11px;font-weight:600;color:var(--ac);min-width:34px;flex-shrink:0}
+.ats-meth-ats{color:#1AA371}
+.ats-meth-rec{color:#4F5BD5}
+/* Recruiter Simulation */
+.sim-box{background:linear-gradient(160deg,#F4F4FF 0%,#F9F9FD 100%);border:1.5px solid #E0DEFF;border-radius:18px;padding:18px}
+.sim-intro{display:flex;gap:13px;align-items:flex-start;margin-bottom:16px}
+.sim-intro-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px}
+.sim-intro-body{font-size:13px;color:var(--muted);line-height:1.6}
+.sim-role-row{display:flex;gap:10px}
+.sim-out{background:#fff;border-radius:14px;padding:16px 18px;margin-top:14px;border:1.5px solid var(--bdr)}
+.sim-persona{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
+.sim-persona-av{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:#EEF0FF}
+.sim-persona-name{font-size:13.5px;font-weight:700;color:var(--ink)}
+.sim-persona-role{font-size:11.5px;color:var(--muted)}
+.sim-verdict{font-size:14px;color:var(--ink);line-height:1.7;margin-bottom:12px}
+.sim-section-head{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.sim-point{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:13.5px;line-height:1.6}
+.sim-point-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.sim-decision{display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:12px;margin-top:14px;font-size:14px;font-weight:600}
 .weak-word-hit{background:#FCF6EC;border:1px solid #F2DCA8;border-radius:12px;padding:11px 14px;margin-bottom:8px}
 .weak-word-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 .weak-word-flag{font-family:var(--ff-m);font-size:13px;font-weight:600;color:#8A5E0A;background:#FBF1DE;padding:2px 8px;border-radius:6px}
@@ -874,18 +918,43 @@ a:focus-visible,[tabindex]:focus-visible{
     <button class="tab" id="tab-templates" onclick="swTab('templates',this)">Templates</button>
     <button class="tab" onclick="swTab('ats',this)">ATS Score</button>
   </div>
-  <div class="ats-pill" role="button" tabindex="0" aria-label="View ATS score details" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
-    <div class="ats-ring">
-      <svg width="34" height="34" viewBox="0 0 34 34">
-        <circle cx="17" cy="17" r="14" fill="none" stroke="#E7E6E2" stroke-width="3.5"/>
-        <circle id="ats-arc" cx="17" cy="17" r="14" fill="none" stroke="#1AA371" stroke-width="3.5"
-          stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round"
-          style="transition:stroke-dashoffset .8s,stroke .4s"/>
-      </svg>
+  <div class="score-pills" role="button" tabindex="0" aria-label="View score details" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
+    <div class="score-pill-item">
+      <div class="ats-ring">
+        <svg width="34" height="34" viewBox="0 0 34 34">
+          <circle cx="17" cy="17" r="14" fill="none" stroke="#E7E6E2" stroke-width="3.5"/>
+          <circle id="ats-arc" cx="17" cy="17" r="14" fill="none" stroke="#1AA371" stroke-width="3.5"
+            stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round"
+            style="transition:stroke-dashoffset .8s,stroke .4s"/>
+        </svg>
+      </div>
+      <div>
+        <div class="ats-lbl">ATS <span id="ats-num">0</span></div>
+        <div class="ats-sub">Parser score</div>
+      </div>
     </div>
-    <div>
-      <div class="ats-lbl">ATS: <span id="ats-num">0</span>%</div>
-      <div class="ats-sub">Live score</div>
+    <div class="score-pill-divider"></div>
+    <div class="score-pill-item">
+      <div class="ats-ring">
+        <svg width="34" height="34" viewBox="0 0 34 34">
+          <circle cx="17" cy="17" r="14" fill="none" stroke="#E7E6E2" stroke-width="3.5"/>
+          <circle id="rec-arc" cx="17" cy="17" r="14" fill="none" stroke="#4F5BD5" stroke-width="3.5"
+            stroke-dasharray="87.9" stroke-dashoffset="87.9" stroke-linecap="round"
+            style="transition:stroke-dashoffset .8s,stroke .4s"/>
+        </svg>
+      </div>
+      <div>
+        <div class="ats-lbl">Recruiter <span id="rec-num">0</span></div>
+        <div class="ats-sub">Appeal score</div>
+      </div>
+    </div>
+    <div class="score-pill-divider"></div>
+    <div class="score-pill-item" id="interview-prob-wrap">
+      <div id="interview-prob-dot" style="width:10px;height:10px;border-radius:50%;background:#E7E6E2;flex-shrink:0"></div>
+      <div>
+        <div class="ats-lbl" id="interview-prob-lbl">—</div>
+        <div class="ats-sub">Interview odds</div>
+      </div>
     </div>
   </div>
   <button class="btn-pill" id="btn-export-pdf" onclick="openExport()">
@@ -1124,22 +1193,53 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="sec">
       <div class="lbl">Score Breakdown</div>
       <div class="ats-methodology">
-        <div class="ats-meth-title">How this score is calculated</div>
+        <div class="ats-meth-title">How these scores are calculated</div>
         <div class="ats-meth-grid">
-          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Full name present</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Valid email</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">12pts</span><span>Professional summary (80+ chars)</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">15pts</span><span>At least one experience entry</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">10pts</span><span>3+ achievement bullets</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">10pts</span><span>5+ skills listed</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Quantified results (numbers)</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">8pts</span><span>Education section</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">5pts</span><span>Strong action verbs</span></div>
-          <div class="ats-meth-row"><span class="ats-meth-pts">14pts</span><span>Bonus: phone, location, LinkedIn, certs, languages, work auth, projects</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">8pts</span><span><strong>ATS:</strong> Full name present</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">12pts</span><span><strong>ATS:</strong> Professional summary (80+ chars)</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">15pts</span><span><strong>ATS:</strong> At least one experience entry</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">10pts</span><span><strong>ATS:</strong> 5+ skills listed</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">8pts</span><span><strong>ATS:</strong> Quantified results (numbers)</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">15pts</span><span><strong>Recruiter:</strong> Focused, single job title</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">18pts</span><span><strong>Recruiter:</strong> Specific summary, no clichés</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">12pts</span><span><strong>Recruiter:</strong> Complete dates on all roles</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">12pts</span><span><strong>Recruiter:</strong> No career gaps over 3 months</span></div>
+          <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">8pts</span><span><strong>Recruiter:</strong> Social / portfolio link</span></div>
         </div>
       </div>
       <div id="ats-bd"><div style="padding:18px;text-align:center;font-size:14.5px;color:var(--muted)">Fill in your CV to see a full breakdown</div></div>
     </div>
+
+    <!-- RECRUITER SIMULATION — AI reads your CV cold -->
+    <div class="sec">
+      <div class="lbl">Recruiter Simulation
+        <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none"> — AI reads your CV as a recruiter would in 8 seconds</span>
+      </div>
+      <div class="sim-box">
+        <div class="sim-intro">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="18" fill="var(--ac)" opacity=".1"/><circle cx="18" cy="13" r="5" fill="var(--ac)"/><path d="M6 30c0-6 5-10 12-10s12 4 12 10" fill="var(--ac)" opacity=".6"/></svg>
+          <div>
+            <div class="sim-intro-title">What would a recruiter actually think?</div>
+            <div class="sim-intro-body">Claude takes the role of a senior recruiter and reads your CV exactly as they would — cold, with no context, for the first time. You'll get their unfiltered first impression, what they'd question, and whether they'd move forward.</div>
+          </div>
+        </div>
+        <div class="sim-role-row">
+          <input class="fi" id="sim-role" placeholder="Target role (e.g. Senior UX Designer, Product Manager)" style="flex:1">
+          <select class="fi" id="sim-exp-level" style="width:160px;padding-right:36px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;-webkit-appearance:none;appearance:none">
+            <option value="junior">Junior recruiter</option>
+            <option value="senior" selected>Senior recruiter</option>
+            <option value="headhunter">Headhunter / exec search</option>
+            <option value="hiring">Hiring manager</option>
+          </select>
+        </div>
+        <button class="btn-pill" id="sim-btn" onclick="runRecruiterSim()" style="width:100%;justify-content:center;margin-top:10px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-5 3.5-8 8-8s8 3 8 8" fill="currentColor" opacity=".5"/><path d="M18 3l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          Run Recruiter Simulation
+        </button>
+        <div class="sim-out" id="sim-out" style="display:none"></div>
+      </div>
+    </div>
+
     <div class="sec">
       <div class="lbl">Weak Word Scan <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(scans your whole CV automatically)</span></div>
       <div id="weak-words-box"></div>
@@ -1149,7 +1249,7 @@ a:focus-visible,[tabindex]:focus-visible{
       <div id="ats-tips" style="margin-bottom:14px"></div>
       <div class="ats-disclaimer-box">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".1"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="16" x2="12" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>
-        <span>This score models well-documented ATS mechanics — keyword matching, parseable structure, standard section headers, quantified achievements. It is not a simulation of any specific company's (Google, Amazon, Apple, Meta, or otherwise) internal hiring algorithm, which is proprietary and not publicly disclosed.</span>
+        <span>Both scores model documented hiring mechanics — not any specific company's proprietary algorithm. The Recruiter Simulation is an AI persona, not a real person's opinion.</span>
       </div>
     </div>
   </div>
@@ -2362,6 +2462,65 @@ function renderWeakWords(){
     </div>`).join('');
 }
 
+// ── CAREER GAP ANALYSIS ──
+// Parses experience start/end dates, detects gaps over 3 months,
+// and returns suggested one-line explanations for each gap.
+function detectCareerGaps(){
+  if(!exps.length)return[];
+  const parseDate=str=>{
+    if(!str||str.trim()==='')return null;
+    const s=str.trim();
+    // Try YYYY-MM, MM/YYYY, "Mon YYYY", "Month YYYY", YYYY
+    const patterns=[
+      {re:/^(\d{4})-(\d{2})$/,fn:m=>new Date(+m[1],+m[2]-1)},
+      {re:/^(\d{1,2})\/(\d{4})$/,fn:m=>new Date(+m[2],+m[1]-1)},
+      {re:/^([A-Za-z]{3,9})\s+(\d{4})$/,fn:m=>{const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};const mo=months[m[1].toLowerCase().slice(0,3)];return mo!==undefined?new Date(+m[2],mo):null;}},
+      {re:/^(\d{4})$/,fn:m=>new Date(+m[1],6)},
+    ];
+    for(const{re,fn}of patterns){const m=s.match(re);if(m){const d=fn(m);if(d&&!isNaN(d))return d;}}
+    return null;
+  };
+
+  // Build sorted list of {start, end} ranges
+  const ranges=exps.map(e=>{
+    const start=parseDate(e.s);
+    const end=e.present?new Date():parseDate(e.e);
+    return{start,end};
+  }).filter(r=>r.start&&r.end&&r.end>=r.start)
+    .sort((a,b)=>a.start-b.start);
+
+  if(ranges.length<2)return[];
+
+  const gaps=[];
+  const monthsBetween=(a,b)=>((b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth()));
+  const fmtDate=d=>d.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+
+  const suggestions=[
+    'Career break for personal development and upskilling',
+    'Freelance / contract work during this period',
+    'Caring for a family member',
+    'Full-time study or professional certification',
+    'Relocating or transitioning between roles',
+    'Health-related sabbatical',
+    'Entrepreneurial venture / startup exploration',
+  ];
+  let sIdx=0;
+  for(let i=0;i<ranges.length-1;i++){
+    const endOfCurrent=ranges[i].end;
+    const startOfNext=ranges[i+1].start;
+    const months=monthsBetween(endOfCurrent,startOfNext);
+    if(months>3){
+      gaps.push({
+        from:fmtDate(endOfCurrent),
+        to:fmtDate(startOfNext),
+        months,
+        suggestion:suggestions[sIdx++%suggestions.length]
+      });
+    }
+  }
+  return gaps;
+}
+
 function upATS(){
   const nm=v('f-name'),em=v('f-email'),ph=v('f-phone'),sum=v('f-sum');
   let sc=0;
@@ -2395,27 +2554,120 @@ function upATS(){
   const arc=gi('ats-arc');
   if(arc){arc.style.strokeDashoffset=circ-(sc/100)*circ;arc.style.stroke=sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B';}
   gi('ats-num').textContent=sc;
+
+  // ── RECRUITER SCORE (rule-based, instant) ──
+  // Measures human appeal: focused title, concrete bullets, complete dates,
+  // no red flags, clear progression — different from ATS structural checks
+  let rsc=0;
+  const rchecks=[];
+  const ti=v('f-title')||'';
+  const titleRoles=ti.split(/[|\/,]/).filter(Boolean).length;
+  if(titleRoles===1&&ti.length>2){rsc+=15;rchecks.push({l:'Focused job title — one clear role',ok:true});}
+  else if(titleRoles>1){rchecks.push({l:`Title lists ${titleRoles} roles — pick one that matches the role you're applying for`,ok:false});}
+  else{rchecks.push({l:'Add a specific job title',ok:false});}
+  const sumText=v('f-sum')||'';
+  const genericWords=/\b(results-driven|dynamic|passionate|hardworking|proven track record|team player|go-getter|self-starter|leverage|synergy|detail-oriented)\b/i;
+  if(sumText.length>=100&&!genericWords.test(sumText)){rsc+=18;rchecks.push({l:'Summary is specific and avoids generic phrases',ok:true});}
+  else if(sumText.length>=100){rsc+=8;rchecks.push({l:'Summary OK but contains generic phrases — make it more specific',ok:false});}
+  else if(sumText.length>0){rsc+=4;rchecks.push({l:'Summary is too brief — expand to 100+ characters',ok:false});}
+  else{rchecks.push({l:'Add a professional summary',ok:false});}
+  const expsWithDates=exps.filter(e=>e.s||e.e||e.present);
+  if(exps.length&&expsWithDates.length===exps.length){rsc+=12;rchecks.push({l:'All experience entries have dates',ok:true});}
+  else if(exps.length){rchecks.push({l:`${exps.length-expsWithDates.length} role(s) missing dates — recruiters flag these`,ok:false});}
+  const expsWithCo=exps.filter(e=>e.co&&e.co.trim());
+  if(exps.length&&expsWithCo.length===exps.length){rsc+=10;rchecks.push({l:'All roles have employer names',ok:true});}
+  else if(exps.length){rchecks.push({l:`${exps.length-expsWithCo.length} role(s) missing employer name`,ok:false});}
+  // Career gap detection
+  const gaps=detectCareerGaps();
+  if(gaps.length===0){rsc+=12;rchecks.push({l:'No unexplained employment gaps detected',ok:true});}
+  else{rchecks.push({l:`${gaps.length} career gap(s) detected — consider adding a brief explanation`,ok:false});}
+  if(socials.some(s=>s.url.trim())||v('f-li')){rsc+=8;rchecks.push({l:'Professional social link included',ok:true});}
+  else{rchecks.push({l:'Add LinkedIn or portfolio link — recruiters check this',ok:false});}
+  const hasQuantified=exps.filter(e=>e.d&&/\d/.test(e.d)).length;
+  if(hasQuantified>=2){rsc+=15;rchecks.push({l:`${hasQuantified} roles with quantified results`,ok:true});}
+  else if(hasQuantified===1){rsc+=7;rchecks.push({l:'Only 1 role with numbers — add metrics to 2+ roles',ok:false});}
+  else if(exps.length){rchecks.push({l:'No quantified achievements — numbers make bullets memorable',ok:false});}
+  if(exps.length>=2){rsc+=10;rchecks.push({l:'Career depth shown (multiple roles)',ok:true});}
+  else if(exps.length===1){rsc+=5;}
+  rsc=Math.min(rsc,100);
+
+  // Update Recruiter Score arc in bar
+  const rarc=gi('rec-arc');
+  if(rarc){rarc.style.strokeDashoffset=circ-(rsc/100)*circ;rarc.style.stroke=rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B';}
+  gi('rec-num').textContent=rsc;
+
+  // ── INTERVIEW PROBABILITY ──
+  let prob='—',probColor='#9A9880',probBg='#E7E6E2';
+  if(sc>=75&&rsc>=70){prob='High';probColor='#0E6B49';probBg='#1AA371';}
+  else if(sc>=55&&rsc>=55){prob='Medium';probColor='#92610A';probBg='#C8860D';}
+  else if(sc>0||rsc>0){prob='Low';probColor='#9A2E2E';probBg='#E14B4B';}
+  const probDot=gi('interview-prob-dot');
+  const probLbl=gi('interview-prob-lbl');
+  if(probDot)probDot.style.background=probBg;
+  if(probLbl){probLbl.textContent=prob;probLbl.style.color=probColor;}
+
+  // ── ATS PANEL: show both scores + gap analysis ──
   const bd=gi('ats-bd');
   if(bd){
-    bd.innerHTML=`<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
-      <div style="position:relative;flex-shrink:0">
-        <svg width="68" height="68" viewBox="0 0 68 68">
-          <circle cx="34" cy="34" r="27" fill="none" stroke="#E7E6E2" stroke-width="6"/>
-          <circle cx="34" cy="34" r="27" fill="none" stroke="${sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B'}" stroke-width="6"
-            stroke-dasharray="${2*Math.PI*27}" stroke-dashoffset="${2*Math.PI*27*(1-sc/100)}"
-            stroke-linecap="round" transform="rotate(-90 34 34)" style="transition:stroke-dashoffset .8s"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ff-d);font-size:15px;font-weight:700">${sc}%</div>
+    const gapHTML=gaps.length?`<div class="ats-gap-section">
+      <div class="ats-gap-title">⚠ Career Gaps Detected</div>
+      ${gaps.map(g=>`<div class="ats-gap-row">
+        <div class="ats-gap-period">${g.from} → ${g.to} <span class="ats-gap-months">${g.months}mo gap</span></div>
+        <div class="ats-gap-tip">💡 Suggested: <em>${g.suggestion}</em></div>
+      </div>`).join('')}
+    </div>`:'';
+    bd.innerHTML=`
+    <div class="score-dual-row">
+      <div class="score-dual-card">
+        <div class="score-dual-head">
+          <svg width="54" height="54" viewBox="0 0 54 54">
+            <circle cx="27" cy="27" r="22" fill="none" stroke="#E7E6E2" stroke-width="5"/>
+            <circle cx="27" cy="27" r="22" fill="none" stroke="${sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B'}" stroke-width="5"
+              stroke-dasharray="${2*Math.PI*22}" stroke-dashoffset="${2*Math.PI*22*(1-sc/100)}"
+              stroke-linecap="round" transform="rotate(-90 27 27)"/>
+          </svg>
+          <div class="score-dual-num" style="color:${sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B'}">${sc}</div>
+        </div>
+        <div class="score-dual-lbl">ATS Score</div>
+        <div class="score-dual-sub">Parser readability, structure & completeness</div>
       </div>
-      <div>
-        <div style="font-size:16px;font-weight:600">${sc>=70?'ATS Ready':sc>=40?'Getting there':'Just starting'}</div>
-        <div style="font-size:13.5px;color:var(--muted);margin-top:3px">${sc>=70?'Strong structure and content for ATS parsing.':sc>=40?'Fill in remaining sections to lift your score.':'Keep going — every section helps.'}</div>
+      <div class="score-dual-card">
+        <div class="score-dual-head">
+          <svg width="54" height="54" viewBox="0 0 54 54">
+            <circle cx="27" cy="27" r="22" fill="none" stroke="#E7E6E2" stroke-width="5"/>
+            <circle cx="27" cy="27" r="22" fill="none" stroke="${rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B'}" stroke-width="5"
+              stroke-dasharray="${2*Math.PI*22}" stroke-dashoffset="${2*Math.PI*22*(1-rsc/100)}"
+              stroke-linecap="round" transform="rotate(-90 27 27)"/>
+          </svg>
+          <div class="score-dual-num" style="color:${rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B'}">${rsc}</div>
+        </div>
+        <div class="score-dual-lbl">Recruiter Score</div>
+        <div class="score-dual-sub">Human appeal — what a recruiter notices in 8 seconds</div>
       </div>
     </div>
+    <div class="interview-prob-banner" style="background:${prob==='High'?'#DEF4EA':prob==='Medium'?'#FFF3CD':prob==='Low'?'#FBEAEA':'var(--surf)'}">
+      <div class="interview-prob-icon">${prob==='High'?'🎯':prob==='Medium'?'📈':prob==='Low'?'⚠':'—'}</div>
+      <div>
+        <div class="interview-prob-head" style="color:${probColor}">Interview Probability: ${prob}</div>
+        <div class="interview-prob-desc">${
+          prob==='High'?'Strong CV — you have a good chance of getting shortlisted. Focus on tailoring the summary to each role.':
+          prob==='Medium'?'Getting there. Address the recruiter score items below to significantly improve your odds.':
+          prob==='Low'?'Several key signals are missing. Complete the checklist below — each item meaningfully improves your chances.':
+          'Fill in your CV to see your interview probability.'
+        }</div>
+      </div>
+    </div>
+    <div class="score-section-head">ATS Checks</div>
     ${checks.map(c=>`<div class="ats-check">
       <div class="ats-dot" style="background:${c.ok?'#DEF4EA':'#FBEAEA'};color:${c.ok?'#0E6B49':'#9A2E2E'}">${c.ok?'✓':'✕'}</div>
-      <span style="font-size:14.5px;color:${c.ok?'#0E6B49':'#5C2222'}">${c.l}</span>
-    </div>`).join('')}`;
+      <span style="font-size:14px;color:${c.ok?'#0E6B49':'#5C2222'}">${c.l}</span>
+    </div>`).join('')}
+    <div class="score-section-head" style="margin-top:18px">Recruiter Checks</div>
+    ${rchecks.map(c=>`<div class="ats-check">
+      <div class="ats-dot" style="background:${c.ok?'#EEEEFF':'#FBEAEA'};color:${c.ok?'#3A4AC2':'#9A2E2E'}">${c.ok?'✓':'✕'}</div>
+      <span style="font-size:14px;color:${c.ok?'#3A4AC2':'#5C2222'}">${c.l}</span>
+    </div>`).join('')}
+    ${gapHTML}`;
   }
   const tips=gi('ats-tips');
   if(tips){
@@ -2427,7 +2679,129 @@ function upATS(){
   }
 }
 
-// ── CV RENDER ──
+// ── RECRUITER SIMULATION ──
+// The most viral feature: Claude takes the role of a specific recruiter persona
+// and reads the CV cold — exactly as a real recruiter would in 8 seconds.
+// Output: structured first impression, red flags, strengths, and a decision.
+const SIM_PERSONAS={
+  junior:{name:'Alex M.',role:'Junior Recruiter, 1 yr exp',emoji:'👩‍💼',style:'straightforward and by-the-book, follows the JD closely, flags anything missing'},
+  senior:{name:'Sarah K.',role:'Senior Recruiter, 8 yrs exp',emoji:'👔',style:'experienced, pattern-matching, notices what candidates miss, direct and honest'},
+  headhunter:{name:'Marcus T.',role:'Executive Search, 15 yrs exp',emoji:'🎯',style:'premium expectations, very high bar, cares deeply about career narrative and distinctiveness'},
+  hiring:{name:'Jamie L.',role:'Hiring Manager (Technical)',emoji:'🔬',style:'cares about actual skills and outcomes, not polish — looks for evidence of real results'},
+};
+
+async function runRecruiterSim(){
+  const d=getData();
+  const role=gi('sim-role')?.value.trim()||d.ti;
+  const expLevel=gi('sim-exp-level')?.value||'senior';
+  const persona=SIM_PERSONAS[expLevel];
+  const btn=gi('sim-btn');
+  const out=gi('sim-out');
+  if(!d.nm||d.nm==='Your Name'||!exps.length){
+    toast('Fill in your name and at least one experience entry first','err');return;
+  }
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Simulating recruiter…`;
+  out.style.display='block';
+  out.innerHTML=`<div class="sim-persona">
+    <div class="sim-persona-av">${persona.emoji}</div>
+    <div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div>
+  </div>
+  <div id="sim-stream" style="font-size:14px;color:var(--muted);line-height:1.7;min-height:40px"></div>`;
+
+  // Build the full CV text for the prompt
+  const cvText=`
+NAME: ${d.nm}
+TITLE: ${d.ti}
+CONTACT: ${d.em} | ${d.ph} | ${d.lo}
+SOCIAL: ${socials.map(s=>`${SOCIAL_TYPES[s.type]?.label}: ${s.url}`).join(', ')||'None listed'}
+SUMMARY: ${d.sum||'None'}
+EXPERIENCE:
+${exps.map(e=>`- ${e.t} at ${e.co||'[no company]'} (${e.s||'?'} – ${e.present?'Present':e.e||'?'})
+  ${e.d?e.d.split('\n').filter(Boolean).map(b=>'  • '+b).join('\n'):'  No bullets'}`).join('\n')}
+EDUCATION: ${edus.map(e=>`${e.d} at ${e.s} (${e.y||'?'})`).join('; ')||'None'}
+SKILLS: ${skills.join(', ')||'None listed'}
+CERTIFICATIONS: ${certs.map(c=>c.name).join(', ')||'None'}
+LANGUAGES: ${langs.map(l=>`${l.name} (${l.level})`).join(', ')||'None'}
+PROJECTS: ${projs.map(p=>p.nm).join(', ')||'None'}
+WORK AUTH: ${d.workauth||'Not stated'}`.trim();
+
+  const gaps=detectCareerGaps();
+  const gapNote=gaps.length?`\nNOTE: Career gaps detected: ${gaps.map(g=>`${g.from}–${g.to} (${g.months} months)`).join(', ')}`:'';
+
+  const prompt=`You are ${persona.name}, a ${persona.role}. Your reviewing style: ${persona.style}.
+
+You have just received this CV${role?` for the role of ${role}`:''}. Read it exactly as you would in real life — cold, no context, for the first time. You have about 8 seconds before deciding whether to read further.
+
+CV TEXT:
+${cvText}${gapNote}
+
+Respond in this EXACT format (use these exact section headers, no markdown, no stars):
+
+FIRST IMPRESSION (1-2 sentences — your gut reaction in the first 3 seconds):
+
+RED FLAGS (bullet list — things that would make you hesitate or reject. Be honest and direct. If there are none, say "None identified."):
+
+STRENGTHS (bullet list — things that genuinely stand out and would make you want to read on):
+
+WHAT I'D WANT TO KNOW MORE ABOUT (1-2 specific questions you'd ask if you called them):
+
+DECISION:
+[Write exactly one of: "Move forward — scheduling a call" / "Maybe — needs more context" / "Pass — here's why"]
+Then one sentence explaining why.
+
+Be a real recruiter. Don't be diplomatic if the CV has real problems. Don't be harsh if it doesn't. React the way you actually would.`;
+
+  try{
+    let raw='';
+    await callAIStream(prompt,800,(text)=>{
+      raw=text;
+      const el=gi('sim-stream');
+      if(el)el.textContent=text;
+    });
+    // Parse and render as structured card
+    out.innerHTML=renderSimOutput(raw,persona);
+  }catch(err){
+    out.innerHTML=`<div style="color:var(--err);font-size:13.5px">Simulation failed. ${err?.message||'Try again.'}</div>`;
+  }
+  btn.disabled=false;
+  btn.innerHTML=`<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-5 3.5-8 8-8s8 3 8 8" fill="currentColor" opacity=".5"/><path d="M18 3l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Run Again`;
+}
+
+function renderSimOutput(raw,persona){
+  // Parse the structured sections from the AI response
+  const sect=(label)=>{
+    const re=new RegExp(label+'[:\\s]*([\\s\\S]*?)(?=FIRST IMPRESSION:|RED FLAGS:|STRENGTHS:|WHAT I\'D|DECISION:|$)','i');
+    const m=raw.match(re);
+    return m?m[1].trim():'';
+  };
+  const impression=sect('FIRST IMPRESSION');
+  const redFlags=sect('RED FLAGS');
+  const strengths=sect('STRENGTHS');
+  const questions=sect("WHAT I'D WANT TO KNOW MORE ABOUT");
+  const decisionRaw=sect('DECISION');
+  const moveForward=/move forward/i.test(decisionRaw);
+  const maybe=/maybe/i.test(decisionRaw);
+  const pass=/pass/i.test(decisionRaw);
+  const decisionColor=moveForward?'#DEF4EA':maybe?'#FFF3CD':'#FBEAEA';
+  const decisionTextColor=moveForward?'#0E6B49':maybe?'#92610A':'#9A2E2E';
+  const decisionIcon=moveForward?'✅':maybe?'🤔':'❌';
+
+  const fmtBullets=(text,dotColor)=>text.split('\n')
+    .map(l=>l.replace(/^[-•*]\s*/,'').trim()).filter(Boolean)
+    .map(l=>`<div class="sim-point"><div class="sim-point-dot" style="background:${dotColor}"></div><span>${l}</span></div>`)
+    .join('');
+
+  return`<div class="sim-persona">
+    <div class="sim-persona-av">${persona.emoji}</div>
+    <div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div>
+  </div>
+  ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${impression}"</p>`:''}
+  ${redFlags?`<div class="sim-section-head">⚠ Red Flags</div>${fmtBullets(redFlags,'#E14B4B')}`:''}
+  ${strengths?`<div class="sim-section-head">✓ Strengths</div>${fmtBullets(strengths,'#1AA371')}`:''}
+  ${questions?`<div class="sim-section-head">Questions I'd Ask</div>${fmtBullets(questions,'#4F5BD5')}`:''}
+  ${decisionRaw?`<div class="sim-decision" style="background:${decisionColor};color:${decisionTextColor}">${decisionIcon} ${decisionRaw}</div>`:''}`;
+}
 // Social link type definitions
 const SOCIAL_TYPES={
   linkedin:{label:'LinkedIn',icon:'in',placeholder:'linkedin.com/in/yourname'},
