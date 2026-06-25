@@ -173,8 +173,8 @@ a:focus-visible,[tabindex]:focus-visible{
 .kw-pill{background:#EFEFFB;color:#3D3FA0;border:none;border-radius:999px;font-size:13px;font-weight:600;padding:6px 13px;cursor:pointer;font-family:var(--ff-b);transition:all .15s}
 .kw-pill:hover{background:var(--ink);color:#fff}
 .kw-pill.added{background:#DEF4EA;color:#0E6B49;cursor:default}
-.score-badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #E6E5F7;border-radius:999px;padding:6px 14px;margin-top:11px}
-.score-badge-num{font-family:var(--ff-d);font-weight:700;font-size:15px}
+.ai-score-pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #E6E5F7;border-radius:999px;padding:6px 14px;margin-top:11px}
+.ai-score-pill-num{font-family:var(--ff-d);font-weight:700;font-size:15px}
 .rewrite-box{background:#fff;border:1.5px solid #D8D6F5;border-radius:12px;padding:13px 15px;margin-top:12px}
 .rewrite-lbl{font-size:11.5px;font-weight:600;color:#4F5BD5;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
 .rewrite-text{font-size:14px;color:#1A1A2E;line-height:1.6;font-style:italic}
@@ -307,7 +307,8 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-upload-drop:hover{border-color:var(--ac);background:#FAFAFF}
 .sim-upload-text{font-size:14px;font-weight:600;color:var(--ink);margin-top:10px}
 .sim-upload-sub{font-size:12px;color:var(--muted);margin-top:4px}
-.sim-upload-status{background:#DEF4EA;border-radius:10px;padding:10px 14px;font-size:13px;color:#0E6B49;display:flex;align-items:center;gap:8px;margin-top:8px}
+.sim-upload-status{border-radius:10px;padding:0;font-size:13px;margin-top:8px;line-height:1.5}
+.sim-upload-status:not(:empty){padding:10px 14px;}
 .select-fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;-webkit-appearance:none;appearance:none;padding-right:40px;cursor:pointer}
 .sim-role-row{display:flex;gap:10px}
 .sim-improvement{align-items:flex-start!important}
@@ -1249,7 +1250,7 @@ a:focus-visible,[tabindex]:focus-visible{
             <div class="sim-upload-text">Click to upload your CV</div>
             <div class="sim-upload-sub">PDF, DOCX or TXT · text will be extracted automatically</div>
           </div>
-          <div class="sim-upload-status" id="sim-upload-status" style="display:none"></div>
+          <div class="sim-upload-status" id="sim-upload-status"></div>
           <input type="file" id="sim-cv-file" accept=".pdf,.docx,.doc,.txt" style="display:none" onchange="handleSimUpload(this)">
         </div>
         <!-- Role + persona — full width stacked -->
@@ -2383,7 +2384,7 @@ Rules for the IMPROVEMENTS and REWRITE sections:
     if(scoreMatch){
       const sc=Math.min(100,parseInt(scoreMatch[1]));
       const col=sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B';
-      html+=`<div class="score-badge"><span style="font-size:13px;color:#6B6B72">AI Quality Score</span><span class="score-badge-num" style="color:${col}">${sc}/100</span></div>`;
+      html+=`<div class="ai-score-pill"><span style="font-size:13px;color:#6B6B72">AI Quality Score</span><span class="ai-score-pill-num" style="color:${col}">${sc}/100</span></div>`;
     }
     if(impMatch){
       html+=`<div style="margin-top:12px;white-space:pre-line;line-height:1.65">${impMatch[1].trim()}</div>`;
@@ -2733,9 +2734,12 @@ function simSetSource(mode){
   gi('sim-src-form').classList.toggle('active',mode==='form');
   gi('sim-src-upload').classList.toggle('active',mode==='upload');
   gi('sim-upload-zone').style.display=mode==='upload'?'block':'none';
-  simUploadedCVText='';
-  const status=gi('sim-upload-status');
-  if(status)status.style.display='none';
+  if(mode==='form'){
+    simUploadedCVText='';
+    // Remove paste fallback if present
+    const fb=gi('sim-paste-fallback');
+    if(fb)fb.remove();
+  }
 }
 
 async function handleSimUpload(input){
@@ -2743,42 +2747,106 @@ async function handleSimUpload(input){
   if(!file)return;
   const status=gi('sim-upload-status');
   const drop=gi('sim-upload-drop');
-  if(status){status.style.display='flex';status.style.background='#F4F4FF';status.style.color='var(--muted)';status.textContent='Reading file…';}
+  const show=(msg,type='loading')=>{
+    if(!status)return;
+    status.style.display='flex';
+    status.style.background=type==='ok'?'#DEF4EA':type==='err'?'#FBEAEA':'#F4F4FF';
+    status.style.color=type==='ok'?'#0E6B49':type==='err'?'#9A2E2E':'var(--muted)';
+    status.innerHTML=msg;
+  };
+  show('Reading file — this may take a few seconds for large PDFs…');
   try{
     let text='';
-    if(file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf')){
+    const isPDF=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
+    if(isPDF){
       text=await extractPDFText(file);
     }else{
-      text=await file.text();
+      // DOCX, TXT, or other — read as plain text
+      text=await file.text().catch(()=>'');
     }
-    if(!text||text.trim().length<50){
-      if(status){status.style.background='#FBEAEA';status.style.color='#9A2E2E';status.textContent='Could not extract enough text. Try a different file or paste the text manually.';}
+    const wordCount=text.trim().split(/\s+/).filter(Boolean).length;
+    if(!text||wordCount<30){
+      // Likely a scanned PDF or image-based CV with no text layer
+      show(`<div>
+        <strong>Could not extract text from this file.</strong><br>
+        This is usually because the PDF is a scanned image rather than a text-based file. Try these options:
+        <ul style="margin:8px 0 0 14px;font-size:12px">
+          <li>Export your CV from the original app as a <strong>text-based PDF</strong></li>
+          <li>Copy-paste your CV text into the box below instead</li>
+        </ul>
+      </div>`,'err');
+      // Show paste fallback
+      showSimPasteFallback();
       return;
     }
     simUploadedCVText=text;
-    if(status){
-      status.style.display='flex';status.style.background='#DEF4EA';status.style.color='#0E6B49';
-      status.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> "${esc(file.name)}" ready — ${Math.round(text.length/5)} words extracted`;
-    }
+    show(`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>&nbsp;"${esc(file.name)}" ready — ${wordCount} words extracted`,'ok');
     drop.innerHTML=`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1AA371" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="sim-upload-text" style="color:#1AA371">${esc(file.name)}</div><div class="sim-upload-sub">Click to change file</div>`;
   }catch(err){
-    if(status){status.style.display='flex';status.style.background='#FBEAEA';status.style.color='#9A2E2E';status.textContent='Error reading file: '+err.message;}
+    console.error('Upload error:',err);
+    const isWorkerErr=err.message&&(err.message.includes('worker')||err.message.includes('Worker'));
+    show(`<div><strong>Upload failed:</strong> ${isWorkerErr?'PDF reader failed to load — check your internet connection and try again.':err.message||'Unknown error.'}<br><span style="font-size:12px">Or paste your CV text directly into the box below.</span></div>`,'err');
+    showSimPasteFallback();
   }
   input.value='';
 }
 
+function showSimPasteFallback(){
+  const zone=gi('sim-upload-zone');
+  if(!zone||gi('sim-paste-fallback'))return;
+  const fb=document.createElement('div');
+  fb.id='sim-paste-fallback';
+  fb.style.cssText='margin-top:10px';
+  fb.innerHTML=`<label style="font-size:12.5px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">Paste CV text instead</label>
+    <textarea id="sim-paste-text" class="fi" rows="5" placeholder="Paste your CV text here — the AI will read it exactly as a recruiter would…" style="resize:vertical;font-size:13px;line-height:1.6" oninput="if(this.value.trim().length>50){simUploadedCVText=this.value;const s=gi('sim-upload-status');if(s){s.style.background='#DEF4EA';s.style.color='#0E6B49';s.innerHTML='✓ Text ready — '+this.value.trim().split(/\\s+/).length+' words';}}" ></textarea>`;
+  zone.appendChild(fb);
+}
+
 async function extractPDFText(file){
-  if(typeof pdfjsLib==='undefined')throw new Error('PDF reader not loaded yet — try again in a moment');
-  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const ab=await file.arrayBuffer();
-  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
-  let text='';
-  for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const content=await page.getTextContent();
-    text+=content.items.map(it=>it.str).join(' ')+'\n';
+  // Try to load pdfjsLib — it may still be loading if CDN is slow
+  if(typeof pdfjsLib==='undefined'){
+    // Wait up to 5 seconds for it to load
+    await new Promise((res,rej)=>{
+      let tries=0;
+      const t=setInterval(()=>{
+        if(typeof pdfjsLib!=='undefined'){clearInterval(t);res();}
+        if(++tries>50){clearInterval(t);rej(new Error('PDF reader did not load. Check your internet connection and refresh the page.'));}
+      },100);
+    });
   }
-  return text;
+  // Try multiple worker sources for reliability
+  const workerSources=[
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+    'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
+  ];
+  pdfjsLib.GlobalWorkerOptions.workerSrc=workerSources[0];
+  const ab=await file.arrayBuffer();
+  let pdf;
+  try{
+    pdf=await pdfjsLib.getDocument({data:ab,disableFontFace:true}).promise;
+  }catch(e){
+    // Retry with second worker source
+    try{
+      pdfjsLib.GlobalWorkerOptions.workerSrc=workerSources[1];
+      pdf=await pdfjsLib.getDocument({data:ab,disableFontFace:true}).promise;
+    }catch(e2){
+      throw new Error('Could not read this PDF. It may be password-protected or corrupted.');
+    }
+  }
+  let text='';
+  const maxPages=Math.min(pdf.numPages,10); // cap at 10 pages for speed
+  for(let i=1;i<=maxPages;i++){
+    try{
+      const page=await pdf.getPage(i);
+      const content=await page.getTextContent();
+      const pageText=content.items.map(it=>it.str||'').filter(Boolean).join(' ');
+      text+=pageText+'\n';
+    }catch(pageErr){
+      // Skip pages that fail, continue with rest
+      console.warn(`Page ${i} extraction failed:`,pageErr);
+    }
+  }
+  return text.trim();
 }
 
 async function applySimSuggestionToSummary(suggestion){
@@ -2825,8 +2893,16 @@ async function runRecruiterSim(){
   const persona=SIM_PERSONAS[expLevel];
   const btn=gi('sim-btn'),out=gi('sim-out');
 
-  if(simSourceMode==='upload'&&!simUploadedCVText){toast('Upload a CV file first','err');return;}
-  if(simSourceMode==='form'&&(!d.nm||d.nm==='Your Name'||!exps.length)){toast('Fill in your name and at least one experience entry first','err');return;}
+  // Also check paste fallback
+  const pasteText=gi('sim-paste-text')?.value.trim()||'';
+  if(pasteText&&!simUploadedCVText)simUploadedCVText=pasteText;
+
+  if(simSourceMode==='upload'&&!simUploadedCVText){
+    toast('Upload a CV file or paste your CV text first, then click Run','err',3500);return;
+  }
+  if(simSourceMode==='form'&&(!d.nm||d.nm==='Your Name'||!exps.length)){
+    toast('Add your name and at least one experience entry in the Build tab first','err',3500);return;
+  }
 
   btn.disabled=true;
   btn.innerHTML=`<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Simulating recruiter…`;
