@@ -190,6 +190,14 @@ a:focus-visible,[tabindex]:focus-visible{
 .sk-tag button{border:none;background:#fff;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:0;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .sk-tag button:hover{color:#fff;background:var(--err)}
 .sk-row{display:flex;gap:9px}
+/* Social links */
+.social-link-row{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}
+.social-link-type{width:140px;flex-shrink:0;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 10px;font-family:var(--ff-b);font-size:13.5px;color:var(--ink);background:var(--card);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;-webkit-appearance:none;appearance:none;cursor:pointer;transition:border-color .15s}
+.social-link-type:focus{outline:none;border-color:var(--ink)}
+.social-link-url{flex:1;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;font-family:var(--ff-b);font-size:14px;color:var(--ink);background:var(--card);transition:border-color .15s,box-shadow .15s}
+.social-link-url:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(21,21,26,.06)}
+.social-link-rm{border:none;background:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;align-self:center;transition:color .15s;border-radius:6px}
+.social-link-rm:hover{color:var(--err)}
 .btn-add{width:100%;border:1.5px dashed var(--bdr);background:none;border-radius:999px;padding:11px;font-family:var(--ff-b);font-size:14.5px;color:var(--muted);cursor:pointer;transition:all .15s}
 .btn-add:hover{border-color:var(--ink);color:var(--ink);border-style:solid}
 
@@ -943,9 +951,13 @@ a:focus-visible,[tabindex]:focus-visible{
           <input class="fi" id="f-email" placeholder="Email address" oninput="rCV()">
           <input class="fi" id="f-phone" placeholder="Phone number" oninput="rCV()">
         </div>
-        <div class="row2">
+        <div>
           <input class="fi" id="f-loc" placeholder="City, Country" oninput="rCV()">
-          <input class="fi" id="f-li" placeholder="LinkedIn / Portfolio" oninput="rCV()">
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:8px;font-size:11.5px">Social &amp; Portfolio Links <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(show as embedded labels, not raw URLs)</span></div>
+          <div id="social-links-list"></div>
+          <button class="btn-add" id="add-social-btn" onclick="addSocialLink()" style="font-size:12.5px;padding:9px 14px">+ Add Link</button>
         </div>
         <textarea class="fi" id="f-sum" placeholder="Professional summary (2–3 sentences)" rows="3" oninput="rCV()"></textarea>
         <button class="btn-pill-outline ai-write-btn" id="sum-ai-write-btn" type="button" onclick="aiWriteSummary()">✦ Write with AI</button>
@@ -1205,14 +1217,14 @@ a:focus-visible,[tabindex]:focus-visible{
 
 <script>
 // ── STATE ──
-let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], projs=[], AC='#4F5BD5', exportSel='print';
+let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], projs=[], socials=[], AC='#4F5BD5', exportSel='print';
 
 // ── AUTOSAVE ──
 // Saves the whole form to localStorage so a refresh, crash, or closed tab
 // never costs someone their CV. Runs after every edit (hooked into rCV()
 // below, the single place every mutation already passes through).
 const DRAFT_KEY='cvcraftai-draft-v1';
-const FIELD_IDS=['f-name','f-title','f-email','f-phone','f-loc','f-li','f-sum','f-workauth'];
+const FIELD_IDS=['f-name','f-title','f-email','f-phone','f-loc','f-sum','f-workauth'];
 let saveDraftTimer=null;
 function saveDraft(){
   clearTimeout(saveDraftTimer);
@@ -1221,7 +1233,7 @@ function saveDraft(){
       const fields={};
       FIELD_IDS.forEach(id=>{const el=gi(id);if(el)fields[id]=el.value;});
       const refsEl=gi('f-refs');
-      const draft={fields,refs:refsEl?refsEl.checked:false,skills,exps,edus,certs,langs,projs,CT,AC,savedAt:Date.now()};
+      const draft={fields,refs:refsEl?refsEl.checked:false,skills,exps,edus,certs,langs,projs,socials,CT,AC,savedAt:Date.now()};
       localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
     }catch(e){/* storage full or unavailable — fail silently, don't block the UI */}
   },400);
@@ -1238,6 +1250,7 @@ function loadDraft(){
   if(Array.isArray(draft.certs))certs=draft.certs;
   if(Array.isArray(draft.langs))langs=draft.langs;
   if(Array.isArray(draft.projs))projs=draft.projs;
+  if(Array.isArray(draft.socials))socials=draft.socials;
   if(draft.CT)CT=draft.CT;
   if(draft.AC){AC=draft.AC;document.documentElement.style.setProperty('--ac',AC);}
 }
@@ -1266,7 +1279,7 @@ document.addEventListener('click',e=>{
 // ── BACKUP & RESTORE ──
 function backupCV(){
   const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
-  const FIELD_IDS_EXPORT=['f-name','f-title','f-email','f-phone','f-loc','f-li','f-sum','f-workauth'];
+  const FIELD_IDS_EXPORT=['f-name','f-title','f-email','f-phone','f-loc','f-sum','f-workauth'];
   const fields={};
   FIELD_IDS_EXPORT.forEach(id=>{const el=gi(id);if(el)fields[id]=el.value;});
   const refsEl=gi('f-refs');
@@ -1275,7 +1288,7 @@ function backupCV(){
     savedAt:new Date().toISOString(),
     fields,
     refs:refsEl?refsEl.checked:false,
-    skills,exps,edus,certs,langs,projs,CT,AC
+    skills,exps,edus,certs,langs,projs,socials,CT,AC
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -1305,7 +1318,7 @@ function restoreCV(input){
         return;
       }
       // Restore all fields
-      const FIELD_IDS_IMPORT=['f-name','f-title','f-email','f-phone','f-loc','f-li','f-sum','f-workauth'];
+      const FIELD_IDS_IMPORT=['f-name','f-title','f-email','f-phone','f-loc','f-sum','f-workauth'];
       FIELD_IDS_IMPORT.forEach(id=>{const el=gi(id);if(el&&data.fields[id]!==undefined)el.value=data.fields[id];});
       const refsEl=gi('f-refs');
       if(refsEl&&data.refs!==undefined)refsEl.checked=data.refs;
@@ -1315,10 +1328,11 @@ function restoreCV(input){
       if(Array.isArray(data.certs))certs=data.certs;
       if(Array.isArray(data.langs))langs=data.langs;
       if(Array.isArray(data.projs))projs=data.projs;
+      if(Array.isArray(data.socials))socials=data.socials;
       if(data.CT)CT=data.CT;
       if(data.AC){AC=data.AC;document.documentElement.style.setProperty('--ac',AC);}
       // Re-render everything
-      renderSk();renderExpList();renderEduList();renderCertList();renderLangList();renderProjList();
+      renderSk();renderSocialLinks();renderExpList();renderEduList();renderCertList();renderLangList();renderProjList();
       buildTplCatRow();buildTplGrid();rCV();upATS();
       saveDraft();
       toast('CV restored from backup','ok',2500);
@@ -2368,7 +2382,7 @@ function upATS(){
   if(quantified>0){sc+=8;checks.push({l:`${quantified} role(s) with quantified achievements`,ok:true})}else if(exps.length){checks.push({l:'Add numbers/metrics to achievements (e.g. "increased X by 30%")',ok:false})}
   const actionVerbs=/\b(led|built|launched|managed|drove|increased|reduced|created|designed|developed|improved|delivered|scaled|optimi[sz]ed|implemented)\b/i;
   if(exps.some(e=>e.d&&actionVerbs.test(e.d))){sc+=5;checks.push({l:'Uses strong action verbs',ok:true})}else if(exps.length){checks.push({l:'Start bullets with strong action verbs (Led, Built, Drove)',ok:false})}
-  if(v('f-li')){sc+=3;checks.push({l:'LinkedIn / portfolio link added',ok:true})}
+  if(socials.some(s=>s.url.trim())||v('f-li')){sc+=3;checks.push({l:'Social / portfolio link added',ok:true})}
   if(certs.length){sc+=4;checks.push({l:`${certs.length} certification(s) listed`,ok:true})}
   if(projs.length){sc+=3;checks.push({l:`${projs.length} project(s) listed`,ok:true})}
   if(langs.length){sc+=2;checks.push({l:`${langs.length} language(s) listed`,ok:true})}
@@ -2414,24 +2428,87 @@ function upATS(){
 }
 
 // ── CV RENDER ──
+// Social link type definitions
+const SOCIAL_TYPES={
+  linkedin:{label:'LinkedIn',icon:'in',placeholder:'linkedin.com/in/yourname'},
+  portfolio:{label:'Portfolio',icon:'🔗',placeholder:'yourportfolio.com'},
+  github:{label:'GitHub',icon:'GH',placeholder:'github.com/yourname'},
+  behance:{label:'Behance',icon:'Bē',placeholder:'behance.net/yourname'},
+  dribbble:{label:'Dribbble',icon:'⚽',placeholder:'dribbble.com/yourname'},
+  twitter:{label:'Twitter/X',icon:'𝕏',placeholder:'twitter.com/yourname'},
+  youtube:{label:'YouTube',icon:'▶',placeholder:'youtube.com/@yourname'},
+  website:{label:'Website',icon:'🌐',placeholder:'yourwebsite.com'},
+  other:{label:'Other',icon:'🔗',placeholder:'your-link.com'},
+};
+
+function renderSocialLinks(){
+  const container=gi('social-links-list');
+  if(!container)return;
+  container.innerHTML=socials.map((s,i)=>`
+    <div class="social-link-row">
+      <select class="social-link-type" onchange="socials[${i}].type=this.value;renderSocialLinks();rCV();saveDraft()">
+        ${Object.entries(SOCIAL_TYPES).map(([k,t])=>`<option value="${k}"${s.type===k?' selected':''}>${t.label}</option>`).join('')}
+      </select>
+      <input class="social-link-url" type="url" inputmode="url" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://...'}" value="${esc(s.url)}" oninput="socials[${i}].url=this.value;rCV();saveDraft()">
+      <button class="social-link-rm" onclick="socials.splice(${i},1);renderSocialLinks();rCV();saveDraft()" title="Remove">×</button>
+    </div>`).join('');
+  // Hide add button after 4 links
+  const btn=gi('add-social-btn');
+  if(btn)btn.style.display=socials.length>=4?'none':'';
+}
+
+function addSocialLink(){
+  // Smart default: suggest LinkedIn first, then Portfolio, then others
+  const usedTypes=socials.map(s=>s.type);
+  const order=['linkedin','portfolio','github','behance','dribbble','website','twitter','youtube','other'];
+  const nextType=order.find(t=>!usedTypes.includes(t))||'other';
+  socials.push({type:nextType,url:''});
+  renderSocialLinks();
+  // Focus the new URL input
+  setTimeout(()=>{
+    const inputs=gi('social-links-list').querySelectorAll('.social-link-url');
+    if(inputs.length)inputs[inputs.length-1].focus();
+  },60);
+}
+
 function linkURL(val){
   if(!val)return val;
   const url=val.match(/^https?:\/\//)?val:'https://'+val;
   return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;text-underline-offset:2px">${val}</a>`;
 }
 
+function buildSocialLinksHTML(accentColor){
+  // Returns embedded labeled links like "LinkedIn" and "Portfolio" — not raw URLs
+  // The label is the visible text; the URL is in the href (ATS reads visible text)
+  if(!socials.length){
+    // Backwards compat: check old f-li field
+    const raw=v('f-li');
+    if(raw){
+      const url=raw.match(/^https?:\/\//)?raw:'https://'+raw;
+      return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${accentColor||'inherit'};text-decoration:underline;text-underline-offset:2px;font-weight:600">LinkedIn</a>`;
+    }
+    return'';
+  }
+  return socials.filter(s=>s.url.trim()).map(s=>{
+    const url=s.url.match(/^https?:\/\//)?s.url:'https://'+s.url;
+    const label=SOCIAL_TYPES[s.type]?.label||'Link';
+    return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${accentColor||'inherit'};text-decoration:underline;text-underline-offset:2px;font-weight:600">${label}</a>`;
+  }).join('<span style="margin:0 4px;opacity:.4">·</span>');
+}
+
 function getData(){
-  const liRaw=v('f-li')||'linkedin.com/in/yourprofile';
+  const liRaw=socials.find(s=>s.url.trim())?.url||v('f-li')||'';
+  const liUrl=liRaw.match(/^https?:\/\//)?liRaw:'https://'+liRaw;
   return{
     nm:v('f-name')||'Your Name',
     ti:v('f-title')||'Professional Title',
     em:v('f-email')||'email@example.com',
     ph:v('f-phone')||'+1 (555) 000-0000',
     lo:v('f-loc')||'City, Country',
-    li:liRaw,
-    liLink:linkURL(liRaw),
+    li:liRaw, // plain text for ATS scoring
+    liLink:buildSocialLinksHTML(), // embedded labeled links for templates (no accent)
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
-    certs,langs,projs,
+    certs,langs,projs,socials,
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
     skills,exps,edus
@@ -3306,6 +3383,7 @@ function init(){
   buildTplGrid();
   buildColorGrid();
   renderSk();
+  renderSocialLinks();
   renderExpList();
   renderEduList();
   renderProjList();
