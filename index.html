@@ -2907,15 +2907,7 @@ function renderSimOutput(raw,persona,canApply=false){
   ${improvements?`<div class="sim-section-head">💡 Suggested Improvements${canApply?' <span style="font-size:10.5px;font-weight:400;color:var(--muted)">(click Apply to update your CV)</span>':''}</div>${improvementBullets(improvements)}`:''}
   ${decisionRaw?`<div class="sim-decision" style="background:${decBg};color:${decCol}">${decIcon} ${decisionRaw}</div>`:''}`;
 }
-  const d=getData();
-  const role=gi('sim-role')?.value.trim()||d.ti;
-  const expLevel=gi('sim-exp-level')?.value||'senior';
-  const persona=SIM_PERSONAS[expLevel];
-  const btn=gi('sim-btn');
-  const out=gi('sim-out');
-  if(!d.nm||d.nm==='Your Name'||!exps.length){
-    toast('Fill in your name and at least one experience entry first','err');return;
-  }
+
 function renderSocialLinks(){
   const container=gi('social-links-list');
   if(!container)return;
