@@ -317,10 +317,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .tpl-desc-box{background:var(--surf);border-radius:14px;padding:14px 16px;font-size:14.5px;color:var(--muted);line-height:1.65}
 
 /* ── ATS PANEL ── */
-.ats-check{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr)}
-.check-fix-btn{flex-shrink:0;border:none;background:#0A0A12;color:#fff;font-family:var(--ff-b);font-size:11px;font-weight:600;padding:4px 11px;border-radius:999px;cursor:pointer;transition:opacity .15s;white-space:nowrap}
-.check-fix-btn:hover{opacity:.8}
-.check-fix-btn:disabled{opacity:.45;cursor:default}
+.ats-check{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--bdr)}
 /* Dual score cards */
 .score-dual-row{display:flex;gap:12px;margin-bottom:20px}
 .score-dual-card{flex:1;background:var(--surf);border-radius:16px;padding:16px;text-align:center}
@@ -2783,30 +2780,30 @@ function upATS(){
   const ti=v('f-title')||'';
   const titleRoles=ti.split(/[|\/,]/).filter(Boolean).length;
   if(titleRoles===1&&ti.length>2){rsc+=15;rchecks.push({l:'Focused job title — one clear role',ok:true});}
-  else if(titleRoles>1){rchecks.push({l:`Title lists ${titleRoles} roles — pick one that matches the role you're applying for`,ok:false,fix:'title'});}
-  else{rchecks.push({l:'Add a specific job title',ok:false,fix:'title'});}
+  else if(titleRoles>1){rchecks.push({l:`Title lists ${titleRoles} roles — pick one that matches the role you're applying for`,ok:false});}
+  else{rchecks.push({l:'Add a specific job title',ok:false});}
   const sumText=v('f-sum')||'';
   const genericWords=/\b(results-driven|dynamic|passionate|hardworking|proven track record|team player|go-getter|self-starter|leverage|synergy|detail-oriented)\b/i;
   if(sumText.length>=100&&!genericWords.test(sumText)){rsc+=18;rchecks.push({l:'Summary is specific and avoids generic phrases',ok:true});}
-  else if(sumText.length>=100){rsc+=8;rchecks.push({l:'Summary OK but contains generic phrases — make it more specific',ok:false,fix:'summary'});}
-  else if(sumText.length>0){rsc+=4;rchecks.push({l:'Summary is too brief — expand to 100+ characters',ok:false,fix:'summary'});}
-  else{rchecks.push({l:'Add a professional summary',ok:false,fix:'summary'});}
+  else if(sumText.length>=100){rsc+=8;rchecks.push({l:'Summary OK but contains generic phrases — make it more specific',ok:false});}
+  else if(sumText.length>0){rsc+=4;rchecks.push({l:'Summary is too brief — expand to 100+ characters',ok:false});}
+  else{rchecks.push({l:'Add a professional summary',ok:false});}
   const expsWithDates=exps.filter(e=>e.s||e.e||e.present);
   if(exps.length&&expsWithDates.length===exps.length){rsc+=12;rchecks.push({l:'All experience entries have dates',ok:true});}
-  else if(exps.length){rchecks.push({l:`${exps.length-expsWithDates.length} role(s) missing dates — recruiters flag these`,ok:false,fix:'dates'});}
+  else if(exps.length){rchecks.push({l:`${exps.length-expsWithDates.length} role(s) missing dates — recruiters flag these`,ok:false});}
   const expsWithCo=exps.filter(e=>e.co&&e.co.trim());
   if(exps.length&&expsWithCo.length===exps.length){rsc+=10;rchecks.push({l:'All roles have employer names',ok:true});}
-  else if(exps.length){rchecks.push({l:`${exps.length-expsWithCo.length} role(s) missing employer name`,ok:false,fix:'employer'});}
+  else if(exps.length){rchecks.push({l:`${exps.length-expsWithCo.length} role(s) missing employer name`,ok:false});}
   // Career gap detection
   const gaps=detectCareerGaps();
   if(gaps.length===0){rsc+=12;rchecks.push({l:'No unexplained employment gaps detected',ok:true});}
-  else{rchecks.push({l:`${gaps.length} career gap(s) detected — consider adding a brief explanation`,ok:false,fix:'gaps'});}
+  else{rchecks.push({l:`${gaps.length} career gap(s) detected — consider adding a brief explanation`,ok:false});}
   if(socials.some(s=>s.url.trim())||v('f-li')){rsc+=8;rchecks.push({l:'Professional social link included',ok:true});}
-  else{rchecks.push({l:'Add LinkedIn or portfolio link — recruiters check this',ok:false,fix:'social'});}
+  else{rchecks.push({l:'Add LinkedIn or portfolio link — recruiters check this',ok:false});}
   const hasQuantified=exps.filter(e=>e.d&&/\d/.test(e.d)).length;
   if(hasQuantified>=2){rsc+=15;rchecks.push({l:`${hasQuantified} roles with quantified results`,ok:true});}
-  else if(hasQuantified===1){rsc+=7;rchecks.push({l:'Only 1 role with numbers — add metrics to 2+ roles',ok:false,fix:'quantify'});}
-  else if(exps.length){rchecks.push({l:'No quantified achievements — numbers make bullets memorable',ok:false,fix:'quantify'});}
+  else if(hasQuantified===1){rsc+=7;rchecks.push({l:'Only 1 role with numbers — add metrics to 2+ roles',ok:false});}
+  else if(exps.length){rchecks.push({l:'No quantified achievements — numbers make bullets memorable',ok:false});}
   if(exps.length>=2){rsc+=10;rchecks.push({l:'Career depth shown (multiple roles)',ok:true});}
   else if(exps.length===1){rsc+=5;}
   rsc=Math.min(rsc,100);
@@ -2882,14 +2879,12 @@ function upATS(){
     <div class="score-section-head">ATS Checks</div>
     ${checks.map(c=>`<div class="ats-check">
       <div class="ats-dot" style="background:${c.ok?'#DEF4EA':'#FBEAEA'};color:${c.ok?'#0E6B49':'#9A2E2E'}">${c.ok?`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><polyline points='20 6 9 17 4 12'/></svg>`:`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>`}</div>
-      <span style="font-size:13.5px;color:${c.ok?'#0E6B49':'#5C2222'};flex:1">${c.l}</span>
-      ${!c.ok&&c.fix?`<button class="check-fix-btn" onclick="fixCheck('${c.fix}',this)">Fix</button>`:''}
+      <span style="font-size:14px;color:${c.ok?'#0E6B49':'#5C2222'}">${c.l}</span>
     </div>`).join('')}
     <div class="score-section-head" style="margin-top:18px">Recruiter Checks</div>
     ${rchecks.map(c=>`<div class="ats-check">
       <div class="ats-dot" style="background:${c.ok?'#EEEEFF':'#FBEAEA'};color:${c.ok?'#3A4AC2':'#9A2E2E'}">${c.ok?`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><polyline points='20 6 9 17 4 12'/></svg>`:`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>`}</div>
-      <span style="font-size:13.5px;color:${c.ok?'#3A4AC2':'#5C2222'};flex:1">${c.l}</span>
-      ${!c.ok&&c.fix?`<button class="check-fix-btn" onclick="fixCheck('${c.fix}',this)">Fix with AI</button>`:''}
+      <span style="font-size:14px;color:${c.ok?'#3A4AC2':'#5C2222'}">${c.l}</span>
     </div>`).join('')}
     ${gapHTML}`;
   }
@@ -2903,100 +2898,7 @@ function upATS(){
   }
 }
 
-// ── FIX WITH AI — triggered from failing ATS/Recruiter check items ──────────
-async function fixCheck(type, btn){
-  btn.disabled=true;
-  btn.textContent='Fixing…';
-  const d=getData();
-
-  const flash=(id)=>{
-    const el=gi(id);
-    if(!el)return;
-    el.scrollIntoView({behavior:'smooth',block:'center'});
-    el.focus?.();
-    el.style.boxShadow='0 0 0 3px rgba(79,91,213,.35)';
-    el.style.borderColor='var(--ac)';
-    setTimeout(()=>{el.style.boxShadow='';el.style.borderColor='';},2500);
-  };
-
-  try{
-    if(type==='title'){
-      // AI suggests a clean single job title from existing content
-      const prompt=`Based on this person's experience and current title, suggest ONE clean professional job title (3-5 words max, no slashes or lists). Return only the title, nothing else.\n\nCurrent title: ${d.ti}\nExperience: ${exps.slice(0,2).map(e=>e.t+' at '+e.co).join(', ')}`;
-      const result=await callAI(prompt,30);
-      if(result.trim()){
-        gi('f-title').value=result.trim();
-        rCV();saveDraft();
-        swTab('build',document.querySelector('.tab'));
-        flash('f-title');
-        toast('Job title updated — check the preview','ok',3000);
-      }
-    }else if(type==='summary'){
-      // AI rewrites the summary to be specific and generic-phrase-free
-      const prompt=`Rewrite this professional summary to be specific, concrete, and free of generic phrases (no "results-driven", "passionate", "team player" etc). 2-3 sentences. Output only the improved summary.\n\nCurrent summary: ${d.sum||'(empty)'}\nTitle: ${d.ti}\nExperience: ${exps.slice(0,3).map(e=>`${e.t} at ${e.co}`).join(', ')}\nSkills: ${skills.slice(0,8).join(', ')}`;
-      const sumField=gi('f-sum');
-      sumField.value='';
-      await callAIStream(prompt,200,(text)=>{sumField.value=text;});
-      rCV();saveDraft();
-      swTab('build',document.querySelector('.tab'));
-      flash('f-sum');
-      toast('Summary rewritten — check the preview','ok',3000);
-    }else if(type==='quantify'){
-      // Find the first experience entry without numbers and AI-enhance its bullets
-      const idx=exps.findIndex(e=>!/\d/.test(e.d));
-      if(idx<0){toast('All your bullets already have numbers','ok');btn.disabled=false;btn.textContent='Fix with AI';return;}
-      const e=exps[idx];
-      const prompt=`Improve these CV bullet points by adding specific metrics and quantified results where plausible. Keep the same facts — only add realistic numbers (%, £/$, time saved, team size, etc.) where they make sense. Output only the improved bullets, one per line.\n\nRole: ${e.t} at ${e.co}\nCurrent bullets:\n${e.d}`;
-      const result=await callAI(prompt,300);
-      if(result.trim()){
-        exps[idx].d=result.trim();
-        renderExpList();rCV();saveDraft();
-        swTab('build',document.querySelector('.tab'));
-        toast(`Bullets quantified for ${e.t}. Review and adjust numbers to match your actual results.`,'ok',5000);
-      }
-    }else if(type==='dates'){
-      // Navigate to Build tab and highlight the first experience entry without dates
-      swTab('build',document.querySelector('.tab'));
-      const idx=exps.findIndex(e=>!e.s);
-      setTimeout(()=>{
-        const editBtns=document.querySelectorAll('.ei-edit');
-        if(editBtns[idx])editBtns[idx].click();
-      },400);
-      toast('Open the experience entry and add start/end dates','default',4000);
-    }else if(type==='employer'){
-      swTab('build',document.querySelector('.tab'));
-      const idx=exps.findIndex(e=>!e.co.trim());
-      setTimeout(()=>{
-        const editBtns=document.querySelectorAll('.ei-edit');
-        if(editBtns[idx])editBtns[idx].click();
-      },400);
-      toast('Add the company name to the highlighted experience','default',4000);
-    }else if(type==='social'){
-      swTab('build',document.querySelector('.tab'));
-      setTimeout(()=>{
-        const addBtn=gi('add-social-btn');
-        if(addBtn){addBtn.scrollIntoView({behavior:'smooth',block:'center'});addBtn.click();}
-      },400);
-      toast('Add your LinkedIn or portfolio link','default',3500);
-    }else if(type==='gaps'){
-      swTab('build',document.querySelector('.tab'));
-      setTimeout(()=>{
-        const wauth=gi('f-workauth');
-        if(wauth){wauth.scrollIntoView({behavior:'smooth',block:'center'});}
-        const addInfoSec=document.querySelector('.sec-additional');
-        if(addInfoSec)addInfoSec.scrollIntoView({behavior:'smooth',block:'center'});
-      },400);
-      toast('Add a brief gap explanation in the Additional Info section','default',4000);
-    }
-    btn.textContent='Done ✓';
-    setTimeout(()=>{btn.disabled=false;btn.textContent='Fix with AI';},3000);
-  }catch(err){
-    console.error('[CVCraft] fixCheck error:',err);
-    btn.disabled=false;
-    btn.textContent='Fix with AI';
-    toast('Fix failed — try again','err',2500);
-  }
-}
+// ── RECRUITER SIMULATION ──
 // The most viral feature: CVCraft AI takes the role of a specific recruiter persona
 // and reads the CV cold — exactly as a real recruiter would in 8 seconds.
 // Output: structured first impression, red flags, strengths, and a decision.
@@ -3804,7 +3706,7 @@ function getData(){
     lo:v('f-loc')||'City, Country',
     li:liRaw,
     liLink:buildSocialLinksHTML(AC),           // for light templates — uses accent colour
-    liLinkDark:buildSocialLinksHTML('rgba(255,255,255,0.9)'), // for dark-bg templates — high contrast white
+    liLinkDark:buildSocialLinksHTML('rgba(255,255,255,0.85)'), // for dark-bg templates
     sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
     certs,langs,projs,socials,
     workauth:v('f-workauth'),
@@ -3892,7 +3794,7 @@ const TPL={
   apex:d=>`<div class="apex">
     <div class="apex-h">
       <div class="apex-nm">${d.nm}</div><div class="apex-tg">${d.ti}</div>
-      <div class="apex-cs">${[d.em,d.ph,d.lo,d.liLinkDark].filter(Boolean).map(c=>`<div class="apex-c">${c}</div>`).join('')}</div>
+      <div class="apex-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="apex-c">${c}</div>`).join('')}</div>
     </div>
     <div class="apex-bd">
       <div class="apex-mn">
@@ -4192,9 +4094,9 @@ const TPL={
   </div>`,
 
   dusk:d=>`<div class="dusk">
-    <div class="dusk-h"><div class="dusk-h-bg" style="background:linear-gradient(135deg,${AC} 0%,${AC}BB 60%,${AC}77 100%)"></div>
+    <div class="dusk-h"><div class="dusk-h-bg" style="background:linear-gradient(135deg,${AC} 0%,${AC}cc 55%,${AC}88 100%);opacity:1"></div>
       <div class="dusk-nm">${d.nm}</div><div class="dusk-ti">${d.ti}</div>
-      <div class="dusk-cs">${[d.em,d.ph,d.lo].filter(Boolean).map(c=>`<span>${c}</span>`).join('')}${d.liLinkDark?'<span>'+d.liLinkDark+'</span>':''}</div>
+      <div class="dusk-cs">${[d.em,d.ph,d.lo].filter(Boolean).map(c=>`<span>${c}</span>`).join('')}${d.liLink?'<span>'+d.liLink+'</span>':''}</div>
     </div>
     <div class="dusk-body">
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>`:''}
@@ -4523,61 +4425,84 @@ async function doExport(){
     // ── IMAGE PDF: direct download, no dialog ──────────────────────────────
     const btn=gi('btn-do-export');
     if(btn){btn.disabled=true;btn.textContent='Generating…';}
-    toast('Building your PDF…','default',12000);
+    toast('Building your PDF…','default',14000);
 
     const zone=gi('pdf-render-zone');
     zone.innerHTML='';
-
-    // Clone the paper element for off-screen rendering
     const paperEl=gi('paper');
-    const clone=paperEl.cloneNode(true);
 
-    // Remove the empty-state skeleton if present (should not appear in PDF)
-    const emptyEl=clone.querySelector('#paper-empty,.paper-empty');
-    if(emptyEl)emptyEl.remove();
-
-    // Resolve all CSS custom properties inline so html2canvas can see them
-    const computedStyle=getComputedStyle(document.documentElement);
-    const cssVars=['--ac','--ink','--surf','--muted','--bdr','--card','--bg','--ff-b','--ff-d','--ff-m'];
-    let inlineVarCSS='';
-    cssVars.forEach(v=>{
-      const val=computedStyle.getPropertyValue(v).trim();
-      if(val)inlineVarCSS+=`${v}:${val};`;
-    });
-
-    clone.style.cssText=`width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;overflow:visible;${inlineVarCSS}`;
-    zone.appendChild(clone);
-
-    // Wait for fonts + layout
+    // Wait for fonts to fully paint
     try{if(document.fonts?.ready)await document.fonts.ready;}catch(_){}
-    void clone.offsetHeight;
+    void paperEl.offsetHeight;
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    // Extra wait for web fonts to paint
-    await new Promise(r=>setTimeout(r,400));
+    await new Promise(r=>setTimeout(r,600));
 
     try{
-      const SCALE=3; // Higher scale = sharper text
-      const canvas=await html2canvas(clone,{
+      const SCALE=3;
+      // Render the LIVE paper element directly using onclone so the full CSS
+      // cascade (custom properties, gradients, dark backgrounds) is preserved
+      const canvas=await html2canvas(paperEl,{
         scale:SCALE,
         useCORS:true,
         allowTaint:true,
         backgroundColor:'#ffffff',
         width:794,
-        height:clone.scrollHeight,
+        height:paperEl.scrollHeight,
         windowWidth:794,
-        imageTimeout:10000,
+        scrollX:0,
+        scrollY:-window.scrollY,
+        imageTimeout:12000,
         logging:false,
-        removeContainer:false,
+        onclone:(clonedDoc,clonedEl)=>{
+          // Remove skeleton empty state from the clone
+          clonedEl.querySelector('#paper-empty,.paper-empty')?.remove();
+          // Reset paper wrapper styles that would break the render
+          clonedEl.style.boxShadow='none';
+          clonedEl.style.borderRadius='0';
+          clonedEl.style.overflow='visible';
+          clonedEl.style.minHeight='unset';
+          clonedEl.style.transition='none';
+          // Ensure CSS variables resolve correctly in the cloned document
+          const rootStyle=clonedDoc.documentElement.style;
+          const computed=getComputedStyle(document.documentElement);
+          ['--ac','--ink','--surf','--muted','--bdr','--card','--bg','--ff-b','--ff-d','--ff-m']
+            .forEach(v=>{const val=computed.getPropertyValue(v).trim();if(val)rootStyle.setProperty(v,val);});
+          // Fix 8-digit hex colors on any inline styles (e.g. Dusk gradient)
+          // html2canvas 1.4.1 doesn't parse #RRGGBBAA format
+          clonedEl.querySelectorAll('[style]').forEach(el=>{
+            el.style.cssText=el.style.cssText.replace(
+              /#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})\b/g,
+              (_,hex,alpha)=>{
+                const r=parseInt(hex.slice(0,2),16);
+                const g=parseInt(hex.slice(2,4),16);
+                const b=parseInt(hex.slice(4,6),16);
+                const a=Math.round(parseInt(alpha,16)/255*100)/100;
+                return`rgba(${r},${g},${b},${a})`;
+              }
+            );
+          });
+          // Also fix in <style> blocks inside the clone
+          clonedDoc.querySelectorAll('style').forEach(s=>{
+            s.textContent=s.textContent.replace(
+              /#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})\b/g,
+              (_,hex,alpha)=>{
+                const r=parseInt(hex.slice(0,2),16);
+                const g=parseInt(hex.slice(2,4),16);
+                const b=parseInt(hex.slice(4,6),16);
+                const a=Math.round(parseInt(alpha,16)/255*100)/100;
+                return`rgba(${r},${g},${b},${a})`;
+              }
+            );
+          });
+        },
       });
 
       if(isCanvasBlank(canvas)){
-        toast('PDF rendered blank — try "Save as PDF (Print)" instead','err',5000);
-        zone.innerHTML='';
+        toast('PDF rendered blank — try the Print option instead, or refresh and try again','err',5000);
         if(btn){btn.disabled=false;btn.textContent='Download PDF';}
         return;
       }
 
-      // ── Smart page cutting — avoid splitting entries mid-block ──────────
       const PAGE_W=794, PAGE_H=1123;
       const protectedSel=[
         '.entry-card','.classic-ex','.nova-ex','.nova-sk','.apex-ex',
@@ -4590,10 +4515,10 @@ async function doExport(){
       ].join(',');
 
       const TOP_PAD=36*SCALE;
-      const cloneRect=clone.getBoundingClientRect();
-      const blocks=[...clone.querySelectorAll(protectedSel)].map(el=>{
+      const paperRect=paperEl.getBoundingClientRect();
+      const blocks=[...paperEl.querySelectorAll(protectedSel)].map(el=>{
         const r=el.getBoundingClientRect();
-        return{top:Math.max(0,(r.top-cloneRect.top)*SCALE), bottom:Math.max(0,(r.bottom-cloneRect.top)*SCALE)};
+        return{top:Math.max(0,(r.top-paperRect.top)*SCALE), bottom:Math.max(0,(r.bottom-paperRect.top)*SCALE)};
       }).filter(b=>b.bottom>b.top+2);
 
       const pageHeightPx=PAGE_H*SCALE;
@@ -4653,10 +4578,9 @@ async function doExport(){
       toast(`${rawName}'s CV downloaded (${pages} page${pages>1?'s':''})`, 'ok', 3500);
     }catch(err){
       console.error('[CVCraft] PDF export error:',err);
-      toast('PDF export failed — try "Save as PDF (Print)" from the menu','err',4000);
+      toast('PDF export failed — try the Print option instead','err',4000);
     }
 
-    zone.innerHTML='';
     if(btn){btn.disabled=false;btn.textContent='Download PDF';}
 
   }else if(exportSel==='print'){
