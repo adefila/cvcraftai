@@ -31,6 +31,14 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 #onb-overlay{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(2px)}
 #onb-overlay.active{display:flex}
 .onb-modal{background:#fff;border-radius:22px;padding:0;width:440px;max-width:calc(100vw - 32px);box-shadow:0 32px 96px rgba(0,0,0,.28);overflow:hidden;animation:modalIn .25s cubic-bezier(.34,1.3,.64,1)}
+/* Confirm modal */
+#confirm-modal.open{display:flex}
+.confirm-box{background:#fff;border-radius:20px;padding:28px 28px 24px;width:380px;max-width:calc(100vw - 32px);box-shadow:0 24px 72px rgba(0,0,0,.22);animation:modalIn .2s cubic-bezier(.34,1.2,.64,1)}
+.confirm-icon{font-size:36px;margin-bottom:14px;text-align:center}
+.confirm-title{font-family:var(--ff-d);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center}
+.confirm-body{font-size:14px;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:22px}
+.confirm-actions{display:flex;gap:10px}
+.confirm-cancel{flex:1;justify-content:center;color:var(--muted);border-color:var(--bdr)}
 .onb-illus{height:152px;display:flex;align-items:center;justify-content:center;gap:18px;padding:0 32px;position:relative;overflow:hidden}
 .onb-illus-bg{position:absolute;inset:0;opacity:.08}
 .onb-illus-icon{font-size:42px;position:relative;z-index:1}
@@ -1379,6 +1387,19 @@ a:focus-visible,[tabindex]:focus-visible{
 </div>
 
 <!-- EXPORT MODAL -->
+<!-- CONFIRM MODAL — replaces browser confirm() dialogs -->
+<div id="confirm-modal" style="display:none;position:fixed;inset:0;z-index:700;align-items:center;justify-content:center;background:rgba(10,10,15,.55);backdrop-filter:blur(3px)">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirm-icon"></div>
+    <div class="confirm-title" id="confirm-title"></div>
+    <div class="confirm-body" id="confirm-body"></div>
+    <div class="confirm-actions">
+      <button class="btn-pill" id="confirm-ok" style="background:#0A0A12;flex:1;justify-content:center"></button>
+      <button class="btn-pill-outline confirm-cancel" id="confirm-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div id="export-modal" style="display:none">
   <div class="modal-bg" onclick="if(event.target===this)closeExport()">
     <div class="modal">
@@ -1468,11 +1489,33 @@ function loadDraft(){
 function clearDraft(){
   try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
 }
+
+// ── CONFIRM MODAL ──
+function showConfirm({icon='⚠️',title,body,okLabel='Confirm',danger=false,onOk}){
+  const modal=gi('confirm-modal');
+  gi('confirm-icon').textContent=icon;
+  gi('confirm-title').textContent=title;
+  gi('confirm-body').textContent=body;
+  const okBtn=gi('confirm-ok');
+  okBtn.textContent=okLabel;
+  okBtn.style.background=danger?'#C0392B':'#0A0A12';
+  modal.classList.add('open');
+  const close=()=>modal.classList.remove('open');
+  okBtn.onclick=()=>{close();onOk();};
+  gi('confirm-cancel').onclick=close;
+  // Click backdrop to cancel
+  modal.onclick=(e)=>{if(e.target===modal)close();};
+}
+
 function confirmStartOver(){
-  if(confirm('Clear this CV and start over? This cannot be undone.')){
-    clearDraft();
-    location.reload();
-  }
+  showConfirm({
+    icon:'🗑️',
+    title:'Start over?',
+    body:'This will clear everything in your CV — name, experience, skills, and all sections. This cannot be undone.',
+    okLabel:'Yes, clear everything',
+    danger:true,
+    onOk:()=>{clearDraft();location.reload();}
+  });
 }
 
 // ── BAR MENU ──
@@ -1513,6 +1556,25 @@ function backupCV(){
   toast('Backup saved — keep this file safe','ok',3000);
 }
 
+function doRestoreCV(data){
+  const FIELD_IDS_IMPORT=['f-name','f-title','f-email','f-phone','f-loc','f-sum','f-workauth'];
+  FIELD_IDS_IMPORT.forEach(id=>{const el=gi(id);if(el&&data.fields[id]!==undefined)el.value=data.fields[id];});
+  const refsEl=gi('f-refs');
+  if(refsEl&&data.refs!==undefined)refsEl.checked=data.refs;
+  if(Array.isArray(data.skills))skills=data.skills;
+  if(Array.isArray(data.exps))exps=data.exps;
+  if(Array.isArray(data.edus))edus=data.edus;
+  if(Array.isArray(data.certs))certs=data.certs;
+  if(Array.isArray(data.langs))langs=data.langs;
+  if(Array.isArray(data.projs))projs=data.projs;
+  if(Array.isArray(data.socials))socials=data.socials;
+  if(data.CT)CT=data.CT;
+  if(data.AC){AC=data.AC;document.documentElement.style.setProperty('--ac',AC);}
+  renderSk();renderSocialLinks();renderExpList();renderEduList();renderCertList();renderLangList();renderProjList();
+  buildTplCatRow();buildTplGrid();rCV();upATS();saveDraft();
+  toast('CV restored from backup','ok',2500);
+}
+
 function restoreCV(input){
   const file=input.files[0];
   if(!file)return;
@@ -1522,31 +1584,16 @@ function restoreCV(input){
       const data=JSON.parse(e.target.result);
       if(!data.version||!data.fields){
         toast('This file doesn\'t look like a CVCraft backup','err');
-        return;
+        input.value='';return;
       }
-      if(!confirm('This will replace your current CV with the backup. Continue?')){
-        input.value='';
-        return;
-      }
-      // Restore all fields
-      const FIELD_IDS_IMPORT=['f-name','f-title','f-email','f-phone','f-loc','f-sum','f-workauth'];
-      FIELD_IDS_IMPORT.forEach(id=>{const el=gi(id);if(el&&data.fields[id]!==undefined)el.value=data.fields[id];});
-      const refsEl=gi('f-refs');
-      if(refsEl&&data.refs!==undefined)refsEl.checked=data.refs;
-      if(Array.isArray(data.skills))skills=data.skills;
-      if(Array.isArray(data.exps))exps=data.exps;
-      if(Array.isArray(data.edus))edus=data.edus;
-      if(Array.isArray(data.certs))certs=data.certs;
-      if(Array.isArray(data.langs))langs=data.langs;
-      if(Array.isArray(data.projs))projs=data.projs;
-      if(Array.isArray(data.socials))socials=data.socials;
-      if(data.CT)CT=data.CT;
-      if(data.AC){AC=data.AC;document.documentElement.style.setProperty('--ac',AC);}
-      // Re-render everything
-      renderSk();renderSocialLinks();renderExpList();renderEduList();renderCertList();renderLangList();renderProjList();
-      buildTplCatRow();buildTplGrid();rCV();upATS();
-      saveDraft();
-      toast('CV restored from backup','ok',2500);
+      showConfirm({
+        icon:'📂',
+        title:'Replace your current CV?',
+        body:'This will overwrite everything in your builder with the backup file. Your current work will be lost.',
+        okLabel:'Yes, restore backup',
+        danger:false,
+        onOk:()=>doRestoreCV(data)
+      });
     }catch(err){
       toast('Could not read that file — make sure it\'s a CVCraft backup','err');
     }
@@ -2922,50 +2969,110 @@ function showSimPasteFallback(){
 }
 
 async function extractPDFText(file){
-  // Try to load pdfjsLib — it may still be loading if CDN is slow
+  // Wait for pdfjsLib to load (CDN may still be fetching)
   if(typeof pdfjsLib==='undefined'){
-    // Wait up to 5 seconds for it to load
     await new Promise((res,rej)=>{
       let tries=0;
       const t=setInterval(()=>{
         if(typeof pdfjsLib!=='undefined'){clearInterval(t);res();}
-        if(++tries>50){clearInterval(t);rej(new Error('PDF reader did not load. Check your internet connection and refresh the page.'));}
+        if(++tries>60){clearInterval(t);rej(new Error('PDF reader did not load — check your connection and refresh.'));}
       },100);
     });
   }
-  // Try multiple worker sources for reliability
-  const workerSources=[
+
+  // Try two worker CDN sources — some networks block one or the other
+  const workers=[
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
     'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js',
   ];
-  pdfjsLib.GlobalWorkerOptions.workerSrc=workerSources[0];
-  const ab=await file.arrayBuffer();
+
   let pdf;
-  try{
-    pdf=await pdfjsLib.getDocument({data:ab,disableFontFace:true}).promise;
-  }catch(e){
-    // Retry with second worker source
+  for(const src of workers){
     try{
-      pdfjsLib.GlobalWorkerOptions.workerSrc=workerSources[1];
-      pdf=await pdfjsLib.getDocument({data:ab,disableFontFace:true}).promise;
-    }catch(e2){
-      throw new Error('Could not read this PDF. It may be password-protected or corrupted.');
+      pdfjsLib.GlobalWorkerOptions.workerSrc=src;
+      const ab=await file.arrayBuffer();
+      pdf=await pdfjsLib.getDocument({
+        data:ab,
+        disableFontFace:true,
+        useSystemFonts:false,
+        // Increases compatibility with unusual PDF encodings
+        cMapUrl:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+        cMapPacked:true,
+      }).promise;
+      break; // success
+    }catch(e){
+      if(src===workers[workers.length-1]){
+        throw new Error('Could not open this PDF. It may be password-protected, corrupted, or an image scan.');
+      }
     }
   }
-  let text='';
-  const maxPages=Math.min(pdf.numPages,10); // cap at 10 pages for speed
-  for(let i=1;i<=maxPages;i++){
+
+  const allLines=[];
+
+  for(let pageNum=1;pageNum<=Math.min(pdf.numPages,12);pageNum++){
     try{
-      const page=await pdf.getPage(i);
-      const content=await page.getTextContent();
-      const pageText=content.items.map(it=>it.str||'').filter(Boolean).join(' ');
-      text+=pageText+'\n';
+      const page=await pdf.getPage(pageNum);
+      const content=await page.getTextContent({normalizeWhitespace:true});
+      if(!content.items.length)continue;
+
+      // Group items by vertical position (y coordinate) to reconstruct lines
+      // Each item has: str, transform [a,b,c,d,x,y], width, height
+      const rowMap=new Map();
+      for(const item of content.items){
+        if(!item.str)continue;
+        const str=item.str
+          // Strip non-printable / control characters
+          .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g,'')
+          // Collapse multiple spaces
+          .replace(/ {2,}/g,' ')
+          .trim();
+        if(!str)continue;
+
+        const x=item.transform[4];
+        const y=item.transform[5];
+        // Bucket by y-position within ±3px tolerance so items on the same visual line group together
+        const yKey=Math.round(y/3)*3;
+
+        if(!rowMap.has(yKey))rowMap.set(yKey,[]);
+        rowMap.get(yKey).push({x,str,width:item.width||0});
+      }
+
+      // Sort rows top-to-bottom (PDF y-axis is bottom-up, so descending y = top-to-bottom)
+      const sortedRows=[...rowMap.entries()].sort((a,b)=>b[0]-a[0]);
+
+      for(const [,items] of sortedRows){
+        // Sort items left-to-right within the line
+        items.sort((a,b)=>a.x-b.x);
+
+        // Join items, inserting a space if there's a visual gap between them
+        let line='';
+        for(let i=0;i<items.length;i++){
+          if(i===0){
+            line=items[i].str;
+          }else{
+            // If there's a large gap (>= ~1 char width), add a space separator
+            const prevEnd=items[i-1].x+(items[i-1].width||6);
+            const gap=items[i].x-prevEnd;
+            line+=(gap>4?' ':'')+items[i].str;
+          }
+        }
+        if(line.trim())allLines.push(line.trim());
+      }
+
+      // Blank line between pages to preserve section separation
+      allLines.push('');
     }catch(pageErr){
-      // Skip pages that fail, continue with rest
-      console.warn(`Page ${i} extraction failed:`,pageErr);
+      console.warn(`[CVCraft] Page ${pageNum} extraction issue:`,pageErr);
     }
   }
-  return text.trim();
+
+  const text=allLines
+    .join('\n')
+    // Remove repeated blank lines
+    .replace(/\n{3,}/g,'\n\n')
+    .trim();
+
+  return text;
 }
 
 async function applySimSuggestionToSummary(suggestion,applyBtn){
