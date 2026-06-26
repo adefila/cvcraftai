@@ -317,7 +317,10 @@ a:focus-visible,[tabindex]:focus-visible{
 .tpl-desc-box{background:var(--surf);border-radius:14px;padding:14px 16px;font-size:14.5px;color:var(--muted);line-height:1.65}
 
 /* ── ATS PANEL ── */
-.ats-check{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.ats-check{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr)}
+.check-fix-btn{flex-shrink:0;border:none;background:#0A0A12;color:#fff;font-family:var(--ff-b);font-size:11px;font-weight:600;padding:4px 11px;border-radius:999px;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.check-fix-btn:hover{opacity:.8}
+.check-fix-btn:disabled{opacity:.45;cursor:default}
 /* Dual score cards */
 .score-dual-row{display:flex;gap:12px;margin-bottom:20px}
 .score-dual-card{flex:1;background:var(--surf);border-radius:16px;padding:16px;text-align:center}
@@ -2780,30 +2783,30 @@ function upATS(){
   const ti=v('f-title')||'';
   const titleRoles=ti.split(/[|\/,]/).filter(Boolean).length;
   if(titleRoles===1&&ti.length>2){rsc+=15;rchecks.push({l:'Focused job title — one clear role',ok:true});}
-  else if(titleRoles>1){rchecks.push({l:`Title lists ${titleRoles} roles — pick one that matches the role you're applying for`,ok:false});}
-  else{rchecks.push({l:'Add a specific job title',ok:false});}
+  else if(titleRoles>1){rchecks.push({l:`Title lists ${titleRoles} roles — pick one that matches the role you're applying for`,ok:false,fix:'title'});}
+  else{rchecks.push({l:'Add a specific job title',ok:false,fix:'title'});}
   const sumText=v('f-sum')||'';
   const genericWords=/\b(results-driven|dynamic|passionate|hardworking|proven track record|team player|go-getter|self-starter|leverage|synergy|detail-oriented)\b/i;
   if(sumText.length>=100&&!genericWords.test(sumText)){rsc+=18;rchecks.push({l:'Summary is specific and avoids generic phrases',ok:true});}
-  else if(sumText.length>=100){rsc+=8;rchecks.push({l:'Summary OK but contains generic phrases — make it more specific',ok:false});}
-  else if(sumText.length>0){rsc+=4;rchecks.push({l:'Summary is too brief — expand to 100+ characters',ok:false});}
-  else{rchecks.push({l:'Add a professional summary',ok:false});}
+  else if(sumText.length>=100){rsc+=8;rchecks.push({l:'Summary OK but contains generic phrases — make it more specific',ok:false,fix:'summary'});}
+  else if(sumText.length>0){rsc+=4;rchecks.push({l:'Summary is too brief — expand to 100+ characters',ok:false,fix:'summary'});}
+  else{rchecks.push({l:'Add a professional summary',ok:false,fix:'summary'});}
   const expsWithDates=exps.filter(e=>e.s||e.e||e.present);
   if(exps.length&&expsWithDates.length===exps.length){rsc+=12;rchecks.push({l:'All experience entries have dates',ok:true});}
-  else if(exps.length){rchecks.push({l:`${exps.length-expsWithDates.length} role(s) missing dates — recruiters flag these`,ok:false});}
+  else if(exps.length){rchecks.push({l:`${exps.length-expsWithDates.length} role(s) missing dates — recruiters flag these`,ok:false,fix:'dates'});}
   const expsWithCo=exps.filter(e=>e.co&&e.co.trim());
   if(exps.length&&expsWithCo.length===exps.length){rsc+=10;rchecks.push({l:'All roles have employer names',ok:true});}
-  else if(exps.length){rchecks.push({l:`${exps.length-expsWithCo.length} role(s) missing employer name`,ok:false});}
+  else if(exps.length){rchecks.push({l:`${exps.length-expsWithCo.length} role(s) missing employer name`,ok:false,fix:'employer'});}
   // Career gap detection
   const gaps=detectCareerGaps();
   if(gaps.length===0){rsc+=12;rchecks.push({l:'No unexplained employment gaps detected',ok:true});}
-  else{rchecks.push({l:`${gaps.length} career gap(s) detected — consider adding a brief explanation`,ok:false});}
+  else{rchecks.push({l:`${gaps.length} career gap(s) detected — consider adding a brief explanation`,ok:false,fix:'gaps'});}
   if(socials.some(s=>s.url.trim())||v('f-li')){rsc+=8;rchecks.push({l:'Professional social link included',ok:true});}
-  else{rchecks.push({l:'Add LinkedIn or portfolio link — recruiters check this',ok:false});}
+  else{rchecks.push({l:'Add LinkedIn or portfolio link — recruiters check this',ok:false,fix:'social'});}
   const hasQuantified=exps.filter(e=>e.d&&/\d/.test(e.d)).length;
   if(hasQuantified>=2){rsc+=15;rchecks.push({l:`${hasQuantified} roles with quantified results`,ok:true});}
-  else if(hasQuantified===1){rsc+=7;rchecks.push({l:'Only 1 role with numbers — add metrics to 2+ roles',ok:false});}
-  else if(exps.length){rchecks.push({l:'No quantified achievements — numbers make bullets memorable',ok:false});}
+  else if(hasQuantified===1){rsc+=7;rchecks.push({l:'Only 1 role with numbers — add metrics to 2+ roles',ok:false,fix:'quantify'});}
+  else if(exps.length){rchecks.push({l:'No quantified achievements — numbers make bullets memorable',ok:false,fix:'quantify'});}
   if(exps.length>=2){rsc+=10;rchecks.push({l:'Career depth shown (multiple roles)',ok:true});}
   else if(exps.length===1){rsc+=5;}
   rsc=Math.min(rsc,100);
@@ -2879,12 +2882,13 @@ function upATS(){
     <div class="score-section-head">ATS Checks</div>
     ${checks.map(c=>`<div class="ats-check">
       <div class="ats-dot" style="background:${c.ok?'#DEF4EA':'#FBEAEA'};color:${c.ok?'#0E6B49':'#9A2E2E'}">${c.ok?`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><polyline points='20 6 9 17 4 12'/></svg>`:`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>`}</div>
-      <span style="font-size:14px;color:${c.ok?'#0E6B49':'#5C2222'}">${c.l}</span>
+      <span style="font-size:13.5px;color:${c.ok?'#0E6B49':'#5C2222'};flex:1">${c.l}</span>
     </div>`).join('')}
     <div class="score-section-head" style="margin-top:18px">Recruiter Checks</div>
     ${rchecks.map(c=>`<div class="ats-check">
       <div class="ats-dot" style="background:${c.ok?'#EEEEFF':'#FBEAEA'};color:${c.ok?'#3A4AC2':'#9A2E2E'}">${c.ok?`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><polyline points='20 6 9 17 4 12'/></svg>`:`<svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>`}</div>
-      <span style="font-size:14px;color:${c.ok?'#3A4AC2':'#5C2222'}">${c.l}</span>
+      <span style="font-size:13.5px;color:${c.ok?'#3A4AC2':'#5C2222'};flex:1">${c.l}</span>
+      ${!c.ok&&c.fix?`<button class="check-fix-btn" onclick="fixCheck('${c.fix}',this)">Fix with AI</button>`:''}
     </div>`).join('')}
     ${gapHTML}`;
   }
@@ -2895,6 +2899,73 @@ function upATS(){
         <div style="font-size:14px;flex-shrink:0">${t.ok?'✓':'✕'}</div>
         <span style="color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.txt}</span>
       </div>`).join('');
+  }
+}
+
+// ── FIX WITH AI — called from failing ATS/Recruiter check items ──────────────
+async function fixCheck(type,btn){
+  btn.disabled=true;btn.textContent='Fixing…';
+  const d=getData();
+
+  const flash=(id,color)=>{
+    const el=gi(id);if(!el)return;
+    swTab('build',document.querySelector('.tab'));
+    setTimeout(()=>{
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.focus?.();
+      const c=color||'var(--ac)';
+      el.style.boxShadow='0 0 0 3px '+c+'44';
+      el.style.borderColor=c;
+      setTimeout(()=>{el.style.boxShadow='';el.style.borderColor='';},2500);
+    },350);
+  };
+
+  try{
+    if(type==='title'){
+      const prompt=`Based on this person's experience, suggest ONE clean professional job title (3-5 words, no slashes/lists). Return only the title.\n\nCurrent title: ${d.ti}\nExperience: ${exps.slice(0,2).map(e=>e.t+' at '+e.co).join(', ')}`;
+      const result=await callAI(prompt,25);
+      if(result.trim()){gi('f-title').value=result.trim();rCV();saveDraft();swTab('build',document.querySelector('.tab'));flash('f-title');}
+      toast('Job title updated','ok',2500);
+    }else if(type==='summary'){
+      const sumF=gi('f-sum');sumF.value='';
+      const prompt=`Rewrite this CV summary: specific, concrete, no clichés (no "results-driven","passionate","team player"). 2-3 tight sentences. Output only the summary.\n\nCurrent: ${d.sum||'(empty)'}\nTitle: ${d.ti}\nExperience: ${exps.slice(0,3).map(e=>e.t+' at '+e.co).join(', ')}\nSkills: ${skills.slice(0,8).join(', ')}`;
+      await callAIStream(prompt,200,(text)=>{sumF.value=text;});
+      rCV();saveDraft();swTab('build',document.querySelector('.tab'));flash('f-sum');
+      toast('Summary rewritten','ok',2500);
+    }else if(type==='quantify'){
+      const idx=exps.findIndex(e=>!/\d/.test(e.d));
+      if(idx<0){toast('Bullets already have numbers','ok');btn.disabled=false;btn.textContent='Fix with AI';return;}
+      const e=exps[idx];
+      const prompt=`Improve these CV bullets by adding realistic metrics (%, £/$, time, team size). Keep the same facts — only strengthen with plausible numbers. One bullet per line.\n\nRole: ${e.t} at ${e.co}\nBullets:\n${e.d}`;
+      const result=await callAI(prompt,300);
+      if(result.trim()){exps[idx].d=result.trim();renderExpList();rCV();saveDraft();}
+      swTab('build',document.querySelector('.tab'));
+      toast(`Bullets quantified for ${e.t} — verify the numbers match your actual results`,'ok',5000);
+    }else if(type==='dates'){
+      swTab('build',document.querySelector('.tab'));
+      const idx=exps.findIndex(e=>!e.s);
+      setTimeout(()=>{const btns=document.querySelectorAll('.ei-edit');if(btns[idx])btns[idx].click();},450);
+      toast('Add start and end dates to this experience entry','default',4000);
+    }else if(type==='employer'){
+      swTab('build',document.querySelector('.tab'));
+      const idx=exps.findIndex(e=>!e.co.trim());
+      setTimeout(()=>{const btns=document.querySelectorAll('.ei-edit');if(btns[idx])btns[idx].click();},450);
+      toast('Add the company name to this experience entry','default',4000);
+    }else if(type==='social'){
+      swTab('build',document.querySelector('.tab'));
+      setTimeout(()=>{const b=gi('add-social-btn');if(b){b.scrollIntoView({behavior:'smooth',block:'center'});b.click();}},450);
+      toast('Add your LinkedIn or portfolio link','default',3500);
+    }else if(type==='gaps'){
+      swTab('build',document.querySelector('.tab'));
+      setTimeout(()=>{const s=document.querySelector('.sec-additional');if(s)s.scrollIntoView({behavior:'smooth',block:'center'});},450);
+      toast('Add a brief gap explanation in Additional Info','default',4000);
+    }
+    btn.textContent='Done ✓';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='Fix with AI';},3000);
+  }catch(err){
+    console.error('[CVCraft] fixCheck error:',err);
+    btn.disabled=false;btn.textContent='Fix with AI';
+    toast('Fix failed — try again','err',2500);
   }
 }
 
@@ -3794,7 +3865,7 @@ const TPL={
   apex:d=>`<div class="apex">
     <div class="apex-h">
       <div class="apex-nm">${d.nm}</div><div class="apex-tg">${d.ti}</div>
-      <div class="apex-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="apex-c">${c}</div>`).join('')}</div>
+      <div class="apex-cs">${[d.em,d.ph,d.lo,d.liLinkDark].filter(Boolean).map(c=>`<div class="apex-c">${c}</div>`).join('')}</div>
     </div>
     <div class="apex-bd">
       <div class="apex-mn">
@@ -4096,7 +4167,7 @@ const TPL={
   dusk:d=>`<div class="dusk">
     <div class="dusk-h"><div class="dusk-h-bg" style="background:linear-gradient(135deg,${AC} 0%,${AC}cc 55%,${AC}88 100%);opacity:1"></div>
       <div class="dusk-nm">${d.nm}</div><div class="dusk-ti">${d.ti}</div>
-      <div class="dusk-cs">${[d.em,d.ph,d.lo].filter(Boolean).map(c=>`<span>${c}</span>`).join('')}${d.liLink?'<span>'+d.liLink+'</span>':''}</div>
+      <div class="dusk-cs">${[d.em,d.ph,d.lo].filter(Boolean).map(c=>`<span>${c}</span>`).join('')}${d.liLinkDark?'<span>'+d.liLinkDark+'</span>':''}</div>
     </div>
     <div class="dusk-body">
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>`:''}
