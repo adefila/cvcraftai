@@ -358,6 +358,10 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-upload-status:not(:empty){padding:10px 14px;}
 .select-fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;-webkit-appearance:none;appearance:none;padding-right:40px;cursor:pointer}
 .sim-role-row{display:flex;gap:10px}
+/* Sim form preview — live sync from builder */
+.sim-form-preview{display:flex;align-items:flex-start;gap:10px;background:var(--surf);border:1.5px solid var(--bdr);border-radius:12px;padding:11px 13px;margin-top:10px}
+.sim-sync-dot{width:8px;height:8px;border-radius:50%;background:#1AA371;flex-shrink:0;margin-top:4px;animation:sync-pulse 2.5s infinite}
+@keyframes sync-pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .sim-improvement{align-items:flex-start!important;gap:10px}
 .sim-apply-btn{margin-left:auto;flex-shrink:0;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .sim-apply-btn:hover{opacity:.85;transform:translateY(-1px)}
@@ -1216,18 +1220,16 @@ a:focus-visible,[tabindex]:focus-visible{
   <!-- JD MATCH PANEL -->
   <div class="pnl" id="pnl-jd">
     <div class="sec">
-      <div class="lbl">Paste Job Description</div>
-      <div class="jd-empty-state" id="jd-empty-hint">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" opacity=".15"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.6" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <div class="jd-empty-title">Match your CV to a job posting</div>
-        <div class="jd-empty-items">
-          <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>Finds keywords in the JD your CV is missing</div>
-          <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>Scores how well your CV matches the role</div>
-          <div class="jd-empty-item"><span class="jd-empty-tick">✓</span>AI gap analysis tells you exactly what to fix</div>
+      <div class="lbl">Job Description Match</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">Paste a job posting to see how well your CV matches it — keywords, match score, and what to add.</p>
+      <textarea class="fi" id="jd-text" placeholder="Paste a job description here…" rows="6" oninput="runJDMatch();gi('jd-empty-hint').style.display=this.value.trim()?'none':'block'" style="resize:vertical"></textarea>
+      <div id="jd-empty-hint" style="display:block;margin-top:8px">
+        <div style="font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap">
+          <span>✓ Keyword gap analysis</span>
+          <span>✓ Match score</span>
+          <span>✓ One-click add missing skills</span>
         </div>
-        <div class="jd-empty-cta">Paste any job description below to start</div>
       </div>
-      <textarea class="fi" id="jd-text" placeholder="Paste the full job description here…" rows="7" oninput="runJDMatch();if(this.value.trim())gi('jd-empty-hint').style.display='none';else gi('jd-empty-hint').style.display=''"></textarea>
     </div>
     <div id="jd-results" style="display:none">
       <div class="sec">
@@ -1311,26 +1313,32 @@ a:focus-visible,[tabindex]:focus-visible{
             Upload a CV
           </button>
         </div>
-        <!-- Upload zone -->
+
+        <!-- Form mode: live sync from builder — updates automatically -->
+        <div id="sim-form-preview" class="sim-form-preview">
+          <div class="sim-sync-dot"></div>
+          <div id="sim-form-preview-text" style="flex:1;font-size:13px;color:var(--ink);line-height:1.55"></div>
+        </div>
+
+        <!-- Upload zone — only shows in upload mode -->
         <div id="sim-upload-zone" style="display:none">
           <div class="sim-upload-drop" id="sim-upload-drop" onclick="gi('sim-cv-file').click()">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 12 15 15"/></svg>
             <div class="sim-upload-text">Click to upload your CV</div>
-            <div class="sim-upload-sub">PDF, DOCX or TXT · text will be extracted automatically</div>
+            <div class="sim-upload-sub">PDF, DOCX or TXT — extracted automatically</div>
           </div>
           <div class="sim-upload-status" id="sim-upload-status"></div>
           <input type="file" id="sim-cv-file" accept=".pdf,.docx,.doc,.txt" style="display:none" onchange="handleSimUpload(this)">
+          <input class="fi" id="sim-role" placeholder="Target role (optional)" list="role-suggestions" autocomplete="off" style="margin-top:10px">
         </div>
-        <!-- Role + persona — full width stacked -->
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
-          <input class="fi" id="sim-role" placeholder="Target role (e.g. Senior UX Designer, Product Manager)" list="role-suggestions" autocomplete="off">
-          <select class="fi select-fi" id="sim-exp-level">
-            <option value="junior">Junior Recruiter</option>
-            <option value="senior" selected>Senior Recruiter</option>
-            <option value="headhunter">Executive Headhunter</option>
-            <option value="hiring">Hiring Manager</option>
-          </select>
-        </div>
+
+        <!-- Persona — always shown -->
+        <select class="fi select-fi" id="sim-exp-level" style="margin-top:10px">
+          <option value="junior">Junior Recruiter</option>
+          <option value="senior" selected>Senior Recruiter</option>
+          <option value="headhunter">Executive Headhunter</option>
+          <option value="hiring">Hiring Manager</option>
+        </select>
         <button class="btn-pill" id="sim-btn" onclick="runRecruiterSim()" style="width:100%;justify-content:center;margin-top:12px">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-5 3.5-8 8-8s8 3 8 8" fill="currentColor" opacity=".5"/><path d="M18 3l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
           Run Recruiter Simulation
@@ -2821,13 +2829,36 @@ function simSetSource(mode){
   simSourceMode=mode;
   gi('sim-src-form').classList.toggle('active',mode==='form');
   gi('sim-src-upload').classList.toggle('active',mode==='upload');
-  gi('sim-upload-zone').style.display=mode==='upload'?'block':'none';
+  // Show the right zone
+  const formPrev=gi('sim-form-preview');
+  const uploadZone=gi('sim-upload-zone');
+  if(formPrev)formPrev.style.display=mode==='form'?'flex':'none';
+  if(uploadZone)uploadZone.style.display=mode==='upload'?'block':'none';
   if(mode==='form'){
     simUploadedCVText='';
-    // Remove paste fallback if present
-    const fb=gi('sim-paste-fallback');
-    if(fb)fb.remove();
+    updateSimFormPreview();
   }
+}
+
+function updateSimFormPreview(){
+  // Only update if in form mode
+  if(simSourceMode!=='form')return;
+  const el=gi('sim-form-preview-text');
+  if(!el)return;
+  const name=v('f-name').trim();
+  const title=v('f-title').trim();
+  const expCount=exps.length;
+  const skillCount=skills.length;
+  if(!name&&!expCount){
+    el.innerHTML=`<span style="color:var(--muted)">No CV data yet — fill in the <strong>Build</strong> tab and it will appear here automatically.</span>`;
+    return;
+  }
+  const parts=[];
+  if(name)parts.push(`<strong>${name}</strong>${title?` · ${title}`:''}`);
+  if(expCount)parts.push(`${expCount} role${expCount>1?'s':''}`);
+  if(skillCount>=3)parts.push(`${skillCount} skills`);
+  if(edus.length)parts.push(`${edus.length} education entr${edus.length>1?'ies':'y'}`);
+  el.innerHTML=`<span style="font-size:11px;font-weight:600;color:#1AA371;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Synced from builder</span>${parts.join(' · ')}`;
 }
 
 async function handleSimUpload(input){
@@ -3244,7 +3275,8 @@ Only include experience entries where the bullets actually need improvement. Ind
 
 async function runRecruiterSim(){
   const d=getData();
-  const role=gi('sim-role')?.value.trim()||d.ti;
+  // In form mode, use the job title from the builder. In upload mode, use the optional role input.
+  const role=simSourceMode==='upload'?(gi('sim-role')?.value.trim()||''):d.ti;
   const expLevel=gi('sim-exp-level')?.value||'senior';
   const persona=SIM_PERSONAS[expLevel];
   const btn=gi('sim-btn'),out=gi('sim-out');
@@ -4174,6 +4206,7 @@ function rCV(){
   updateBuildProgress(d);
   upATS();runJDMatch();
   try{updateProgress();}catch(_){}
+  try{updateSimFormPreview();}catch(_){}
   saveDraft();
 }
 
@@ -4531,6 +4564,7 @@ function init(){
     </div>`).join('');
   }catch(e){}
   try{rCV();}catch(e){console.error('[CVCraft] rCV failed:',e);}
+  try{updateSimFormPreview();}catch(_){}
   if(localStorage.getItem(DRAFT_KEY)&&(v('f-name')||skills.length||exps.length)){
     toast('Restored your last draft','ok',2500);
   } else {
