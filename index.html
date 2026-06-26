@@ -138,6 +138,14 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ── FORMS ── */
+.cv-progress-wrap{padding:14px 22px 12px;border-bottom:1px solid var(--bdr);background:var(--bg)}
+.cv-progress-label{display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.cv-progress-track{height:5px;background:var(--surf);border-radius:999px;overflow:hidden;margin-bottom:9px}
+.cv-progress-bar{height:100%;border-radius:999px;background:var(--ac);transition:width .4s cubic-bezier(.4,0,.2,1)}
+.cv-progress-steps{display:flex;gap:6px;flex-wrap:wrap}
+.cv-step{font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;white-space:nowrap}
+.cv-step.done{background:#DEF4EA;color:#0E6B49}
+.cv-step.todo{background:var(--surf);color:var(--muted)}
 .sec{padding:20px 22px;border-bottom:1px solid var(--bdr)}
 .lbl{font-family:var(--ff-d);font-size:12.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);margin-bottom:13px}
 .fi{width:100%;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;font-family:var(--ff-b);font-size:16px;color:var(--ink);background:var(--card);transition:border-color .15s,box-shadow .15s;resize:vertical}
@@ -205,21 +213,23 @@ a:focus-visible,[tabindex]:focus-visible{
 .sk-tag button:hover{color:#fff;background:var(--err)}
 .sk-row{display:flex;gap:9px}
 /* Social links */
-.social-link-card{background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:13px 14px;margin-bottom:9px}
-.social-link-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.social-type-pill{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--bdr);border-radius:999px;padding:4px 10px 4px 9px;font-family:var(--ff-b);font-size:12px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--ink);transition:border-color .15s,background .15s;user-select:none}
-.social-type-pill:hover{border-color:var(--ac);background:var(--surf)}
-.social-type-pill svg{opacity:.5;transition:opacity .15s}
-.social-type-pill:hover svg{opacity:1}
-/* Dropdown — uses position:fixed to escape overflow:auto clipping */
-.social-type-menu{position:fixed;background:var(--card);border:1.5px solid var(--bdr);border-radius:16px;padding:6px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.14);display:none;min-width:190px;max-height:280px;overflow-y:auto}
-.social-type-menu.open{display:grid;grid-template-columns:1fr 1fr;gap:3px}
-.social-type-item{border:none;background:none;border-radius:9px;padding:8px 11px;font-family:var(--ff-b);font-size:12.5px;font-weight:500;cursor:pointer;text-align:left;color:var(--ink);transition:background .1s;white-space:nowrap}
-.social-type-item:hover{background:var(--surf)}
-.social-type-item.sel{font-weight:700;background:var(--surf)}
-.social-link-rm{margin-left:auto;border:none;background:none;color:var(--muted);cursor:pointer;padding:5px;border-radius:8px;display:flex;align-items:center;transition:color .15s,background .15s;flex-shrink:0}
+.social-link-row{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--bdr);border-radius:12px;padding:10px 12px;margin-bottom:8px;transition:border-color .15s}
+.social-link-row:focus-within{border-color:var(--ink)}
+.social-type-tag{display:inline-flex;align-items:center;gap:4px;border:none;border-radius:999px;padding:4px 9px;font-family:var(--ff-b);font-size:11.5px;font-weight:700;cursor:pointer;flex-shrink:0;transition:filter .12s;white-space:nowrap}
+.social-type-tag:hover{filter:brightness(.93)}
+.social-type-tag svg{opacity:.7}
+.social-link-url-inp{flex:1;border:none;background:transparent;font-family:var(--ff-b);font-size:14px;color:var(--ink);min-width:0;outline:none}
+.social-link-url-inp::placeholder{color:var(--muted)}
+.social-link-rm{border:none;background:none;color:var(--muted);cursor:pointer;padding:4px;border-radius:6px;display:flex;align-items:center;flex-shrink:0;transition:color .15s,background .15s}
 .social-link-rm:hover{color:#E14B4B;background:#FBEAEA}
-.btn-add{width:100%;border:1.5px dashed var(--bdr);background:none;border-radius:999px;padding:11px;font-family:var(--ff-b);font-size:14.5px;color:var(--muted);cursor:pointer;transition:all .15s}
+/* type picker popover */
+.social-type-popover{position:absolute;top:calc(100% + 4px);left:0;background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:6px;z-index:300;min-width:170px;box-shadow:0 8px 28px rgba(0,0,0,.14);display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.social-type-opt{border:none;background:none;border-radius:8px;padding:8px 10px;font-family:var(--ff-b);font-size:13px;font-weight:500;cursor:pointer;text-align:left;transition:background .12s;white-space:nowrap}
+.social-type-opt:hover,.social-type-opt.active{background:var(--surf)}
+.social-type-opt.active{font-weight:700}
+.social-link-label-inp{width:100%;border:none;border-top:1px solid var(--bdr);background:transparent;font-family:var(--ff-b);font-size:12px;color:var(--muted);padding:8px 12px 0;margin-top:8px;outline:none}
+.social-link-label-inp::placeholder{color:var(--bdr)}
+.btn-add{.btn-add{width:100%;border:1.5px dashed var(--bdr);background:none;border-radius:999px;padding:11px;font-family:var(--ff-b);font-size:14.5px;color:var(--muted);cursor:pointer;transition:all .15s}
 .btn-add:hover{border-color:var(--ink);color:var(--ink);border-style:solid}
 
 /* ── EXPERIENCE ITEMS ── */
@@ -267,7 +277,7 @@ a:focus-visible,[tabindex]:focus-visible{
 /* ── ATS PANEL ── */
 .ats-check{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--bdr)}
 /* Dual score cards */
-.score-dual-row{display:flex;gap:12px;margin-bottom:20px}
+.score-dual-row{display:flex;gap:12px;margin-bottom:16px}
 .score-dual-card{flex:1;background:var(--surf);border-radius:16px;padding:16px;text-align:center}
 .score-dual-head{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px}
 .score-dual-num{position:absolute;font-family:var(--ff-d);font-size:14px;font-weight:700}
@@ -300,13 +310,6 @@ a:focus-visible,[tabindex]:focus-visible{
 .ats-meth-pts{font-family:var(--ff-m);font-size:11px;font-weight:600;color:var(--ac);min-width:34px;flex-shrink:0}
 .ats-meth-ats{color:#1AA371}
 .ats-meth-rec{color:#4F5BD5}
-/* Build progress ring */
-.build-progress-wrap{display:flex;align-items:center;gap:13px;padding:16px 22px;background:linear-gradient(135deg,var(--surf) 0%,var(--bg) 100%);border-bottom:1px solid var(--bdr)}
-.build-progress-info{}
-.build-progress-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
-.build-progress-sub{font-size:12px;color:var(--muted)}
-/* Section completion dots */
-.sec-done .lbl::after{content:'✓';margin-left:6px;color:#1AA371;font-size:11px;font-weight:700;letter-spacing:0;text-transform:none}
 /* Recruiter Simulation */
 .sim-box{background:linear-gradient(160deg,#F4F4FF 0%,#F9F9FD 100%);border:1.5px solid #E0DEFF;border-radius:18px;padding:18px}
 /* ── TOOLTIP SYSTEM ── */
@@ -342,7 +345,6 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-point{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:13.5px;line-height:1.6}
 .sim-point-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
 .sim-decision{display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:12px;margin-top:14px;font-size:14px;font-weight:600}
-.sim-import-bar{display:flex;align-items:center;gap:12px;background:#EEF9F4;border:1.5px solid #B8E0CC;border-radius:14px;padding:13px 16px;margin-top:12px}
 .weak-word-hit{background:#FCF6EC;border:1px solid #F2DCA8;border-radius:12px;padding:11px 14px;margin-bottom:8px}
 .weak-word-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 .weak-word-flag{font-family:var(--ff-m);font-size:13px;font-weight:600;color:#8A5E0A;background:#FBF1DE;padding:2px 8px;border-radius:6px}
@@ -355,6 +357,16 @@ a:focus-visible,[tabindex]:focus-visible{
 .cv-tl{font-family:var(--ff-d);font-size:13px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
 .cv-tl-val{font-size:14px;color:var(--muted)}
 .paper{background:#fff;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 48px rgba(0,0,0,.09);min-height:920px;overflow:hidden;transition:box-shadow .2s}
+.paper-empty{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:52px 40px 40px;text-align:center;min-height:920px;box-sizing:border-box}
+.paper-empty-icon{width:64px;height:64px;border-radius:20px;background:var(--surf);display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--muted)}
+.paper-empty-title{font-family:var(--ff-d);font-size:17px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.paper-empty-sub{font-size:13.5px;color:var(--muted);max-width:240px;line-height:1.5;margin-bottom:32px}
+.paper-empty-skeleton{width:100%;text-align:left}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skel{border-radius:4px;background:linear-gradient(90deg,#F0EFED 25%,#E8E6E3 50%,#F0EFED 75%);background-size:800px 100%;animation:shimmer 1.8s infinite linear;margin-bottom:8px}
+.skel-name{height:28px;width:55%}
+.skel-title{height:14px;width:38%;margin-top:6px}
+.skel-line{height:10px;width:100%}
 
 /* ── MODAL ── */
 .modal-bg{position:fixed;inset:0;background:rgba(15,15,20,.5);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease;padding:20px}
@@ -1019,21 +1031,17 @@ a:focus-visible,[tabindex]:focus-visible{
 
   <!-- BUILD PANEL -->
   <div class="pnl active" id="pnl-build">
-    <!-- CV Completeness Progress -->
-    <div id="build-progress-ring" class="build-progress-wrap">
-      <div style="position:relative;flex-shrink:0;width:40px;height:40px">
-        <svg width="40" height="40" viewBox="0 0 40 40">
-          <circle cx="20" cy="20" r="16" fill="none" stroke="var(--bdr)" stroke-width="4"/>
-          <circle class="progress-arc" cx="20" cy="20" r="16" fill="none" stroke="var(--ac)" stroke-width="4"
-            stroke-dasharray="100.5" stroke-dashoffset="100.5" stroke-linecap="round"
-            transform="rotate(-90 20 20)" style="transition:stroke-dashoffset .5s,stroke .3s"/>
-        </svg>
-        <div id="build-progress-lbl" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ff-m);font-size:9.5px;font-weight:700;color:var(--ink)">0%</div>
+
+    <!-- CV COMPLETENESS BAR -->
+    <div class="cv-progress-wrap" id="cv-progress-wrap">
+      <div class="cv-progress-label">
+        <span>CV Completeness</span>
+        <span id="cv-progress-pct" style="font-weight:700;color:var(--ac)">0%</span>
       </div>
-      <div class="build-progress-info">
-        <div class="build-progress-title">CV Completeness</div>
-        <div class="build-progress-sub">Fill in each section to improve your scores</div>
+      <div class="cv-progress-track">
+        <div class="cv-progress-bar" id="cv-progress-bar"></div>
       </div>
+      <div class="cv-progress-steps" id="cv-progress-steps"></div>
     </div>
 
     <div class="sec">
@@ -1319,7 +1327,25 @@ a:focus-visible,[tabindex]:focus-visible{
         <div class="cv-tl">Live Preview</div>
         <div class="cv-tl-val">Template: <strong id="tpl-nm-lbl" style="color:var(--ink)">Classic</strong></div>
       </div>
-      <div class="paper" id="paper"></div>
+      <div class="paper" id="paper">
+        <div class="paper-empty" id="paper-empty">
+          <div class="paper-empty-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity=".3"/><polyline points="14 2 14 8 20 8" opacity=".3"/><line x1="8" y1="13" x2="16" y2="13" opacity=".5"/><line x1="8" y1="17" x2="12" y2="17" opacity=".5"/><line x1="8" y1="9" x2="10" y2="9" opacity=".5"/></svg>
+          </div>
+          <div class="paper-empty-title">Your CV preview will appear here</div>
+          <div class="paper-empty-sub">Start by filling in your name and job title on the left</div>
+          <div class="paper-empty-skeleton">
+            <div class="skel skel-name"></div>
+            <div class="skel skel-title"></div>
+            <div class="skel skel-line" style="width:75%;margin-top:16px"></div>
+            <div style="height:1px;background:var(--bdr);margin:12px 0"></div>
+            <div class="skel skel-line" style="width:40%;margin-bottom:6px;height:8px"></div>
+            <div class="skel skel-line"></div>
+            <div class="skel skel-line" style="width:88%"></div>
+            <div class="skel skel-line" style="width:92%"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2980,52 +3006,6 @@ function simApplyImprovement(suggestion,btn){
   }
 }
 
-// ── IMPORT UPLOADED CV INTO BUILDER ──
-async function importUploadedCV(btn){
-  if(!simUploadedCVText){toast('No CV text to import','err');return;}
-  btn.disabled=true;
-  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Importing...`;
-  const prompt=`Extract all information from this CV and return it ONLY as valid JSON (no markdown, no explanation):
-{
-  "name":"Full name","title":"Job title","email":"email","phone":"phone","location":"City, Country",
-  "summary":"Professional summary",
-  "skills":["skill1","skill2"],
-  "experience":[{"title":"Job title","company":"Company","start":"Mon YYYY","end":"Mon YYYY","current":false,"bullets":"Bullet 1\\nBullet 2"}],
-  "education":[{"degree":"Degree","school":"School","year":"YYYY","gpa":""}],
-  "certifications":[{"name":"Cert","issuer":"Issuer","year":"YYYY"}],
-  "languages":[{"name":"Language","level":"Native"}]
-}
-
-CV TEXT:
-${simUploadedCVText.slice(0,5000)}`;
-  try{
-    const raw=await callAI(prompt,1200);
-    const clean=raw.replace(/^```json\s*/i,'').replace(/^```/,'').replace(/```\s*$/,'').trim();
-    const data=JSON.parse(clean);
-    const set=(id,val)=>{const el=gi(id);if(el&&val)el.value=val;};
-    set('f-name',data.name);set('f-title',data.title);set('f-email',data.email);
-    set('f-phone',data.phone);set('f-loc',data.location);set('f-sum',data.summary);
-    if(Array.isArray(data.skills)&&data.skills.length)skills=[...new Set(data.skills.filter(Boolean))];
-    if(Array.isArray(data.experience)&&data.experience.length)
-      exps=data.experience.map(e=>({t:e.title||'',co:e.company||'',s:e.start||'',e:e.end||'',present:!!e.current,d:e.bullets||''}));
-    if(Array.isArray(data.education)&&data.education.length)
-      edus=data.education.map(e=>({d:e.degree||'',s:e.school||'',y:e.year||'',g:e.gpa||''}));
-    if(Array.isArray(data.certifications)&&data.certifications.length)
-      certs=data.certifications.map(c=>({name:c.name||'',issuer:c.issuer||'',year:c.year||''}));
-    if(Array.isArray(data.languages)&&data.languages.length)
-      langs=data.languages.map(l=>({name:l.name||'',level:l.level||''}));
-    renderSk();renderExpList();renderEduList();renderCertList();renderLangList();renderSocialLinks();
-    rCV();upATS();saveDraft();
-    swTab('build',document.querySelector('.tab'));
-    btn.textContent='Imported ✓';btn.style.background='#1AA371';btn.onclick=null;
-    toast('CV imported — review and edit in the Build tab','ok',4000);
-  }catch(err){
-    console.error('[CVCraft] Import error:',err);
-    btn.disabled=false;btn.innerHTML='Retry Import';
-    toast('Could not parse CV — try again','err',3000);
-  }
-}
-
 async function runRecruiterSim(){
   const d=getData();
   const role=gi('sim-role')?.value.trim()||d.ti;
@@ -3092,14 +3072,6 @@ Be a real recruiter. React honestly.`;
       if(el)el.textContent=text;
     });
     out.innerHTML=renderSimOutput(raw,persona,isFormMode);
-    // For uploaded CVs — show Import to Builder bar
-    if(simSourceMode==='upload'&&simUploadedCVText){
-      const bar=document.createElement('div');
-      bar.className='sim-import-bar';
-      bar.innerHTML=`<div style="flex:1;font-size:13.5px;color:#1A4A35;line-height:1.4"><strong>Import to Builder</strong> — populate your CV form with this CV and start editing it.</div>
-        <button class="btn-pill" id="sim-import-btn" onclick="importUploadedCV(this)" style="flex-shrink:0;padding:9px 16px;font-size:13px;background:#1AA371">Import <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>`;
-      out.appendChild(bar);
-    }
   }catch(err){
     out.innerHTML=`<div style="color:var(--err);font-size:13.5px">Simulation failed. ${err?.message||'Try again.'}</div>`;
   }
@@ -3132,57 +3104,6 @@ function renderSimOutput(raw,persona,canApply=false){
   ${decisionRaw?`<div class="sim-decision" style="background:${decBg};color:${decCol}">${decIcon} ${decisionRaw}</div>`:''}`;
 }
 
-// Global single dropdown menu — appended to body so it escapes overflow clipping
-let _socialMenuEl=null;
-function _getSocialMenu(){
-  if(!_socialMenuEl){
-    _socialMenuEl=document.createElement('div');
-    _socialMenuEl.className='social-type-menu';
-    _socialMenuEl.id='social-type-menu-global';
-    document.body.appendChild(_socialMenuEl);
-    document.addEventListener('click',e=>{
-      if(!_socialMenuEl.contains(e.target)&&!e.target.closest('.social-type-pill')){
-        _socialMenuEl.classList.remove('open');
-      }
-    });
-  }
-  return _socialMenuEl;
-}
-
-function openSocialTypeMenu(pill,idx){
-  const menu=_getSocialMenu();
-  const rect=pill.getBoundingClientRect();
-  // Build menu items
-  menu.innerHTML=Object.entries(SOCIAL_TYPES).map(([k,t])=>`
-    <button class="social-type-item${socials[idx]?.type===k?' sel':''}" data-type="${k}" data-idx="${idx}">${t.label}</button>
-  `).join('');
-  // Wire click
-  menu.querySelectorAll('.social-type-item').forEach(item=>{
-    item.addEventListener('click',e=>{
-      e.stopPropagation();
-      const i=+item.dataset.idx;
-      if(socials[i]){
-        socials[i].type=item.dataset.type;
-        renderSocialLinks();
-        rCV();saveDraft();
-      }
-      menu.classList.remove('open');
-    });
-  });
-  // Position fixed below the pill, left-aligned
-  const top=rect.bottom+6;
-  const left=rect.left;
-  const right=window.innerWidth-rect.right;
-  menu.style.top=top+'px';
-  // Stay on screen
-  if(left+196>window.innerWidth){
-    menu.style.left='auto';menu.style.right=right+'px';
-  }else{
-    menu.style.left=left+'px';menu.style.right='auto';
-  }
-  menu.classList.toggle('open');
-}
-
 function renderSocialLinks(){
   const container=gi('social-links-list');
   if(!container)return;
@@ -3193,56 +3114,59 @@ function renderSocialLinks(){
     return;
   }
   container.innerHTML=socials.map((s,i)=>{
-    const typeLabel=SOCIAL_TYPES[s.type]?.label||'Other';
-    return`<div class="social-link-card" data-idx="${i}">
-      <div class="social-link-header">
-        <button class="social-type-pill" data-idx="${i}" title="Change platform">
-          <span>${typeLabel}</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <button class="social-link-rm" data-idx="${i}" title="Remove">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+    const col=SOCIAL_COLORS[s.type]||SOCIAL_COLORS.other;
+    return`<div class="social-link-row" style="position:relative" data-idx="${i}">
+      <button class="social-type-tag" data-idx="${i}" style="background:${col.bg};color:${col.color}">
+        ${SOCIAL_TYPES[s.type]?.label||'Other'}
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="social-type-pop-${i}" class="social-type-popover" style="display:none">
+        ${Object.entries(SOCIAL_TYPES).map(([k,t])=>{
+          const c=SOCIAL_COLORS[k]||SOCIAL_COLORS.other;
+          return`<button class="social-type-opt${s.type===k?' active':''}" data-idx="${i}" data-type="${k}" style="color:${c.color}">${t.label}</button>`;
+        }).join('')}
       </div>
-      <input class="fi social-link-url" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://'}" value="${esc(s.url)}" style="margin-bottom:6px">
-      <input class="fi social-link-label" data-idx="${i}" placeholder="Custom label — e.g. 'My Portfolio' (leave blank to use '${typeLabel}')" value="${esc(s.label||'')}" style="font-size:13px;padding:9px 12px">
+      <input class="social-link-url-inp" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://'}" value="${esc(s.url)}">
+      <button class="social-link-rm" data-idx="${i}" title="Remove">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>`;
   }).join('');
-
-  // Type pill — open global dropdown on click
-  container.querySelectorAll('.social-type-pill').forEach(pill=>{
-    pill.addEventListener('click',e=>{
+  container.querySelectorAll('.social-type-tag').forEach(tag=>{
+    tag.addEventListener('click',e=>{
       e.stopPropagation();
-      const idx=+pill.dataset.idx;
-      openSocialTypeMenu(pill,idx);
+      const idx=+tag.dataset.idx;
+      const pop=gi(`social-type-pop-${idx}`);
+      container.querySelectorAll('.social-type-popover').forEach(p=>{if(p!==pop)p.style.display='none';});
+      pop.style.display=pop.style.display==='none'?'grid':'none';
     });
   });
-  // URL input
-  container.querySelectorAll('.social-link-url').forEach(inp=>{
+  container.querySelectorAll('.social-type-opt').forEach(opt=>{
+    opt.addEventListener('click',e=>{
+      e.stopPropagation();
+      const idx=+opt.dataset.idx;
+      if(socials[idx])socials[idx].type=opt.dataset.type;
+      renderSocialLinks();rCV();saveDraft();
+    });
+  });
+  container.querySelectorAll('.social-link-url-inp').forEach(inp=>{
     inp.addEventListener('input',()=>{
       const idx=+inp.dataset.idx;
       if(socials[idx])socials[idx].url=inp.value;
       rCV();saveDraft();
     });
   });
-  // Label input
-  container.querySelectorAll('.social-link-label').forEach(inp=>{
-    inp.addEventListener('input',()=>{
-      const idx=+inp.dataset.idx;
-      if(socials[idx])socials[idx].label=inp.value;
-      rCV();saveDraft();
-    });
-  });
-  // Remove
   container.querySelectorAll('.social-link-rm').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const idx=+btn.dataset.idx;
       socials.splice(idx,1);
-      renderSocialLinks();
-      rCV();upATS();saveDraft();
+      renderSocialLinks();rCV();upATS();saveDraft();
       toast('Link removed');
     });
   });
+  setTimeout(()=>document.addEventListener('click',()=>{
+    container.querySelectorAll('.social-type-popover').forEach(p=>p.style.display='none');
+  },{once:true}),0);
   const addBtn=gi('add-social-btn');
   if(addBtn)addBtn.style.display=socials.length>=4?'none':'';
 }
@@ -3254,10 +3178,11 @@ function addSocialLink(){
   socials.push({type:nextType,url:'',label:''});
   renderSocialLinks();
   setTimeout(()=>{
-    const inputs=gi('social-links-list').querySelectorAll('.social-link-url');
+    const inputs=gi('social-links-list').querySelectorAll('.social-link-url-inp');
     if(inputs.length)inputs[inputs.length-1].focus();
   },60);
 }
+
 
 function linkURL(val){
   if(!val)return val;
@@ -3861,41 +3786,43 @@ const TPL={
     </div></div>`,
 };
 
+function updateProgress(){
+  const steps=[
+    {key:'name',   label:'Name',       done:!!v('f-name').trim()},
+    {key:'title',  label:'Title',      done:!!v('f-title').trim()},
+    {key:'contact',label:'Contact',    done:!!(v('f-email').trim()&&v('f-phone').trim())},
+    {key:'summary',label:'Summary',    done:v('f-sum').trim().length>=80},
+    {key:'exp',    label:'Experience', done:exps.length>=1},
+    {key:'skills', label:'Skills',     done:skills.length>=3},
+    {key:'edu',    label:'Education',  done:edus.length>=1},
+    {key:'social', label:'Social Link',done:socials.some(s=>s.url.trim())},
+  ];
+  const done=steps.filter(s=>s.done).length;
+  const pct=Math.round((done/steps.length)*100);
+  const bar=gi('cv-progress-bar');
+  const pctEl=gi('cv-progress-pct');
+  const stepsEl=gi('cv-progress-steps');
+  if(bar)bar.style.width=pct+'%';
+  if(bar)bar.style.background=pct>=75?'#1AA371':pct>=40?'#C8860D':'var(--ac)';
+  if(pctEl)pctEl.textContent=pct+'%';
+  if(stepsEl)stepsEl.innerHTML=steps.map(s=>`<span class="cv-step ${s.done?'done':'todo'}">${s.done?'✓ ':''}<span style="font-size:10px;opacity:.8">${s.label}</span></span>`).join('');
+}
+
 function rCV(){
   const d=getData();
   try{
     if(!TPL[CT]){console.warn('[CVCraft] Unknown template:',CT,'— falling back to classic');CT='classic';}
     gi('paper').innerHTML=TPL[CT](d);
+    // Hide empty state once content is set (name or experience entered)
   }catch(e){
     console.error('[CVCraft] Template render error:',e);
+    // Show empty state on error
+    const emp=gi('paper-empty');
+    if(emp&&gi('paper').innerHTML==='')gi('paper').appendChild(emp);
     try{CT='classic';gi('paper').innerHTML=TPL.classic(d);}catch(_){}
   }
-  // Show progress ring in build panel
-  updateBuildProgress(d);
-  upATS();runJDMatch();
+  upATS();runJDMatch();updateProgress();
   saveDraft();
-}
-
-function updateBuildProgress(d){
-  const ring=gi('build-progress-ring');
-  if(!ring)return;
-  const checks=[
-    !!d.nm&&d.nm!=='Your Name',
-    !!d.ti&&d.ti!=='Professional Title',
-    !!d.em&&d.em!=='email@example.com',
-    !!d.sum&&d.sum.length>50,
-    exps.length>0,
-    skills.length>=3,
-    edus.length>0,
-    socials.some(s=>s.url.trim())
-  ];
-  const done=checks.filter(Boolean).length;
-  const pct=Math.round(done/checks.length*100);
-  const r=16,circ=2*Math.PI*r;
-  const arc=ring.querySelector('.progress-arc');
-  if(arc){arc.style.strokeDashoffset=circ-(pct/100)*circ;arc.style.stroke=pct===100?'#1AA371':pct>=50?'var(--ac)':'#C8860D';}
-  const lbl=gi('build-progress-lbl');
-  if(lbl)lbl.textContent=pct+'%';
 }
 
 // ── EXPORT ──
