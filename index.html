@@ -205,13 +205,13 @@ a:focus-visible,[tabindex]:focus-visible{
 .sk-tag button:hover{color:#fff;background:var(--err)}
 .sk-row{display:flex;gap:9px}
 /* Social links */
-.social-link-row{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}
-.social-link-type{width:140px;flex-shrink:0;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 10px;font-family:var(--ff-b);font-size:13.5px;color:var(--ink);background:var(--card);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;-webkit-appearance:none;appearance:none;cursor:pointer;transition:border-color .15s}
-.social-link-type:focus{outline:none;border-color:var(--ink)}
-.social-link-url{flex:1;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;font-family:var(--ff-b);font-size:14px;color:var(--ink);background:var(--card);transition:border-color .15s,box-shadow .15s}
-.social-link-url:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(21,21,26,.06)}
-.social-link-rm{border:none;background:none;color:var(--muted);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;align-self:center;transition:color .15s;border-radius:6px}
-.social-link-rm:hover{color:var(--err)}
+.social-link-card{background:var(--surf);border:1.5px solid var(--bdr);border-radius:14px;padding:12px 14px;margin-bottom:10px;transition:border-color .15s}
+.social-link-card:hover{border-color:var(--bdr)}
+.social-link-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.social-link-type{flex:1;border:none;background:none;font-family:var(--ff-b);font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;appearance:none;-webkit-appearance:none;padding:0}
+.social-link-type:focus{outline:none}
+.social-link-rm{border:none;background:none;color:var(--muted);cursor:pointer;padding:4px;line-height:1;border-radius:6px;display:flex;align-items:center;transition:color .15s,background .15s;flex-shrink:0}
+.social-link-rm:hover{color:#E14B4B;background:#FBEAEA}
 .btn-add{width:100%;border:1.5px dashed var(--bdr);background:none;border-radius:999px;padding:11px;font-family:var(--ff-b);font-size:14.5px;color:var(--muted);cursor:pointer;transition:all .15s}
 .btn-add:hover{border-color:var(--ink);color:var(--ink);border-style:solid}
 
@@ -314,9 +314,10 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-upload-status:not(:empty){padding:10px 14px;}
 .select-fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B72' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;-webkit-appearance:none;appearance:none;padding-right:40px;cursor:pointer}
 .sim-role-row{display:flex;gap:10px}
-.sim-improvement{align-items:flex-start!important}
-.sim-apply-btn{margin-left:auto;flex-shrink:0;background:#F3EEFF;color:#7C3AED;border:1.5px solid #D4C4FF;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:5px 11px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.sim-apply-btn:hover{background:#7C3AED;color:#fff;border-color:#7C3AED}
+.sim-improvement{align-items:flex-start!important;gap:10px}
+.sim-apply-btn{margin-left:auto;flex-shrink:0;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.sim-apply-btn:hover{opacity:.85;transform:translateY(-1px)}
+.sim-apply-btn:disabled{opacity:.5;cursor:default;transform:none}
 .sim-out{background:#fff;border-radius:14px;padding:16px 18px;margin-top:14px;border:1.5px solid var(--bdr)}
 .sim-persona{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
 .sim-persona-av{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:#EEF0FF}
@@ -1035,9 +1036,11 @@ a:focus-visible,[tabindex]:focus-visible{
           <input class="fi" id="f-loc" placeholder="City, Country" oninput="rCV()">
         </div>
         <div>
-          <div class="lbl" style="margin-bottom:8px;font-size:11.5px">Social &amp; Portfolio Links <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(show as embedded labels, not raw URLs)</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="lbl" style="margin:0;font-size:11px">Social &amp; Portfolio Links</div>
+            <button class="btn-add" id="add-social-btn" onclick="addSocialLink()" style="width:auto;padding:6px 14px;font-size:12.5px;border-radius:999px">+ Add Link</button>
+          </div>
           <div id="social-links-list"></div>
-          <button class="btn-add" id="add-social-btn" onclick="addSocialLink()" style="font-size:12.5px;padding:9px 14px">+ Add Link</button>
         </div>
         <textarea class="fi" id="f-sum" placeholder="Professional summary (2–3 sentences)" rows="3" oninput="rCV()"></textarea>
         <button class="btn-pill-outline ai-write-btn" id="sum-ai-write-btn" type="button" onclick="aiWriteSummary()">✦ Write with AI</button>
@@ -1133,7 +1136,7 @@ a:focus-visible,[tabindex]:focus-visible{
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ac)" opacity=".15"/><circle cx="12" cy="12" r="10" stroke="var(--ac)" stroke-width="1.5"/><path d="M8 12l3 3 5-5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           AI Polish Check
         </div>
-        <p class="ai-check-desc">Once your CV is filled in, run a full check. AI will spot grammar issues, weak phrasing, ATS problems, and missing keywords — then let you apply fixes directly with one click.</p>
+        <p class="ai-check-desc">Spot grammar issues, weak phrasing, ATS problems and missing keywords — then apply fixes in one click.</p>
         <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Run AI Check ✦</button>
         <div class="ai-out" id="ai-out"></div>
         <div class="ai-disclaimer" id="ai-disclaimer-box" style="display:none">ⓘ Scores model documented ATS mechanics — not any specific company's proprietary algorithm.</div>
@@ -1203,7 +1206,7 @@ a:focus-visible,[tabindex]:focus-visible{
   <div class="pnl" id="pnl-ats">
     <div class="sec">
       <div class="lbl">Score Breakdown <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS Score = structural/parseable quality. Recruiter Score = human appeal in the first 8 seconds. Both update live as you type.</span></span></div>
-      <div class="ats-methodology">
+      <details class="ats-methodology"><summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);list-style:none;display:flex;align-items:center;gap:5px;padding:8px 0;user-select:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>How scoring works</summary>
         <div class="ats-meth-title">How scores are calculated <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS checks measure parser readability. Recruiter checks measure human appeal. Each item shows maximum points — fill in your CV to see your actual score.</span></span></div>
         <div class="ats-meth-grid">
           <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">8pts</span><span><strong>ATS:</strong> Full name present</span></div>
@@ -1217,14 +1220,14 @@ a:focus-visible,[tabindex]:focus-visible{
           <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">12pts</span><span><strong>Recruiter:</strong> No career gaps over 3 months</span></div>
           <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-rec">8pts</span><span><strong>Recruiter:</strong> Social / portfolio link</span></div>
         </div>
-      </div>
+      </details>
       <div id="ats-bd"><div style="padding:18px;text-align:center;font-size:14.5px;color:var(--muted)">Fill in your CV to see a full breakdown</div></div>
     </div>
 
     <!-- RECRUITER SIMULATION — AI reads your CV cold -->
     <div class="sec">
       <div class="lbl">Recruiter Simulation
-        <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none"></span>
+
       </div>
       <div class="sim-box">
         
@@ -1576,6 +1579,20 @@ function bls(desc,cls){
   if(!desc)return'';
   return desc.split('\n').filter(Boolean).map(l=>`<div class="${cls}">${l}</div>`).join('');
 }
+
+// ── SOCIAL LINK TYPES ──
+// Each entry: label shown on CV, icon (not used visually but useful for future), placeholder for URL input
+const SOCIAL_TYPES={
+  linkedin: {label:'LinkedIn',   placeholder:'linkedin.com/in/yourname'},
+  portfolio:{label:'Portfolio',  placeholder:'yourportfolio.com'},
+  github:   {label:'GitHub',     placeholder:'github.com/yourname'},
+  behance:  {label:'Behance',    placeholder:'behance.net/yourname'},
+  dribbble: {label:'Dribbble',   placeholder:'dribbble.com/yourname'},
+  twitter:  {label:'Twitter / X',placeholder:'twitter.com/yourname'},
+  youtube:  {label:'YouTube',    placeholder:'youtube.com/@yourname'},
+  website:  {label:'Website',    placeholder:'yourwebsite.com'},
+  other:    {label:'Other',      placeholder:'your-link.com'},
+};
 
 // Single entry point for all AI calls — routes through the serverless proxy at /api/ai
 // so the Anthropic API key never reaches the browser and calls don't get blocked by CORS.
@@ -3034,31 +3051,35 @@ function renderSocialLinks(){
   const container=gi('social-links-list');
   if(!container)return;
   if(!socials.length){
-    container.innerHTML=`<div style="font-size:13px;color:var(--muted);padding:4px 0 8px">No links added yet. Click "+ Add Link" to add LinkedIn, Portfolio, GitHub, or any other profile.</div>`;
+    container.innerHTML='';
     const btn=gi('add-social-btn');
     if(btn)btn.style.display='';
     return;
   }
   container.innerHTML=socials.map((s,i)=>`
-    <div class="social-link-row" data-idx="${i}">
-      <select class="social-link-type" data-idx="${i}" data-field="type">
-        ${Object.entries(SOCIAL_TYPES).map(([k,t])=>`<option value="${k}"${s.type===k?' selected':''}>${t.label}</option>`).join('')}
-      </select>
-      <input class="social-link-url" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://...'}" value="${esc(s.url)}">
-      <button class="social-link-rm" data-idx="${i}" title="Remove link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+    <div class="social-link-card" data-idx="${i}">
+      <div class="social-link-top">
+        <select class="social-link-type" data-idx="${i}">
+          ${Object.entries(SOCIAL_TYPES).map(([k,t])=>`<option value="${k}"${s.type===k?' selected':''}>${t.label}</option>`).join('')}
+        </select>
+        <button class="social-link-rm" data-idx="${i}" title="Remove link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <input class="fi social-link-url" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://'}" value="${esc(s.url)}" style="margin-bottom:6px">
+      <input class="fi social-link-label" data-idx="${i}" placeholder="Display label (optional — defaults to type name e.g. 'LinkedIn')" value="${esc(s.label||'')}" style="font-size:13px;padding:9px 12px">
     </div>`).join('');
 
-  // Wire up events via delegation — no inline index references so splice doesn't break them
+  // Wire all events via delegation — safe across splices
   container.querySelectorAll('.social-link-type').forEach(sel=>{
     sel.addEventListener('change',()=>{
       const idx=+sel.dataset.idx;
-      if(socials[idx])socials[idx].type=sel.value;
-      // Update placeholder without full re-render
-      const row=sel.closest('.social-link-row');
-      const inp=row?.querySelector('.social-link-url');
-      if(inp)inp.placeholder=SOCIAL_TYPES[sel.value]?.placeholder||'https://...';
+      if(socials[idx]){
+        socials[idx].type=sel.value;
+        const card=sel.closest('.social-link-card');
+        const urlInp=card?.querySelector('.social-link-url');
+        if(urlInp&&!urlInp.value)urlInp.placeholder=SOCIAL_TYPES[sel.value]?.placeholder||'https://';
+      }
       rCV();saveDraft();
     });
   });
@@ -3066,6 +3087,13 @@ function renderSocialLinks(){
     inp.addEventListener('input',()=>{
       const idx=+inp.dataset.idx;
       if(socials[idx])socials[idx].url=inp.value;
+      rCV();saveDraft();
+    });
+  });
+  container.querySelectorAll('.social-link-label').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const idx=+inp.dataset.idx;
+      if(socials[idx])socials[idx].label=inp.value;
       rCV();saveDraft();
     });
   });
@@ -3107,7 +3135,7 @@ function buildSocialLinksHTML(accentColor){
   const ac=accentColor||'var(--ac)';
   const links=socials.filter(s=>s.url.trim()).map(s=>{
     const url=s.url.match(/^https?:\/\//)?s.url:'https://'+s.url;
-    const label=SOCIAL_TYPES[s.type]?.label||'Link';
+    const label=(s.label&&s.label.trim())||SOCIAL_TYPES[s.type]?.label||'Link';
     return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600;font-style:normal">${label}</a>`;
   });
   if(!links.length){
