@@ -92,11 +92,8 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .btn-pill:hover:not(:disabled) svg{transform:translateX(2px)}
 .sk-tag button svg{transition:transform .15s,opacity .15s}
 .sk-tag button:hover svg{transform:rotate(90deg)}
-.sim-section-head{display:flex;align-items:center;gap:6px}
 .sim-section-head svg{flex-shrink:0;opacity:.65}
 .bar-menu-btn:hover svg{opacity:.7;transform:rotate(90deg)}
-.tip-icon{transition:border-color .15s,color .15s,transform .15s}
-.tip:hover .tip-icon{transform:scale(1.1)}
 /* Contextual nudge strip */
 .cv-nudge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 22px;background:var(--ac);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:none;transition:background .2s}
 .cv-nudge:hover{filter:brightness(.95)}
@@ -366,8 +363,8 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-box{background:var(--surf);border:1.5px solid var(--bdr);border-radius:16px;padding:16px}
 /* ── TOOLTIP SYSTEM ── */
 .tip{position:relative;display:inline-flex;align-items:center;cursor:help}
-.tip-icon{width:16px;height:16px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);color:var(--muted);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s;font-family:var(--ff-b);line-height:1}
-.tip:hover .tip-icon{border-color:var(--ac);color:var(--ac)}
+.tip-icon{width:16px;height:16px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);color:var(--muted);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s,transform .15s;font-family:var(--ff-b);line-height:1}
+.tip:hover .tip-icon{border-color:var(--ac);color:var(--ac);transform:scale(1.1)}
 .tip-box{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#F0EDE8;font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;white-space:normal;width:240px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:999;font-family:var(--ff-b);font-weight:400;box-shadow:0 4px 20px rgba(0,0,0,.25);text-transform:none;letter-spacing:0}
 .tip-box::after{content:'';position:absolute;bottom:100%;top:auto;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#1A1A2E}
 .tip:hover .tip-box{opacity:1}
@@ -397,7 +394,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-persona-name{font-size:13.5px;font-weight:700;color:var(--ink)}
 .sim-persona-role{font-size:11.5px;color:var(--muted)}
 .sim-verdict{font-size:14px;color:var(--ink);line-height:1.7;margin-bottom:12px}
-.sim-section-head{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.sim-section-head{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
 .sim-point{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:13.5px;line-height:1.6}
 .sim-point-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
 .sim-decision{display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:12px;margin-top:14px;font-size:14px;font-weight:600}
@@ -1081,6 +1078,20 @@ a:focus-visible,[tabindex]:focus-visible{
 
   <!-- BUILD PANEL -->
   <div class="pnl active" id="pnl-build">
+
+    <!-- CONTEXTUAL NUDGE STRIP -->
+    <div id="cv-nudge" class="cv-nudge" style="display:none" onclick="if(window._nudgeTab)swTab(window._nudgeTab,document.querySelector('.tab'))">
+      <span id="cv-nudge-text"></span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
+    <!-- CV COMPLETENESS PROGRESS BAR -->
+    <div class="cv-progress-wrap" id="cv-progress-wrap">
+      <div class="cv-progress-label"><span>CV Completeness</span><span id="cv-progress-pct" style="color:var(--ac);font-weight:700">0%</span></div>
+      <div class="cv-progress-track"><div class="cv-progress-bar" id="cv-progress-bar" style="width:0%"></div></div>
+      <div class="cv-step-chips" id="cv-step-chips"></div>
+    </div>
+
     <!-- CONTEXTUAL NUDGE STRIP — guides users to their next best action -->
     <div id="cv-nudge" class="cv-nudge" style="display:none" onclick="if(window._nudgeTab)swTab(window._nudgeTab,document.querySelector('.tab'))">
       <span id="cv-nudge-text"></span>
@@ -1740,6 +1751,19 @@ const SOCIAL_TYPES={
   youtube:  {label:'YouTube',    placeholder:'youtube.com/@yourname'},
   website:  {label:'Website',    placeholder:'yourwebsite.com'},
   other:    {label:'Other',      placeholder:'your-link.com'},
+};
+
+// Accent colours per type — used for the coloured type tag chip on each link card
+const SOCIAL_COLORS={
+  linkedin: {bg:'#E8F0FE',color:'#1A66C4'},
+  portfolio:{bg:'#EEF0FF',color:'#4F5BD5'},
+  github:   {bg:'#F0F0F0',color:'#24292E'},
+  behance:  {bg:'#EEF4FF',color:'#1769FF'},
+  dribbble: {bg:'#FEF0F3',color:'#E84C8B'},
+  twitter:  {bg:'#F0FAFF',color:'#1DA1F2'},
+  youtube:  {bg:'#FEF0F0',color:'#CC0000'},
+  website:  {bg:'#F0FAF5',color:'#1AA371'},
+  other:    {bg:'#F4F4F7',color:'#6B6B72'},
 };
 
 // Single entry point for all AI calls — routes through the serverless proxy at /api/ai
