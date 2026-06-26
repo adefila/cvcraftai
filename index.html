@@ -63,7 +63,21 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
   }
 }
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
-.tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap}
+.tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.tab-step{font-size:10px;font-weight:700;width:17px;height:17px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);display:inline-flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .18s}
+.tab.on .tab-step{background:var(--ac);border-color:var(--ac);color:#fff}
+.tab-step.next-step{background:#FFF3CD;border-color:#C8860D;color:#92610A;animation:pulse-tab 2s infinite}
+@keyframes pulse-tab{0%,100%{box-shadow:0 0 0 0 rgba(200,134,13,.3)}50%{box-shadow:0 0 0 4px rgba(200,134,13,0)}}
+/* Section completion row */
+.sec-lbl-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+.sec-done{font-size:11px;font-weight:700;color:#1AA371;opacity:0;transition:opacity .3s}
+.sec-done.visible{opacity:1}
+/* Contextual nudge strip */
+.cv-nudge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 22px;background:var(--ac);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:none;transition:background .2s}
+.cv-nudge:hover{filter:brightness(.95)}
+/* JD Match teaser */
+.jd-teaser{display:flex;gap:14px;align-items:flex-start;background:var(--surf);border-radius:14px;padding:16px;margin-bottom:16px}
+.jd-teaser svg{flex-shrink:0;color:var(--ac);margin-top:2px}
 .tab:hover{color:var(--ink);background:rgba(21,21,26,.05)}
 .tab.on{background:var(--ink);color:#fff;box-shadow:0 2px 8px rgba(21,21,26,.14)}
 /* ── Compact score badge in the bar ── */
@@ -975,10 +989,10 @@ a:focus-visible,[tabindex]:focus-visible{
  <div class="bar-inner">
   <div class="logo">cv<span>craft</span>.ai</div>
   <div class="tabs">
-    <button class="tab on" onclick="swTab('build',this)">Build</button>
-    <button class="tab" onclick="swTab('jd',this)">JD Match</button>
-    <button class="tab" id="tab-templates" onclick="swTab('templates',this)">Templates</button>
-    <button class="tab" onclick="swTab('ats',this)">ATS Score</button>
+    <button class="tab on" onclick="swTab('build',this)"><span class="tab-step">1</span>Build</button>
+    <button class="tab" onclick="swTab('jd',this)"><span class="tab-step">2</span>JD Match</button>
+    <button class="tab" id="tab-templates" onclick="swTab('templates',this)"><span class="tab-step">3</span>Templates</button>
+    <button class="tab" onclick="swTab('ats',this)"><span class="tab-step">4</span>ATS Score</button>
   </div>
   <div class="score-badge" role="button" tabindex="0" aria-label="View score details — ATS, Recruiter, Interview Probability" onclick="swTab('ats',document.querySelectorAll('.tab')[3])">
     <span class="score-badge-prob" id="score-badge-prob-wrap">
@@ -1038,6 +1052,11 @@ a:focus-visible,[tabindex]:focus-visible{
 
   <!-- BUILD PANEL -->
   <div class="pnl active" id="pnl-build">
+    <!-- CONTEXTUAL NUDGE STRIP — guides users to their next best action -->
+    <div id="cv-nudge" class="cv-nudge" style="display:none" onclick="if(window._nudgeTab)swTab(window._nudgeTab,document.querySelector('.tab'))">
+      <span id="cv-nudge-text"></span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
     <!-- CV Completeness Progress -->
     <div id="build-progress-ring" class="build-progress-wrap">
       <div style="position:relative;flex-shrink:0;width:40px;height:40px">
@@ -1056,7 +1075,7 @@ a:focus-visible,[tabindex]:focus-visible{
     </div>
 
     <div class="sec">
-      <div class="lbl">Personal Info</div>
+      <div class="lbl sec-lbl-row"><span>Personal Info</span><span class="sec-done" id="lbl-personal"></span></div>
       <div class="fg">
         <div class="row2">
           <input class="fi" id="f-name" placeholder="Full Name" oninput="rCV()">
@@ -1099,19 +1118,19 @@ a:focus-visible,[tabindex]:focus-visible{
     </div>
 
     <div class="sec">
-      <div class="lbl">Experience</div>
+      <div class="lbl sec-lbl-row"><span>Experience</span><span class="sec-done" id="lbl-exp"></span></div>
       <div id="exp-list"></div>
       <button class="btn-add" id="add-exp-btn" onclick="addExp()">+ Add Experience</button>
     </div>
 
     <div class="sec">
-      <div class="lbl">Education</div>
+      <div class="lbl sec-lbl-row"><span>Education</span><span class="sec-done" id="lbl-edu"></span></div>
       <div id="edu-list"></div>
       <button class="btn-add" onclick="addEdu()">+ Add Education</button>
     </div>
 
     <div class="sec">
-      <div class="lbl">Skills</div>
+      <div class="lbl sec-lbl-row"><span>Skills</span><span class="sec-done" id="lbl-skills"></span></div>
       <div class="sk-tags" id="sk-tags"></div>
       <div class="sk-row">
         <input class="fi" id="sk-inp" placeholder="Add skill & press Enter" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}" list="skill-suggestions" autocomplete="off">
@@ -4091,6 +4110,55 @@ function updateProgress(){
   const pctEl=gi('cv-progress-pct');if(pctEl)pctEl.textContent=pct+'%';
   const chips=gi('cv-step-chips');
   if(chips)chips.innerHTML=steps.map(s=>`<span class="cv-step-chip ${s.done?'done':'todo'}">${s.done?'✓ ':''}<span style="font-size:10px">${s.l}</span></span>`).join('');
+
+  // ── Section completion dots ──
+  const personal=v('f-name').trim()&&v('f-email').trim();
+  const pdot=gi('lbl-personal');
+  if(pdot){pdot.textContent=personal?'✓':'';pdot.classList.toggle('visible',!!personal);}
+  const edot=gi('lbl-exp');
+  if(edot){edot.textContent=exps.length?`✓ ${exps.length} role${exps.length>1?'s':''}`:' ';edot.classList.toggle('visible',exps.length>0);}
+  const eddot=gi('lbl-edu');
+  if(eddot){eddot.textContent=edus.length?'✓':'';eddot.classList.toggle('visible',edus.length>0);}
+  const skdot=gi('lbl-skills');
+  if(skdot){skdot.textContent=skills.length?`✓ ${skills.length}`:' ';skdot.classList.toggle('visible',skills.length>=3);}
+
+  // ── Contextual nudge strip ──
+  const nudge=gi('cv-nudge');
+  const nudgeText=gi('cv-nudge-text');
+  if(nudge&&nudgeText){
+    const hasBasics=v('f-name').trim()&&exps.length>=1;
+    const hasGoodScore=done>=5;
+    const jdPasted=!!(v('jd-text')||'').trim();
+    let msg='',tab='',bg='';
+    if(!hasBasics&&done>=2){
+      msg='Add your first experience role →';tab='build';bg='var(--ac)';
+    }else if(hasBasics&&!jdPasted){
+      msg='Paste a job description to see your match score →';tab='jd';bg='#E07B39';
+    }else if(hasBasics&&done>=5&&done<8){
+      msg='Check your ATS & Recruiter scores →';tab='ats';bg='var(--ac)';
+    }else if(done>=7){
+      msg='Pick a template that works for your field →';tab='templates';bg='#7C3AED';
+    }
+    if(msg){
+      nudge.style.display='flex';
+      nudge.style.background=bg;
+      nudgeText.textContent=msg;
+      window._nudgeTab=tab;
+    }else{
+      nudge.style.display='none';
+    }
+  }
+
+  // ── Highlight recommended next tab step ──
+  const tabBtns=document.querySelectorAll('.tab');
+  tabBtns.forEach(b=>b.querySelector('.tab-step')?.classList.remove('next-step'));
+  const tabMap={build:0,jd:1,templates:2,ats:3};
+  if(window._nudgeTab&&tabMap[window._nudgeTab]!==undefined){
+    const targetTab=tabBtns[tabMap[window._nudgeTab]];
+    if(targetTab&&!targetTab.classList.contains('on')){
+      targetTab.querySelector('.tab-step')?.classList.add('next-step');
+    }
+  }
 }
 
 function rCV(){
