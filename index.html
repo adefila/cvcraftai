@@ -299,8 +299,8 @@ a:focus-visible,[tabindex]:focus-visible{
 .tip{position:relative;display:inline-flex;align-items:center;cursor:help}
 .tip-icon{width:16px;height:16px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);color:var(--muted);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s;font-family:var(--ff-b);line-height:1}
 .tip:hover .tip-icon{border-color:var(--ac);color:var(--ac)}
-.tip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#F0EDE8;font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;white-space:normal;width:240px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:999;font-family:var(--ff-b);font-weight:400;box-shadow:0 4px 20px rgba(0,0,0,.25)}
-.tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1A1A2E}
+.tip-box{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#F0EDE8;font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;white-space:normal;width:240px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:999;font-family:var(--ff-b);font-weight:400;box-shadow:0 4px 20px rgba(0,0,0,.25);text-transform:none;letter-spacing:0}
+.tip-box::after{content:'';position:absolute;bottom:100%;top:auto;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#1A1A2E}
 .tip:hover .tip-box{opacity:1}
 .sim-source-row{display:flex;gap:8px;margin-bottom:4px}
 .sim-source-btn{flex:1;background:var(--card);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 12px;font-family:var(--ff-b);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -928,9 +928,8 @@ a:focus-visible,[tabindex]:focus-visible{
     <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:18px">
       <rect x="2" y="4" width="20" height="13" rx="2" fill="var(--ac)" opacity=".15"/><rect x="2" y="4" width="20" height="13" rx="2" stroke="var(--ac)" stroke-width="1.6" fill="none"/><line x1="8" y1="21" x2="16" y2="21" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="11" r="2" fill="var(--ac)" opacity=".4"/>
     </svg>
-    <div class="gate-title">Best on a bigger screen</div>
-    <p class="gate-body">CVCraft AI's builder needs more room than a phone or tablet screen can give it — the live preview, template panel, and editor are all designed to sit side by side.</p>
-    <p class="gate-body">Open this page on a laptop or desktop to build your CV.</p>
+    <div class="gate-title">Open on a laptop or desktop</div>
+    <p class="gate-body">CVCraft AI needs a wider screen to show the editor and live preview side by side. It works best on a laptop or desktop browser.</p>
     <button class="btn-pill" id="gate-copy-btn" onclick="copyGateLink()" style="margin-top:6px">Copy link to send to yourself</button>
   </div>
 </div>
@@ -2845,40 +2844,91 @@ async function extractPDFText(file){
   return text.trim();
 }
 
-async function applySimSuggestionToSummary(suggestion){
+async function applySimSuggestionToSummary(suggestion,applyBtn){
   const currentSum=v('f-sum');
-  if(!currentSum){toast('Add a summary first','err');return;}
-  toast('Rewriting summary…','default',8000);
-  const prompt=`Rewrite this professional CV summary incorporating the following improvement.
+  if(!currentSum){
+    toast('Add a summary in the Build tab first','err');
+    if(applyBtn){applyBtn.disabled=false;applyBtn.textContent='Apply';}
+    return;
+  }
+  toast('Rewriting summary...','default',8000);
+  const prompt=`Rewrite this professional CV summary to incorporate the following improvement.
 
 Current summary: ${currentSum}
-Improvement needed: ${suggestion}
 
-Output ONLY the improved summary — 2-3 sentences, no preamble, no quotes, no explanation. Specific and concrete, no clichés.`;
+Improvement to apply: ${suggestion}
+
+Output ONLY the improved summary. 2-3 sentences max. No preamble, no quotes, no explanation. Specific and concrete, no cliches.`;
   try{
     let result='';
     await callAIStream(prompt,200,(text)=>{result=text;});
-    const sf=gi('f-sum');
-    if(sf&&result.trim()){
-      sf.value=result.trim();
-      rCV();upATS();saveDraft();
-      toast('Summary updated — check the preview','ok',2500);
-      swTab('build',document.querySelector('.tab'));
+    if(result.trim()){
+      const sf=gi('f-sum');
+      if(sf){
+        sf.value=result.trim();
+        rCV();upATS();saveDraft();
+        toast('Summary updated in the preview','ok',2500);
+        swTab('build',document.querySelector('.tab'));
+        if(applyBtn){
+          applyBtn.textContent='Applied';
+          applyBtn.style.background='#DEF4EA';
+          applyBtn.style.color='#0E6B49';
+          applyBtn.style.borderColor='#B8E8CE';
+          applyBtn.onclick=null;
+        }
+      }
     }
-  }catch(e){toast('Could not apply suggestion','err');}
+  }catch(e){
+    toast('Could not apply — try again','err');
+    if(applyBtn){applyBtn.disabled=false;applyBtn.textContent='Apply';}
+  }
 }
 
-function simApplyImprovement(suggestion){
-  const targetsTitle=/title|role|position|headline|job title/i.test(suggestion);
+function simApplyImprovement(suggestion,btn){
+  if(btn){btn.disabled=true;btn.textContent='Applying...';}
+  const s=suggestion.toLowerCase();
+  const targetsTitle=/\b(title|job title|role|headline|position)\b/.test(s);
+  const targetsSummary=/\b(summary|profile|opening|personal statement|intro)\b/.test(s);
+  const targetsSkills=/\b(skills?|keyword|add.*tool|missing.*skill|technolog)\b/.test(s);
+  const targetsBullets=/\b(bullet|achievement|quantif|number|metric|result|measur)\b/.test(s);
+  const targetsContact=/\b(linkedin|portfolio|social|link|contact)\b/.test(s);
+
+  const highlight=(id,color)=>{
+    color=color||'#7C3AED';
+    const el=gi(id);if(!el)return;
+    swTab('build',document.querySelector('.tab'));
+    setTimeout(()=>{
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      if(el.focus)el.focus();
+      el.style.boxShadow='0 0 0 3px '+color+'44';
+      el.style.borderColor=color;
+      setTimeout(()=>{el.style.boxShadow='';el.style.borderColor='';},2500);
+    },350);
+  };
+
   if(targetsTitle){
-    const tf=gi('f-title');
-    if(tf){
-      swTab('build',document.querySelector('.tab'));
-      setTimeout(()=>{tf.scrollIntoView({behavior:'smooth',block:'center'});tf.focus();tf.style.boxShadow='0 0 0 3px rgba(124,58,237,.3)';tf.style.borderColor='#7C3AED';setTimeout(()=>{tf.style.boxShadow='';tf.style.borderColor='';},2500);},300);
-      toast('Job title field highlighted — update it based on the suggestion','default',3500);
-    }
+    highlight('f-title');
+    toast('Job title highlighted in the Build tab','default',3000);
+    if(btn){btn.textContent='Done';btn.style.background='#DEF4EA';btn.style.color='#0E6B49';}
+  }else if(targetsContact){
+    swTab('build',document.querySelector('.tab'));
+    highlight('add-social-btn','#0E84B5');
+    toast('Add your social links in the Build tab','default',3000);
+    if(btn){btn.textContent='Done';btn.style.background='#DEF4EA';btn.style.color='#0E6B49';}
+  }else if(targetsSkills){
+    highlight('sk-inp','#1AA371');
+    toast('Skills field highlighted — add the missing keywords','default',3000);
+    if(btn){btn.textContent='Done';btn.style.background='#DEF4EA';btn.style.color='#0E6B49';}
+  }else if(targetsBullets&&exps.length){
+    swTab('build',document.querySelector('.tab'));
+    setTimeout(()=>{
+      const editBtn=document.querySelector('.ei-edit');
+      if(editBtn)editBtn.click();
+    },450);
+    toast('Experience opened — add quantified bullets based on the suggestion','default',4000);
+    if(btn){btn.textContent='Done';btn.style.background='#DEF4EA';btn.style.color='#0E6B49';}
   }else{
-    applySimSuggestionToSummary(suggestion);
+    applySimSuggestionToSummary(suggestion,btn);
   }
 }
 
@@ -2970,7 +3020,7 @@ function renderSimOutput(raw,persona,canApply=false){
   const bullets=(text,dot)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
     .map(l=>`<div class="sim-point"><div class="sim-point-dot" style="background:${dot}"></div><span>${l}</span></div>`).join('');
   const improvementBullets=(text)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
-    .map((l,i)=>`<div class="sim-point sim-improvement"><div class="sim-point-dot" style="background:#7C3AED"></div><span>${l}</span>${canApply?`<button class="sim-apply-btn" onclick="simApplyImprovement('${l.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">Apply</button>`:''}</div>`).join('');
+    .map((l,i)=>`<div class="sim-point sim-improvement"><div class="sim-point-dot" style="background:#7C3AED"></div><span>${l}</span>${canApply?`<button class="sim-apply-btn" onclick="simApplyImprovement('${l.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}',this)">Apply</button>`:''}</div>`).join('');
   return`<div class="sim-persona"><div class="sim-persona-av">${persona.emoji}</div><div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div></div>
   ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${impression}"</p>`:''}
   ${redFlags?`<div class="sim-section-head">⚠ Red Flags</div>${bullets(redFlags,'#E14B4B')}`:''}
