@@ -1433,21 +1433,21 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="modal">
       <div class="modal-title">Export Your CV</div>
 
-      <!-- Print is now PRIMARY — produces real text PDF, ATS-safe, no image layer -->
-      <div class="export-opt sel" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
+      <!-- Print option: ATS-safe text PDF via browser -->
+      <div class="export-opt" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
         <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" opacity=".15"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.6" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
         <div class="export-info">
-          <div class="export-info-t">Save as PDF <span class="export-badge export-badge-best">✓ Real text — ATS safe</span></div>
-          <div class="export-info-s">Opens print dialog → choose "Save as PDF". Produces a proper text-layer PDF that ATS systems can parse and recruiters can search. Headers and page numbers are suppressed automatically.</div>
+          <div class="export-info-t">Save as PDF (Print) <span class="export-badge export-badge-best">ATS-safe text</span></div>
+          <div class="export-info-s">Opens browser print dialog → choose "Save as PDF". Produces a real text-layer PDF that ATS systems can parse. Filename will use your name.</div>
         </div>
       </div>
 
-      <!-- Image PDF — honest label, secondary option -->
-      <div class="export-opt" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
+      <!-- Image PDF: direct download, selected by default -->
+      <div class="export-opt sel" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
         <div class="export-icon" style="background:#FFF7ED;color:#C2790A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" opacity=".12"/><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="8.5" cy="8.5" r="2" fill="currentColor" opacity=".5"/><polyline points="21 15 15 9 5 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div class="export-info">
-          <div class="export-info-t">Download as Image PDF <span class="export-badge export-badge-warn">⚠ Image only</span></div>
-          <div class="export-info-s">Saves a pixel-perfect visual snapshot. Text is not selectable or searchable — some ATS systems cannot read this format. Use for sharing as an attachment where visual appearance matters more than parsing.</div>
+          <div class="export-info-t">Download PDF <span class="export-badge">Direct download</span></div>
+          <div class="export-info-s">Downloads directly as <strong>[Your Name]-cv.pdf</strong> — no print dialog. Preserves your template design and colours exactly. Best for sharing.</div>
         </div>
       </div>
 
@@ -1460,7 +1460,7 @@ a:focus-visible,[tabindex]:focus-visible{
       </div>
 
       <div class="modal-btns">
-        <button class="btn-pill" id="btn-do-export" onclick="doExport()" style="flex:1;justify-content:center">Save as PDF</button>
+        <button class="btn-pill" id="btn-do-export" onclick="doExport()" style="flex:1;justify-content:center">Download PDF</button>
         <button class="btn-pill-outline" onclick="closeExport()">Cancel</button>
       </div>
     </div>
@@ -1477,7 +1477,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
 <script>
 // ── STATE ──
-let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], projs=[], socials=[], AC='#4F5BD5', exportSel='print';
+let CT='classic', skills=[], exps=[], edus=[], certs=[], langs=[], projs=[], socials=[], AC='#4F5BD5', exportSel='pdf';
 
 // ── AUTOSAVE ──
 // Saves the whole form to localStorage so a refresh, crash, or closed tab
@@ -4417,74 +4417,101 @@ function isCanvasBlank(canvas){
 
 async function doExport(){
   closeExport();
-  const name=(v('f-name')||'cv').replace(/\s+/g,'-').toLowerCase();
+  // Build filename from user's name — e.g. "adefila-samuel-cv.pdf"
+  const rawName=v('f-name').trim()||'cv';
+  const safeName=rawName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
   if(exportSel==='pdf'){
-    toast('Generating PDF…','default',9000);
+    // ── IMAGE PDF: direct download, no dialog ──────────────────────────────
+    const btn=gi('btn-do-export');
+    if(btn){btn.disabled=true;btn.textContent='Generating…';}
+    toast('Building your PDF…','default',12000);
+
     const zone=gi('pdf-render-zone');
     zone.innerHTML='';
-    const clone=gi('paper').cloneNode(true);
-    clone.style.cssText='width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;overflow:visible';
+
+    // Clone the paper element for off-screen rendering
+    const paperEl=gi('paper');
+    const clone=paperEl.cloneNode(true);
+
+    // Remove the empty-state skeleton if present (should not appear in PDF)
+    const emptyEl=clone.querySelector('#paper-empty,.paper-empty');
+    if(emptyEl)emptyEl.remove();
+
+    // Resolve all CSS custom properties inline so html2canvas can see them
+    const computedStyle=getComputedStyle(document.documentElement);
+    const cssVars=['--ac','--ink','--surf','--muted','--bdr','--card','--bg','--ff-b','--ff-d','--ff-m'];
+    let inlineVarCSS='';
+    cssVars.forEach(v=>{
+      const val=computedStyle.getPropertyValue(v).trim();
+      if(val)inlineVarCSS+=`${v}:${val};`;
+    });
+
+    clone.style.cssText=`width:794px;min-height:1123px;background:#fff;box-shadow:none;border-radius:0;margin:0;display:block;overflow:visible;${inlineVarCSS}`;
     zone.appendChild(clone);
+
+    // Wait for fonts + layout
+    try{if(document.fonts?.ready)await document.fonts.ready;}catch(_){}
+    void clone.offsetHeight;
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    // Extra wait for web fonts to paint
+    await new Promise(r=>setTimeout(r,400));
+
     try{
-      if(document.fonts&&document.fonts.ready){await document.fonts.ready;}
-      void clone.offsetHeight; // force layout before measuring
-      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-      const SCALE=2;
+      const SCALE=3; // Higher scale = sharper text
       const canvas=await html2canvas(clone,{
         scale:SCALE,
         useCORS:true,
+        allowTaint:true,
         backgroundColor:'#ffffff',
         width:794,
         height:clone.scrollHeight,
-        windowWidth:794
+        windowWidth:794,
+        imageTimeout:10000,
+        logging:false,
+        removeContainer:false,
       });
-      console.log('PDF capture check — canvas size:',canvas.width,canvas.height,'clone scrollHeight:',clone.scrollHeight);
+
       if(isCanvasBlank(canvas)){
-        console.error('PDF canvas rendered blank — clone height/content check:',clone.scrollHeight,clone.innerHTML.length);
-        toast('PDF rendered blank — try Print instead, or refresh and retry','err',4500);
+        toast('PDF rendered blank — try "Save as PDF (Print)" instead','err',5000);
         zone.innerHTML='';
+        if(btn){btn.disabled=false;btn.textContent='Download PDF';}
         return;
       }
 
-      // ── Real multi-page pagination ──
-      // Slice the tall canvas into A4-sized pages. Cut points snap to the
-      // nearest safe gap between entries so a job or degree is never split.
-      const PAGE_W=794,PAGE_H=1123;
-      const protectedSel='.entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,.zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,.mono-ex,.lat-ex,.lat-edu-card,.aur-ex,.aur-edu,.bcn-ex,.csc-ex,.vtx-ex,.hbr-ex,.spc-ex,.org-ex';
+      // ── Smart page cutting — avoid splitting entries mid-block ──────────
+      const PAGE_W=794, PAGE_H=1123;
+      const protectedSel=[
+        '.entry-card','.classic-ex','.nova-ex','.nova-sk','.apex-ex',
+        '.prism-ex','.strand-ti','.folio-ex','.zenith-ex','.carbon-ex',
+        '.carbon-edu','.pulse-ex','.merid-ex','.axis-grid-row','.mono-ex',
+        '.lat-ex','.lat-edu-card','.aur-ex','.bcn-ex','.csc-ex','.vtx-ex',
+        '.hbr-ex','.spc-ex','.org-ex','.edge-item','.sage-item','.blade-item',
+        '.frost-ex','.anchor-ex','.neon-ex','.ruled-ex','.slate-ex',
+        '.chron-item','.serif-ex','.split-ex','.prof-ex',
+      ].join(',');
 
-      // TOP_PAD: white space reserved at the top of every continuation page (page 2+).
-      // Page 1 is left as-is — the CV's own internal padding handles that.
-      // 36px at CSS scale = 72 canvas pixels at SCALE=2, matching a normal document margin.
-      const TOP_PAD_CSS=36; // px in CSS (document) units
-      const TOP_PAD=TOP_PAD_CSS*SCALE; // canvas pixels
-
+      const TOP_PAD=36*SCALE;
       const cloneRect=clone.getBoundingClientRect();
       const blocks=[...clone.querySelectorAll(protectedSel)].map(el=>{
         const r=el.getBoundingClientRect();
-        const top=(r.top-cloneRect.top)*SCALE;
-        const bottom=(r.bottom-cloneRect.top)*SCALE;
-        return{top:Math.max(0,top),bottom:Math.max(0,bottom)};
+        return{top:Math.max(0,(r.top-cloneRect.top)*SCALE), bottom:Math.max(0,(r.bottom-cloneRect.top)*SCALE)};
       }).filter(b=>b.bottom>b.top+2);
 
       const pageHeightPx=PAGE_H*SCALE;
-      // For page 1 we use the full height; for continuation pages we subtract
-      // TOP_PAD so that the white margin at the top doesn't push content off the bottom.
-      const contPageHeightPx=pageHeightPx-TOP_PAD;
-      const MARGIN=30*SCALE;
+      const contPageH=pageHeightPx-TOP_PAD;
+      const MARGIN=28*SCALE;
       const totalH=canvas.height;
       const cuts=[0];
-      let pos=0;
-      let pageIdx=0;
+      let pos=0,pageIdx=0;
       while(pos<totalH-1){
-        const availH=pageIdx===0?pageHeightPx:contPageHeightPx;
+        const availH=pageIdx===0?pageHeightPx:contPageH;
         let target=Math.min(pos+availH,totalH);
         if(target<totalH){
-          const collision=blocks.find(b=>b.top<target&&b.bottom>target);
-          if(collision){
-            const snapTo=collision.top-MARGIN;
-            if(snapTo>pos+(availH*0.25)){
-              target=snapTo;
-            }
+          const hit=blocks.find(b=>b.top<target&&b.bottom>target);
+          if(hit){
+            const snap=hit.top-MARGIN;
+            if(snap>pos+(availH*0.3))target=snap;
           }
         }
         if(target<=pos)target=pos+availH;
@@ -4497,49 +4524,70 @@ async function doExport(){
       let pdf=null;
       for(let i=0;i<cuts.length-1;i++){
         const isFirst=i===0;
-        const sliceTop=cuts[i],sliceBottom=Math.min(cuts[i+1],totalH);
-        const sliceHpx=sliceBottom-sliceTop;
-        if(sliceHpx<=0)continue;
-
-        // For continuation pages, add TOP_PAD white pixels above the content slice
+        const sliceTop=cuts[i];
+        const sliceBottom=Math.min(cuts[i+1],totalH);
+        const sliceH=sliceBottom-sliceTop;
+        if(sliceH<=0)continue;
         const padTop=isFirst?0:TOP_PAD;
+
+        // Use PNG for lossless quality (no JPEG compression artifacts on text)
         const pageCanvas=document.createElement('canvas');
         pageCanvas.width=canvas.width;
-        pageCanvas.height=sliceHpx+padTop;
+        pageCanvas.height=sliceH+padTop;
         const pctx=pageCanvas.getContext('2d');
         pctx.fillStyle='#ffffff';
         pctx.fillRect(0,0,pageCanvas.width,pageCanvas.height);
-        // Draw the content slice starting at y=padTop, leaving white space above
-        pctx.drawImage(canvas,0,sliceTop,canvas.width,sliceHpx,0,padTop,canvas.width,sliceHpx);
-        const imgData=pageCanvas.toDataURL('image/jpeg',0.98);
-        const imgHInPdfPx=(sliceHpx+padTop)/SCALE;
+        pctx.drawImage(canvas,0,sliceTop,canvas.width,sliceH,0,padTop,canvas.width,sliceH);
+
+        // PNG for first page text sharpness, JPEG for continuation (smaller file)
+        const imgData=pageCanvas.toDataURL(isFirst?'image/png':'image/jpeg',0.97);
+
         if(!pdf){
           pdf=new jsPDF({unit:'px',format:[PAGE_W,PAGE_H],orientation:'portrait'});
         }else{
           pdf.addPage([PAGE_W,PAGE_H],'portrait');
         }
-        pdf.addImage(imgData,'JPEG',0,0,PAGE_W,imgHInPdfPx);
+        pdf.addImage(imgData,isFirst?'PNG':'JPEG',0,0,PAGE_W,(sliceH+padTop)/SCALE);
       }
-      const pageCount=cuts.length-1;
-      pdf.save(`${name}-cv.pdf`);
-      toast(pageCount>1?`PDF downloaded (${pageCount} pages)`:'PDF downloaded','ok');
+
+      pdf.save(`${safeName}-cv.pdf`);
+      const pages=cuts.length-1;
+      toast(`${rawName}'s CV downloaded (${pages} page${pages>1?'s':''})`, 'ok', 3500);
     }catch(err){
-      console.error('PDF export error:',err);
-      toast('PDF export failed — try Print instead','err',3500);
+      console.error('[CVCraft] PDF export error:',err);
+      toast('PDF export failed — try "Save as PDF (Print)" from the menu','err',4000);
     }
+
     zone.innerHTML='';
-  } else if(exportSel==='print'){
+    if(btn){btn.disabled=false;btn.textContent='Download PDF';}
+
+  }else if(exportSel==='print'){
+    // ── PRINT PATH: set document title to user's name for OS dialog filename ──
+    const prevTitle=document.title;
+    document.title=`${rawName} — CV`;
     const pt=gi('print-target');
     pt.innerHTML=gi('paper').innerHTML;
+    // Remove skeleton from print target
+    const emptyEl=pt.querySelector('#paper-empty,.paper-empty');
+    if(emptyEl)emptyEl.remove();
     pt.style.cssText='display:block;position:fixed;inset:0;z-index:9999;background:#fff;padding:40px;overflow:auto';
     window.print();
-    setTimeout(()=>{pt.style.display='none';pt.innerHTML='';},1000);
-  } else {
-    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${v('f-name')||'CV'}</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}:root{--ac:${AC};--ink:#15151A;--surf:#F7F7F5;--muted:#6B6B72;--bdr:#E7E6E2;--card:#FBFBFA;--ff-d:'Plus Jakarta Sans',sans-serif;--ff-b:'Inter',sans-serif;--ff-m:'IBM Plex Mono',monospace}body{font-family:var(--ff-b);color:var(--ink);background:#fff}${document.querySelector('style').textContent}</style></head><body>${gi('paper').outerHTML}</body></html>`;
+    setTimeout(()=>{
+      pt.style.display='none';
+      pt.innerHTML='';
+      document.title=prevTitle;
+    },1500);
+  }else{
+    // ── HTML DOWNLOAD ──────────────────────────────────────────────────────
+    const styleEl=document.querySelector('style');
+    const exportHtml=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${rawName} — CV</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}:root{--ac:${AC};--ink:#15151A;--surf:#F7F7F5;--muted:#6B6B72;--bdr:#E7E6E2;--card:#FBFBFA;--ff-d:'Plus Jakarta Sans',sans-serif;--ff-b:'Inter',sans-serif;--ff-m:'IBM Plex Mono',monospace}body{font-family:var(--ff-b);color:var(--ink);background:#fff}${styleEl?styleEl.textContent:''}</style></head><body>${gi('paper').outerHTML}</body></html>`;
     const a=document.createElement('a');
-    a.href='data:text/html;charset=utf-8,'+encodeURIComponent(html);
-    a.download=`${name}-cv.html`;a.click();
-    toast('HTML downloaded','ok');
+    a.href='data:text/html;charset=utf-8,'+encodeURIComponent(exportHtml);
+    a.download=`${safeName}-cv.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast('HTML file downloaded','ok');
   }
 }
 
