@@ -358,7 +358,8 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-point{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:13.5px;line-height:1.6}
 .sim-point-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
 .sim-decision{display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:12px;margin-top:14px;font-size:14px;font-weight:600}
-.sim-import-bar{display:flex;align-items:center;gap:12px;background:#EEF9F4;border:1.5px solid #B8E0CC;border-radius:14px;padding:13px 16px;margin-top:12px}
+.sim-import-bar{background:#F4F4F7;border:1.5px solid #E0E0E8;border-radius:14px;padding:14px 16px;margin-top:14px}
+.sim-import-msg{font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:10px;font-weight:400}
 .weak-word-hit{background:#FCF6EC;border:1px solid #F2DCA8;border-radius:12px;padding:11px 14px;margin-bottom:8px}
 .weak-word-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
 .weak-word-flag{font-family:var(--ff-m);font-size:13px;font-weight:600;color:#8A5E0A;background:#FBF1DE;padding:2px 8px;border-radius:6px}
@@ -3134,99 +3135,91 @@ ${simUploadedCVText.slice(0,6000)}`;
 }
 
 // ── REFINE CV WITH AI ──
-// Takes all recruiter simulation suggestions and applies them to the built CV intelligently
-async function refineCVWithAI(encodedImprovements,btn){
-  const improvements=typeof encodedImprovements==='string'?
-    (encodedImprovements.startsWith('%')?decodeURIComponent(encodedImprovements):encodedImprovements):'';
-
-  if(!improvements){toast('No improvements to apply','err');return;}
-
-  // Need at least a summary or experience to refine
+async function refineCVWithAI(improvements,btn){
+  if(!improvements||!improvements.trim()){
+    toast('No improvements found to apply','err',2500);return;
+  }
   const d=getData();
-  const hasSummary=d.sum&&d.sum.length>20;
-  const hasExp=exps.length>0;
-  if(!hasSummary&&!hasExp){
-    toast('Import your CV first, then click Refine','err',3500);return;
+  if((!d.sum||d.sum.length<20)&&!exps.length){
+    toast('Import your CV first so there is content to refine','err',3500);return;
   }
 
   btn.disabled=true;
-  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Refining your CV…`;
+  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Refining…`;
 
-  // Build current CV state
-  const cvState=`NAME: ${d.nm}
-TITLE: ${d.ti}
-SUMMARY: ${d.sum||''}
-EXPERIENCE:
-${exps.map(e=>`${e.t} at ${e.co} (${e.s}${e.present?' – Present':e.e?' – '+e.e:''})
-${e.d}`).join('\n\n')}`;
+  const expBlock=exps.map((e,idx)=>`[${idx}] ${e.t} at ${e.co}\nBullets: ${e.d||'none'}`).join('\n\n');
 
-  const prompt=`You are a CV improvement expert. Apply these recruiter suggestions to improve this CV.
+  const prompt=`You are a CV editor. Apply these recruiter suggestions to improve this CV.
 
-RECRUITER SUGGESTIONS TO APPLY:
+RECRUITER SUGGESTIONS:
 ${improvements}
 
-CURRENT CV CONTENT:
-${cvState}
+CURRENT CV:
+Summary: ${d.sum||'(empty)'}
 
-Apply the suggestions and return ONLY this JSON (no markdown, no explanation):
+Experience (use index numbers exactly):
+${expBlock}
+
+RULES:
+- Do NOT invent achievements or facts not present in the original
+- Strengthen weak language, remove clichés like "passionate", "results-driven", "detail-oriented"  
+- Make bullets specific and concrete using the existing information
+- Keep summary to 2-3 tight sentences
+- If a field has good content already, keep it as-is
+
+Return ONLY this JSON, no markdown, no explanation:
 {
-  "summary": "improved summary — 2-3 sentences, specific, no clichés, incorporates the relevant suggestions",
+  "summary": "improved summary here",
   "experience": [
-    {
-      "title": "exact job title from CV",
-      "company": "exact company from CV",
-      "bullets": "improved bullet 1\\nimproved bullet 2\\nimproved bullet 3"
-    }
+    {"index": 0, "bullets": "improved bullet 1\\nimproved bullet 2\\nimproved bullet 3"}
   ]
 }
 
-Rules:
-- Keep all facts accurate — do not add achievements that are not in the original
-- Strengthen weak language and vague descriptions
-- Add quantification where it makes sense from context
-- Remove clichés (results-driven, passionate, etc.)
-- Keep bullet points concise — one achievement per bullet
-- Return all experience entries that exist in the original`;
+Only include experience entries where the bullets actually need improvement. Index must match the order above.`;
 
   try{
     const raw=await callAI(prompt,1500);
     const clean=raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
     const data=JSON.parse(clean);
 
-    // Apply summary
-    if(data.summary&&data.summary.length>20){
+    let changed=0;
+
+    // Apply summary if improved
+    if(data.summary&&data.summary.trim()&&data.summary.trim()!==d.sum){
       const sf=gi('f-sum');
-      if(sf)sf.value=data.summary;
+      if(sf){sf.value=data.summary.trim();changed++;}
     }
 
-    // Apply experience bullets
-    if(Array.isArray(data.experience)&&data.experience.length){
-      data.experience.forEach(improved=>{
-        // Match by title+company
-        const match=exps.find(e=>
-          e.t.toLowerCase().trim()===improved.title?.toLowerCase().trim()||
-          e.co.toLowerCase().trim()===improved.company?.toLowerCase().trim()
-        );
-        if(match&&improved.bullets){
-          match.d=improved.bullets;
+    // Apply experience improvements by index
+    if(Array.isArray(data.experience)){
+      data.experience.forEach(item=>{
+        const idx=item.index;
+        if(typeof idx==='number'&&exps[idx]&&item.bullets){
+          exps[idx].d=item.bullets;
+          changed++;
         }
       });
-      renderExpList();
+      if(data.experience.length)renderExpList();
+    }
+
+    if(changed===0){
+      toast('No changes needed — your CV already addresses these points','default',3500);
+      btn.disabled=false;
+      btn.innerHTML='Refine CV with AI';
+      return;
     }
 
     rCV();upATS();saveDraft();
     swTab('build',document.querySelector('.tab'));
-
-    btn.innerHTML='✓ CV Refined';
+    btn.innerHTML=`✓ ${changed} improvement${changed>1?'s':''} applied`;
     btn.style.background='#0A0A12';
-    btn.style.opacity='1';
     btn.onclick=null;
-    toast('CV refined — review the changes in the Build tab','ok',4000);
+    toast(`${changed} improvement${changed>1?'s':''} applied — check the Build tab`,'ok',4000);
   }catch(err){
     console.error('[CVCraft] Refine error:',err);
     btn.disabled=false;
     btn.innerHTML='Retry Refinement';
-    toast('Refinement failed — try again','err',3000);
+    toast('Refinement failed — check your connection and try again','err',3500);
   }
 }
 
@@ -3300,11 +3293,11 @@ Be a real recruiter. React honestly.`;
     if(simSourceMode==='upload'&&simUploadedCVText){
       const bar=document.createElement('div');
       bar.className='sim-import-bar';
-      bar.innerHTML=`<div style="flex:1;font-size:13px;color:#1A4A35;line-height:1.5">
-        <strong>Import to Builder</strong> — pull this CV into the editor so you can apply the suggestions above with one click.
+      bar.innerHTML=`<div class="sim-import-msg">
+        <strong>Import to Builder</strong> — pull this CV into the editor, then click Refine CV with AI to apply the improvements above.
       </div>
-      <button class="btn-pill" id="sim-import-btn" onclick="importUploadedCV(this)" style="flex-shrink:0;padding:9px 18px;font-size:13px;background:#0A0A12;white-space:nowrap">
-        Import CV
+      <button class="btn-pill" id="sim-import-btn" onclick="importUploadedCV(this)" style="width:100%;justify-content:center;padding:11px 16px;font-size:13.5px;background:#0A0A12">
+        Import CV to Builder
       </button>`;
       out.appendChild(bar);
     }
@@ -3321,29 +3314,33 @@ function renderSimOutput(raw,persona,canApply=false){
     const re=new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[:\\s]*([\\s\\S]*?)(?='+labels.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'|$)','i');
     const m=raw.match(re);return m?m[1].trim():'';
   };
+  const stripMd=t=>t.replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/`([^`]+)`/g,'$1');
   const impression=sect('FIRST IMPRESSION'),redFlags=sect('RED FLAGS'),strengths=sect('STRENGTHS');
-  const questions=sect("WHAT I'D ASK ON A CALL"),improvements=sect('SUGGESTED IMPROVEMENTS'),decisionRaw=sect('DECISION');
+  const questions=sect("WHAT I'D ASK ON A CALL"),improvements=sect('SUGGESTED IMPROVEMENTS'),decisionRaw=stripMd(sect('DECISION'));
   const moveForward=/move forward/i.test(decisionRaw),maybe=/maybe/i.test(decisionRaw);
   const decBg=moveForward?'#DEF4EA':maybe?'#FFF3CD':'#FBEAEA';
   const decCol=moveForward?'#0E6B49':maybe?'#92610A':'#9A2E2E';
   const decIcon=moveForward?'✅':maybe?'🤔':'❌';
-  const bullets=(text,dot)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
+  const bullets=(text,dot)=>text.split('\n').map(l=>stripMd(l.replace(/^[-•*\d.)\s]+/,'').trim())).filter(Boolean)
     .map(l=>`<div class="sim-point"><div class="sim-point-dot" style="background:${dot}"></div><span>${l}</span></div>`).join('');
-  const improvementBullets=(text)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
+  const improvementBullets=(text)=>text.split('\n').map(l=>stripMd(l.replace(/^[-•*\d.)\s]+/,'').trim())).filter(Boolean)
     .map(l=>`<div class="sim-point sim-improvement"><div class="sim-point-dot" style="background:#7C3AED"></div><span>${l}</span></div>`).join('');
 
-  // Store improvements for the refine button
-  const improvementsText=improvements;
+  // Store improvements in a global keyed object — avoids HTML attribute encoding bugs
+  if(!window._simStore)window._simStore={};
+  const _simKey='sim_'+Date.now();
+  window._simStore[_simKey]=improvements;
+
   return`<div class="sim-persona"><div class="sim-persona-av">${persona.emoji}</div><div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div></div>
-  ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${impression}"</p>`:''}
+  ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${stripMd(impression)}"</p>`:''}
   ${redFlags?`<div class="sim-section-head">⚠ Red Flags</div>${bullets(redFlags,'#E14B4B')}`:''}
   ${strengths?`<div class="sim-section-head">✓ Strengths</div>${bullets(strengths,'#1AA371')}`:''}
   ${questions?`<div class="sim-section-head">Questions I'd Ask</div>${bullets(questions,'#4F5BD5')}`:''}
   ${improvements?`<div class="sim-section-head">💡 Improvements</div>${improvementBullets(improvements)}
-  ${canApply?`<button class="btn-pill" style="width:100%;justify-content:center;margin-top:12px;background:#0A0A12;font-size:13.5px" onclick="(function(btn){refineCVWithAI(${JSON.stringify('__IMP__')},btn)})(this)">
+  ${canApply?`<button class="btn-pill sim-refine-btn" data-key="${_simKey}" style="width:100%;justify-content:center;margin-top:12px;background:#0A0A12;font-size:13.5px" onclick="refineCVWithAI(window._simStore[this.dataset.key],this)">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
     Refine CV with AI
-  </button>`.replace('__IMP__', encodeURIComponent(improvementsText)):''}`:'' }
+  </button>`:''}`:'' }
   ${decisionRaw?`<div class="sim-decision" style="background:${decBg};color:${decCol}">${decIcon} ${decisionRaw}</div>`:''}`;
 }
 
