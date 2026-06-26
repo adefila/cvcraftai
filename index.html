@@ -3009,45 +3009,224 @@ function simApplyImprovement(suggestion,btn){
 async function importUploadedCV(btn){
   if(!simUploadedCVText){toast('No CV text to import','err');return;}
   btn.disabled=true;
-  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Importing...`;
-  const prompt=`Extract all information from this CV and return it ONLY as valid JSON (no markdown, no explanation):
+  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Extracting…`;
+
+  const prompt=`You are a precise CV data extractor. Extract ONLY what is explicitly written in this CV — do not invent, infer, or paraphrase anything. Copy text verbatim where possible.
+
+EXTRACTION RULES:
+- name: Full name exactly as written at the top of the CV
+- title: The job title or professional headline, exactly as written
+- email: Email address exactly as written
+- phone: Phone number exactly as written
+- location: City/Country exactly as written (e.g. "Lagos, Nigeria")
+- summary: The profile/summary/about section, copied word for word
+- skills: Every skill listed, exactly as written — include all tools, technologies, and competencies
+- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", bullets: all bullet points for that role joined with \\n, copied exactly
+- education: Degree title exactly as written, school name exactly as written, graduation year
+- certifications: Certificate name exactly, issuer exactly, year if given
+- languages: Language name, proficiency level exactly as written
+
+If a field is not present in the CV, use null for strings, [] for arrays, false for booleans.
+
+Return ONLY this JSON, nothing else — no markdown fences, no explanation:
 {
-  "name":"Full name","title":"Job title","email":"email","phone":"phone","location":"City, Country",
-  "summary":"Professional summary",
-  "skills":["skill1","skill2"],
-  "experience":[{"title":"Job title","company":"Company","start":"Mon YYYY","end":"Mon YYYY","current":false,"bullets":"Bullet 1\\nBullet 2"}],
-  "education":[{"degree":"Degree","school":"School","year":"YYYY","gpa":""}],
-  "certifications":[{"name":"Cert","issuer":"Issuer","year":"YYYY"}],
-  "languages":[{"name":"Language","level":"Native"}]
+  "name": null,
+  "title": null,
+  "email": null,
+  "phone": null,
+  "location": null,
+  "summary": null,
+  "skills": [],
+  "experience": [
+    {
+      "title": null,
+      "company": null,
+      "start": null,
+      "end": null,
+      "current": false,
+      "bullets": null
+    }
+  ],
+  "education": [
+    {"degree": null, "school": null, "year": null, "gpa": null}
+  ],
+  "certifications": [
+    {"name": null, "issuer": null, "year": null}
+  ],
+  "languages": [
+    {"name": null, "level": null}
+  ]
 }
 
-CV TEXT:
-${simUploadedCVText.slice(0,5000)}`;
+CV TEXT TO EXTRACT FROM:
+${simUploadedCVText.slice(0,6000)}`;
+
   try{
-    const raw=await callAI(prompt,1200);
-    const clean=raw.replace(/^```json\s*/i,'').replace(/^```/,'').replace(/```\s*$/,'').trim();
+    const raw=await callAI(prompt,2000);
+    // Strip any accidental markdown fences
+    const clean=raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
     const data=JSON.parse(clean);
-    const set=(id,val)=>{const el=gi(id);if(el&&val)el.value=val;};
-    set('f-name',data.name);set('f-title',data.title);set('f-email',data.email);
-    set('f-phone',data.phone);set('f-loc',data.location);set('f-sum',data.summary);
-    if(Array.isArray(data.skills)&&data.skills.length)skills=[...new Set(data.skills.filter(Boolean))];
-    if(Array.isArray(data.experience)&&data.experience.length)
-      exps=data.experience.map(e=>({t:e.title||'',co:e.company||'',s:e.start||'',e:e.end||'',present:!!e.current,d:e.bullets||''}));
-    if(Array.isArray(data.education)&&data.education.length)
-      edus=data.education.map(e=>({d:e.degree||'',s:e.school||'',y:e.year||'',g:e.gpa||''}));
-    if(Array.isArray(data.certifications)&&data.certifications.length)
-      certs=data.certifications.map(c=>({name:c.name||'',issuer:c.issuer||'',year:c.year||''}));
-    if(Array.isArray(data.languages)&&data.languages.length)
-      langs=data.languages.map(l=>({name:l.name||'',level:l.level||''}));
-    renderSk();renderExpList();renderEduList();renderCertList();renderLangList();renderSocialLinks();
+
+    const setField=(id,val)=>{
+      const el=gi(id);
+      if(el&&val&&val!=='null')el.value=String(val).trim();
+    };
+
+    setField('f-name', data.name);
+    setField('f-title', data.title);
+    setField('f-email', data.email);
+    setField('f-phone', data.phone);
+    setField('f-loc', data.location);
+    setField('f-sum', data.summary);
+
+    if(Array.isArray(data.skills)&&data.skills.length){
+      skills=[...new Set(data.skills.filter(s=>s&&s!=='null').map(s=>s.trim()))];
+      renderSk();
+    }
+    if(Array.isArray(data.experience)&&data.experience.length){
+      exps=data.experience
+        .filter(e=>e.title||e.company)
+        .map(e=>({
+          t:e.title||'',
+          co:e.company||'',
+          s:e.start||'',
+          e:e.current?'':e.end||'',
+          present:!!e.current,
+          d:e.bullets||''
+        }));
+      renderExpList();
+    }
+    if(Array.isArray(data.education)&&data.education.length){
+      edus=data.education
+        .filter(e=>e.degree||e.school)
+        .map(e=>({d:e.degree||'',s:e.school||'',y:e.year||'',g:e.gpa||''}));
+      renderEduList();
+    }
+    if(Array.isArray(data.certifications)&&data.certifications.length){
+      const realCerts=data.certifications.filter(c=>c.name&&c.name!=='null');
+      if(realCerts.length){
+        certs=realCerts.map(c=>({name:c.name||'',issuer:c.issuer||'',year:c.year||''}));
+        renderCertList();
+      }
+    }
+    if(Array.isArray(data.languages)&&data.languages.length){
+      const realLangs=data.languages.filter(l=>l.name&&l.name!=='null');
+      if(realLangs.length){
+        langs=realLangs.map(l=>({name:l.name||'',level:l.level||''}));
+        renderLangList();
+      }
+    }
+
     rCV();upATS();saveDraft();
     swTab('build',document.querySelector('.tab'));
-    btn.textContent='Imported ✓';btn.style.background='#1AA371';btn.onclick=null;
-    toast('CV imported — review and edit in the Build tab','ok',4000);
+
+    btn.innerHTML='Imported ✓';
+    btn.style.background='#0A0A12';
+    btn.style.color='#fff';
+    btn.onclick=null;
+    toast(`CV imported — ${exps.length} roles, ${skills.length} skills, ${edus.length} education entries`,'ok',4500);
   }catch(err){
     console.error('[CVCraft] Import error:',err);
-    btn.disabled=false;btn.innerHTML='Retry Import';
-    toast('Could not parse CV — try again','err',3000);
+    btn.disabled=false;
+    btn.innerHTML='Retry Import';
+    toast('Could not parse CV — the file may be unreadable. Try a different file or paste the text.','err',4000);
+  }
+}
+
+// ── REFINE CV WITH AI ──
+// Takes all recruiter simulation suggestions and applies them to the built CV intelligently
+async function refineCVWithAI(encodedImprovements,btn){
+  const improvements=typeof encodedImprovements==='string'?
+    (encodedImprovements.startsWith('%')?decodeURIComponent(encodedImprovements):encodedImprovements):'';
+
+  if(!improvements){toast('No improvements to apply','err');return;}
+
+  // Need at least a summary or experience to refine
+  const d=getData();
+  const hasSummary=d.sum&&d.sum.length>20;
+  const hasExp=exps.length>0;
+  if(!hasSummary&&!hasExp){
+    toast('Import your CV first, then click Refine','err',3500);return;
+  }
+
+  btn.disabled=true;
+  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Refining your CV…`;
+
+  // Build current CV state
+  const cvState=`NAME: ${d.nm}
+TITLE: ${d.ti}
+SUMMARY: ${d.sum||''}
+EXPERIENCE:
+${exps.map(e=>`${e.t} at ${e.co} (${e.s}${e.present?' – Present':e.e?' – '+e.e:''})
+${e.d}`).join('\n\n')}`;
+
+  const prompt=`You are a CV improvement expert. Apply these recruiter suggestions to improve this CV.
+
+RECRUITER SUGGESTIONS TO APPLY:
+${improvements}
+
+CURRENT CV CONTENT:
+${cvState}
+
+Apply the suggestions and return ONLY this JSON (no markdown, no explanation):
+{
+  "summary": "improved summary — 2-3 sentences, specific, no clichés, incorporates the relevant suggestions",
+  "experience": [
+    {
+      "title": "exact job title from CV",
+      "company": "exact company from CV",
+      "bullets": "improved bullet 1\\nimproved bullet 2\\nimproved bullet 3"
+    }
+  ]
+}
+
+Rules:
+- Keep all facts accurate — do not add achievements that are not in the original
+- Strengthen weak language and vague descriptions
+- Add quantification where it makes sense from context
+- Remove clichés (results-driven, passionate, etc.)
+- Keep bullet points concise — one achievement per bullet
+- Return all experience entries that exist in the original`;
+
+  try{
+    const raw=await callAI(prompt,1500);
+    const clean=raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+    const data=JSON.parse(clean);
+
+    // Apply summary
+    if(data.summary&&data.summary.length>20){
+      const sf=gi('f-sum');
+      if(sf)sf.value=data.summary;
+    }
+
+    // Apply experience bullets
+    if(Array.isArray(data.experience)&&data.experience.length){
+      data.experience.forEach(improved=>{
+        // Match by title+company
+        const match=exps.find(e=>
+          e.t.toLowerCase().trim()===improved.title?.toLowerCase().trim()||
+          e.co.toLowerCase().trim()===improved.company?.toLowerCase().trim()
+        );
+        if(match&&improved.bullets){
+          match.d=improved.bullets;
+        }
+      });
+      renderExpList();
+    }
+
+    rCV();upATS();saveDraft();
+    swTab('build',document.querySelector('.tab'));
+
+    btn.innerHTML='✓ CV Refined';
+    btn.style.background='#0A0A12';
+    btn.style.opacity='1';
+    btn.onclick=null;
+    toast('CV refined — review the changes in the Build tab','ok',4000);
+  }catch(err){
+    console.error('[CVCraft] Refine error:',err);
+    btn.disabled=false;
+    btn.innerHTML='Retry Refinement';
+    toast('Refinement failed — try again','err',3000);
   }
 }
 
@@ -3124,8 +3303,8 @@ Be a real recruiter. React honestly.`;
       bar.innerHTML=`<div style="flex:1;font-size:13px;color:#1A4A35;line-height:1.5">
         <strong>Import to Builder</strong> — pull this CV into the editor so you can apply the suggestions above with one click.
       </div>
-      <button class="btn-pill" id="sim-import-btn" onclick="importUploadedCV(this)" style="flex-shrink:0;padding:9px 16px;font-size:13px;background:#1AA371;white-space:nowrap">
-        Import + Edit
+      <button class="btn-pill" id="sim-import-btn" onclick="importUploadedCV(this)" style="flex-shrink:0;padding:9px 18px;font-size:13px;background:#0A0A12;white-space:nowrap">
+        Import CV
       </button>`;
       out.appendChild(bar);
     }
@@ -3151,13 +3330,20 @@ function renderSimOutput(raw,persona,canApply=false){
   const bullets=(text,dot)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
     .map(l=>`<div class="sim-point"><div class="sim-point-dot" style="background:${dot}"></div><span>${l}</span></div>`).join('');
   const improvementBullets=(text)=>text.split('\n').map(l=>l.replace(/^[-•*\d.)\s]+/,'').trim()).filter(Boolean)
-    .map((l,i)=>`<div class="sim-point sim-improvement"><div class="sim-point-dot" style="background:#7C3AED"></div><span>${l}</span>${canApply?`<button class="sim-apply-btn" onclick="simApplyImprovement('${l.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}',this)">Apply</button>`:''}</div>`).join('');
+    .map(l=>`<div class="sim-point sim-improvement"><div class="sim-point-dot" style="background:#7C3AED"></div><span>${l}</span></div>`).join('');
+
+  // Store improvements for the refine button
+  const improvementsText=improvements;
   return`<div class="sim-persona"><div class="sim-persona-av">${persona.emoji}</div><div><div class="sim-persona-name">${persona.name}</div><div class="sim-persona-role">${persona.role}</div></div></div>
   ${impression?`<div class="sim-section-head">First Impression</div><p class="sim-verdict">"${impression}"</p>`:''}
   ${redFlags?`<div class="sim-section-head">⚠ Red Flags</div>${bullets(redFlags,'#E14B4B')}`:''}
   ${strengths?`<div class="sim-section-head">✓ Strengths</div>${bullets(strengths,'#1AA371')}`:''}
   ${questions?`<div class="sim-section-head">Questions I'd Ask</div>${bullets(questions,'#4F5BD5')}`:''}
-  ${improvements?`<div class="sim-section-head">💡 Improvements <span style="font-size:11px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">${canApply?'— click Apply to update your CV directly':'' }</span></div>${improvementBullets(improvements)}`:'' }
+  ${improvements?`<div class="sim-section-head">💡 Improvements</div>${improvementBullets(improvements)}
+  ${canApply?`<button class="btn-pill" style="width:100%;justify-content:center;margin-top:12px;background:#0A0A12;font-size:13.5px" onclick="(function(btn){refineCVWithAI(${JSON.stringify('__IMP__')},btn)})(this)">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    Refine CV with AI
+  </button>`.replace('__IMP__', encodeURIComponent(improvementsText)):''}`:'' }
   ${decisionRaw?`<div class="sim-decision" style="background:${decBg};color:${decCol}">${decIcon} ${decisionRaw}</div>`:''}`;
 }
 
