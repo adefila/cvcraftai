@@ -110,7 +110,6 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .btn-pill-outline:hover{border-color:var(--ink);background:var(--surf)}
 .btn-pill-outline:active{transform:scale(.96)}
 /* Pane crossfade */
-.pnl{animation:pnlIn .22s cubic-bezier(.4,0,.2,1)}
 @keyframes pnlIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 /* Skill chip entrance */
 @keyframes chipIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
@@ -133,7 +132,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 /* ── LAYOUT ── */
 .ws-outer{display:flex;justify-content:center;height:100vh;padding-top:68px;background:var(--surf)}
 .ws{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 68px);width:100%;max-width:1200px}
-.pnl{background:var(--bg);border-right:1px solid var(--bdr);overflow-y:auto;height:100%;display:none;flex-direction:column}
+.pnl{background:var(--bg);border-right:1px solid var(--bdr);overflow-y:auto;height:100%;display:none;flex-direction:column;animation:pnlIn .22s cubic-bezier(.4,0,.2,1)}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:var(--surf);overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:32px 24px}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -1377,7 +1376,7 @@ function loadDraft(){
   if(Array.isArray(draft.langs))langs=draft.langs;
   if(Array.isArray(draft.projs))projs=draft.projs;
   if(Array.isArray(draft.socials))socials=draft.socials;
-  if(draft.CT)CT=draft.CT;
+  if(draft.CT&&(typeof TPL==='undefined'||TPL[draft.CT]))CT=draft.CT; else if(draft.CT&&typeof TPL!=='undefined'&&!TPL[draft.CT]){CT='classic';} // guard against stale template names
   if(draft.AC){AC=draft.AC;document.documentElement.style.setProperty('--ac',AC);}
 }
 function clearDraft(){
@@ -2276,6 +2275,8 @@ function getCVText(){
 }
 
 let jdDebounce;
+function upJDScore(){runJDMatch();} // alias
+
 function runJDMatch(){
   clearTimeout(jdDebounce);
   jdDebounce=setTimeout(()=>{
@@ -3650,7 +3651,13 @@ const TPL={
 
 function rCV(){
   const d=getData();
-  gi('paper').innerHTML=TPL[CT](d);
+  try{
+    if(!TPL[CT]){console.warn('[CVCraft] Unknown template:',CT,'— falling back to classic');CT='classic';}
+    gi('paper').innerHTML=TPL[CT](d);
+  }catch(e){
+    console.error('[CVCraft] Template render error:',e);
+    try{CT='classic';gi('paper').innerHTML=TPL.classic(d);}catch(_){}
+  }
   upATS();runJDMatch();
   saveDraft();
 }
@@ -3954,27 +3961,21 @@ window.addEventListener('error',e=>logError('js',e.message,e.filename+':'+e.line
 window.addEventListener('unhandledrejection',e=>logError('promise',e.reason?.message||String(e.reason),'promise'));
 
 function init(){
-  loadDraft();
-  buildTplCatRow();
-  buildTplGrid();
-  buildColorGrid();
-  renderSk();
-  renderSocialLinks();
-  renderExpList();
-  renderEduList();
-  renderProjList();
-  renderCertList();
-  renderLangList();
-  gi('ats-tips').innerHTML=ATS_TIPS.map(t=>`
+  try{loadDraft();}catch(e){console.error('[CVCraft] loadDraft failed:',e);}
+  try{buildTplCatRow();buildTplGrid();buildColorGrid();}catch(e){console.error('[CVCraft] buildTpl failed:',e);}
+  try{renderSk();renderSocialLinks();}catch(e){console.error('[CVCraft] renderSk failed:',e);}
+  try{renderExpList();renderEduList();renderProjList();renderCertList();renderLangList();}catch(e){console.error('[CVCraft] renderLists failed:',e);}
+  try{
+    gi('ats-tips').innerHTML=ATS_TIPS.map(t=>`
     <div class="ats-tip-box" style="background:${t.ok?'#F2FAF6':'#FCF1F1'}">
       <div style="font-size:14px;flex-shrink:0">${t.ok?'✓':'✕'}</div>
       <span style="font-size:14.5px;color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.txt}</span>
     </div>`).join('');
-  rCV();
+  }catch(e){}
+  try{rCV();}catch(e){console.error('[CVCraft] rCV failed:',e);}
   if(localStorage.getItem(DRAFT_KEY)&&(v('f-name')||skills.length||exps.length)){
     toast('Restored your last draft','ok',2500);
   } else {
-    // New user — start tour after UI finishes painting
     setTimeout(startOnboarding, 600);
   }
 }
