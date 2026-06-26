@@ -296,9 +296,13 @@ a:focus-visible,[tabindex]:focus-visible{
 .ats-meth-rec{color:#4F5BD5}
 /* Recruiter Simulation */
 .sim-box{background:linear-gradient(160deg,#F4F4FF 0%,#F9F9FD 100%);border:1.5px solid #E0DEFF;border-radius:18px;padding:18px}
-.sim-intro{display:flex;gap:13px;align-items:flex-start;margin-bottom:16px}
-.sim-intro-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:5px}
-.sim-intro-body{font-size:13px;color:var(--muted);line-height:1.6}
+/* ── TOOLTIP SYSTEM ── */
+.tip{position:relative;display:inline-flex;align-items:center;cursor:help}
+.tip-icon{width:16px;height:16px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);color:var(--muted);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s;font-family:var(--ff-b);line-height:1}
+.tip:hover .tip-icon{border-color:var(--ac);color:var(--ac)}
+.tip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#F0EDE8;font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;white-space:normal;width:240px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:999;font-family:var(--ff-b);font-weight:400;box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.tip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1A1A2E}
+.tip:hover .tip-box{opacity:1}
 .sim-source-row{display:flex;gap:8px;margin-bottom:4px}
 .sim-source-btn{flex:1;background:var(--card);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 12px;font-family:var(--ff-b);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px}
 .sim-source-btn:hover{border-color:var(--ac);color:var(--ac)}
@@ -1094,7 +1098,7 @@ a:focus-visible,[tabindex]:focus-visible{
     </div>
 
     <div class="sec" style="border-bottom:none">
-      <div class="lbl">Additional Info <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(commonly missed, often a silent rejection reason)</span></div>
+      <div class="lbl">Additional Info <span class="tip"><span class="tip-icon">?</span><span class="tip-box">Work authorization is often an automated filter — candidates who don't state it can be silently rejected before a human sees their CV.</span></span></div>
       <div class="fg">
         <div>
           <label class="date-lbl">Work authorization</label>
@@ -1134,7 +1138,7 @@ a:focus-visible,[tabindex]:focus-visible{
         <p class="ai-check-desc">Once your CV is filled in, run a full check. AI will spot grammar issues, weak phrasing, ATS problems, and missing keywords — then let you apply fixes directly with one click.</p>
         <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Run AI Check ✦</button>
         <div class="ai-out" id="ai-out"></div>
-        <div class="ai-disclaimer" id="ai-disclaimer-box" style="display:none">ⓘ CVCraft AI reasons over your actual CV text using documented ATS mechanics — not any specific company's proprietary algorithm.</div>
+        <div class="ai-disclaimer" id="ai-disclaimer-box" style="display:none">ⓘ Scores model documented ATS mechanics — not any specific company's proprietary algorithm.</div>
       </div>
     </div>
   </div>
@@ -1200,9 +1204,9 @@ a:focus-visible,[tabindex]:focus-visible{
   <!-- ATS PANEL -->
   <div class="pnl" id="pnl-ats">
     <div class="sec">
-      <div class="lbl">Score Breakdown</div>
+      <div class="lbl">Score Breakdown <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS Score = structural/parseable quality. Recruiter Score = human appeal in the first 8 seconds. Both update live as you type.</span></span></div>
       <div class="ats-methodology">
-        <div class="ats-meth-title">How these scores are calculated</div>
+        <div class="ats-meth-title">How scores are calculated <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS checks measure parser readability. Recruiter checks measure human appeal. Each item shows maximum points — fill in your CV to see your actual score.</span></span></div>
         <div class="ats-meth-grid">
           <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">8pts</span><span><strong>ATS:</strong> Full name present</span></div>
           <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">12pts</span><span><strong>ATS:</strong> Professional summary (80+ chars)</span></div>
@@ -1222,16 +1226,10 @@ a:focus-visible,[tabindex]:focus-visible{
     <!-- RECRUITER SIMULATION — AI reads your CV cold -->
     <div class="sec">
       <div class="lbl">Recruiter Simulation
-        <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none"> — AI reads your CV as a recruiter would in 8 seconds</span>
+        <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none"></span>
       </div>
       <div class="sim-box">
-        <div class="sim-intro">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="18" fill="var(--ac)" opacity=".1"/><circle cx="18" cy="13" r="5" fill="var(--ac)"/><path d="M6 30c0-6 5-10 12-10s12 4 12 10" fill="var(--ac)" opacity=".6"/></svg>
-          <div>
-            <div class="sim-intro-title">What would a recruiter actually think?</div>
-            <div class="sim-intro-body">Claude takes the role of a recruiter and reads your CV cold — exactly as they would for the first time. Unfiltered first impression, red flags, strengths, and a clear move-forward / pass decision.</div>
-          </div>
-        </div>
+        
         <!-- Source toggle -->
         <div class="sim-source-row">
           <button class="sim-source-btn active" id="sim-src-form" onclick="simSetSource('form')">
@@ -1272,16 +1270,13 @@ a:focus-visible,[tabindex]:focus-visible{
     </div>
 
     <div class="sec">
-      <div class="lbl">Weak Word Scan <span style="font-weight:400;color:var(--muted);font-size:11px;letter-spacing:0;text-transform:none">(scans your whole CV automatically)</span></div>
+      <div class="lbl">Weak Word Scan <span class="tip"><span class="tip-icon">?</span><span class="tip-box">Automatically scans every bullet and sentence in your CV for weak or clichéd phrasing that ATS systems and recruiters flag negatively.</span></span></div>
       <div id="weak-words-box"></div>
     </div>
     <div class="sec" style="border-bottom:none">
       <div class="lbl">ATS Best Practices</div>
       <div id="ats-tips" style="margin-bottom:14px"></div>
-      <div class="ats-disclaimer-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".1"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="12" y1="16" x2="12" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>
-        <span>Both scores model documented hiring mechanics — not any specific company's proprietary algorithm. The Recruiter Simulation is an AI persona, not a real person's opinion.</span>
-      </div>
+      <div class="ats-disclaimer-box" style="font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:7px;padding:10px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;opacity:.6"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><line x1="12" y1="16" x2="12" y2="11" stroke-linecap="round"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg><span>Scores model documented ATS mechanics — not any specific company's proprietary algorithm. Recruiter Simulation is an AI persona, not a real person.</span></div>
     </div>
   </div>
 
@@ -2715,7 +2710,7 @@ function upATS(){
 }
 
 // ── RECRUITER SIMULATION ──
-// The most viral feature: Claude takes the role of a specific recruiter persona
+// The most viral feature: CVCraft AI takes the role of a specific recruiter persona
 // and reads the CV cold — exactly as a real recruiter would in 8 seconds.
 // Output: structured first impression, red flags, strengths, and a decision.
 const SIM_PERSONAS={
