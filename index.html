@@ -12,7 +12,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#15151A;--bg:#FFFFFF;--surf:#F7F7F5;--card:#FBFBFA;--muted:#6B6B72;
+  --ink:#15151A;--bg:#F5F5F3;--surf:#EDEDEA;--card:#FFFFFF;--muted:#74747B;
   --ac:#4F5BD5;--ok:#1AA371;--err:#E14B4B;--warn:#C8860D;--bdr:#E7E6E2;
   --ff-d:'Plus Jakarta Sans',sans-serif;--ff-b:'Inter',sans-serif;--ff-m:'IBM Plex Mono',monospace;
 }
@@ -20,7 +20,7 @@ html,body{height:100%;overflow:hidden}
 body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--surf);color:var(--ink);-webkit-font-smoothing:antialiased}
 
 /* ── TOPBAR ── */
-.bar{position:fixed;top:0;left:0;right:0;height:68px;background:var(--bg);border-bottom:1px solid var(--bdr);z-index:200;display:flex;justify-content:center}
+.bar{position:fixed;top:0;left:0;right:0;height:68px;background:#FFFFFF;border-bottom:1px solid #ECEAE5;z-index:200;display:flex;justify-content:center}
 .bar-inner{width:100%;max-width:1300px;display:flex;align-items:center;padding:0 22px;gap:18px}
 .logo{font-family:var(--ff-d);font-weight:800;font-size:32px;letter-spacing:-1px;white-space:nowrap;color:var(--ink);line-height:1}
 .logo span{color:var(--ac)}
@@ -30,11 +30,11 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 /* ── ONBOARDING TOUR ── */
 #onb-overlay{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(2px)}
 #onb-overlay.active{display:flex}
-.onb-modal{background:#fff;border-radius:22px;padding:0;width:440px;max-width:calc(100vw - 32px);box-shadow:0 32px 96px rgba(0,0,0,.28);overflow:hidden;animation:modalIn .25s cubic-bezier(.34,1.3,.64,1)}
+.onb-modal{background:#FFFFFF;border-radius:20px;padding:0;width:440px;max-width:calc(100vw - 32px);box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;animation:modalIn .25s cubic-bezier(.34,1.3,.64,1)}
 /* Confirm modal */
 #confirm-modal{display:none}
 #confirm-modal.open{display:flex}
-.confirm-box{background:#fff;border-radius:20px;padding:28px 28px 24px;width:380px;max-width:calc(100vw - 32px);box-shadow:0 24px 72px rgba(0,0,0,.22);animation:modalIn .2s cubic-bezier(.34,1.2,.64,1)}
+.confirm-box{background:#fff;border-radius:20px;padding:28px 28px 24px;width:380px;max-width:calc(100vw - 32px);box-shadow:0 6px 32px rgba(0,0,0,.09);animation:modalIn .2s cubic-bezier(.34,1.2,.64,1)}
 .confirm-icon{font-size:36px;margin-bottom:14px;text-align:center}
 .confirm-title{font-family:var(--ff-d);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center}
 .confirm-body{font-size:14px;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:22px}
@@ -44,7 +44,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 .onb-illus{height:152px;display:flex;align-items:center;justify-content:center;gap:18px;padding:0 32px;position:relative;overflow:hidden}
 .onb-illus-bg{position:absolute;inset:0;opacity:.08}
 .onb-illus-icon{font-size:42px;position:relative;z-index:1}
-.onb-illus-where{position:relative;z-index:1;background:#fff;border-radius:12px;padding:8px 14px;box-shadow:0 4px 16px rgba(0,0,0,.1);font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:7px;max-width:180px}
+.onb-illus-where{position:relative;z-index:1;background:#fff;border-radius:12px;padding:8px 14px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:7px;max-width:180px}
 .onb-illus-where svg{flex-shrink:0}
 .onb-body-wrap{padding:22px 28px 26px}
 .onb-step-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px}
@@ -95,13 +95,13 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .sim-section-head svg{flex-shrink:0;opacity:.65}
 .bar-menu-btn:hover svg{opacity:.7;transform:rotate(90deg)}
 /* Contextual nudge strip */
-.cv-nudge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 22px;background:var(--ac);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:none;transition:background .2s}
+.cv-nudge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 22px;background:var(--ac);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:none;transition:background .2s}
 .cv-nudge:hover{filter:brightness(.95)}
 /* JD Match teaser */
 .jd-teaser{display:flex;gap:14px;align-items:flex-start;background:var(--surf);border-radius:14px;padding:16px;margin-bottom:16px}
 .jd-teaser svg{flex-shrink:0;color:var(--ac);margin-top:2px}
 .tab:hover{color:var(--ink);background:rgba(21,21,26,.05)}
-.tab.on{background:var(--ink);color:#fff;box-shadow:0 2px 8px rgba(21,21,26,.14)}
+.tab.on{background:var(--ink);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 /* ── Compact score badge in the bar ── */
 .score-badge{margin-left:auto;display:inline-flex;align-items:center;gap:0;background:var(--surf);border:1.5px solid var(--bdr);border-radius:999px;padding:0;cursor:pointer;transition:all .18s;overflow:hidden;height:38px}
 .score-badge:hover{background:var(--bg);border-color:var(--ink)}
@@ -130,7 +130,7 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .bar-menu-wrap{position:relative}
 .bar-menu-btn{background:transparent;border:1.5px solid var(--bdr);border-radius:999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;color:var(--muted)}
 .bar-menu-btn:hover{background:var(--surf);border-color:var(--ink);color:var(--ink)}
-.bar-menu-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:6px;box-shadow:0 12px 40px rgba(0,0,0,.14);z-index:300;min-width:188px;display:none}
+.bar-menu-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,.07);z-index:300;min-width:188px;display:none}
 .bar-menu-dropdown.open{display:block;animation:pnlIn .18s cubic-bezier(.4,0,.2,1)}
 .bar-menu-section{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:6px 10px 4px}
 .bar-menu-item{width:100%;background:none;border:none;border-radius:9px;padding:9px 10px;font-family:var(--ff-b);font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s;text-align:left}
@@ -151,12 +151,12 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 @keyframes chipIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
 .sk-chip{animation:chipIn .2s cubic-bezier(.34,1.56,.64,1)}
 /* Input field focus lift */
-.fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(21,21,26,.07);transform:translateY(-1px)}
+.fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(79,91,213,.12);transform:translateY(-1px)}
 /* ATS ring animated fill */
 #ats-arc{transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke .4s}
 /* Template card lift */
 .tpl-card:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.1)}
-.tpl-card:active{transform:translateY(-1px)!important;box-shadow:0 4px 10px rgba(0,0,0,.07)!important}
+.tpl-card:active{transform:translateY(-1px)!important;box-shadow:0 2px 6px rgba(0,0,0,.05)!important}
 /* Export option interactive */
 .export-opt{border:1.5px solid var(--bdr);border-radius:16px;padding:16px 18px;cursor:pointer;margin-bottom:10px;transition:all .18s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:14px}
 .export-opt:hover{border-color:var(--ink);background:var(--surf);transform:translateX(3px)}
@@ -168,15 +168,15 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 /* ── LAYOUT ── */
 .ws-outer{display:flex;justify-content:center;height:100vh;padding-top:68px;background:#fff}
 .ws{display:grid;grid-template-columns:420px 1fr;height:calc(100vh - 68px);width:100%;max-width:1300px}
-.pnl{background:var(--bg);border-right:1px solid var(--bdr);overflow-y:auto;height:100%;display:none;flex-direction:column;animation:pnlIn .22s cubic-bezier(.4,0,.2,1)}
+.pnl{background:#F5F5F3;border-right:1px solid #E4E2DC;overflow-y:auto;height:100%;display:none;flex-direction:column;animation:pnlIn .22s cubic-bezier(.4,0,.2,1)}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:#F5F4F1;overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:28px 20px}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ── FORMS ── */
-.cv-progress-wrap{padding:12px 22px 10px;border-bottom:1px solid var(--bdr);background:var(--bg)}
+.cv-progress-wrap{padding:12px 22px 10px;border-bottom:1px solid #E9E7E2;background:#F5F5F3}
 .cv-progress-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:7px}
-.cv-progress-track{height:4px;background:var(--surf);border-radius:999px;overflow:hidden;margin-bottom:8px}
+.cv-progress-track{height:3px;background:#E4E2DC;border-radius:999px;overflow:hidden;margin-bottom:8px}
 .cv-progress-bar{height:100%;border-radius:999px;background:var(--ac);transition:width .4s cubic-bezier(.4,0,.2,1)}
 .cv-step-chips{display:flex;gap:5px;flex-wrap:wrap}
 .cv-step-chip{font-size:10.5px;padding:2px 8px;border-radius:999px;font-weight:600;white-space:nowrap}
@@ -190,9 +190,9 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
 .skel{border-radius:4px;background:linear-gradient(90deg,#F0EFED 25%,#E8E6E3 50%,#F0EFED 75%);background-size:800px 100%;animation:shimmer 1.8s infinite linear;margin-bottom:7px}
 .skel-name{height:24px;width:55%}.skel-title{height:12px;width:38%;margin-top:4px}.skel-line{height:9px;width:100%}
-.sec{padding:20px 22px;border-bottom:1px solid var(--bdr)}
+.sec{padding:18px 22px;border-bottom:1px solid #E9E7E2}
 .lbl{font-family:var(--ff-d);font-size:12.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);margin-bottom:13px}
-.fi{width:100%;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;font-family:var(--ff-b);font-size:16px;color:var(--ink);background:var(--card);transition:border-color .15s,box-shadow .15s;resize:vertical}
+.fi{width:100%;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;font-family:var(--ff-b);font-size:16px;color:var(--ink);background:#FFFFFF;transition:border-color .15s,box-shadow .15s;resize:vertical}
 /* Hide the native datalist picker indicator (the small arrow on list= inputs) */
 input[list]::-webkit-calendar-picker-indicator{display:none!important;opacity:0}
 input[list]::-webkit-list-button{display:none!important}
@@ -202,7 +202,7 @@ select.fi{padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xml
 input[type=number].no-spin::-webkit-inner-spin-button,
 input[type=number].no-spin::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number].no-spin{-moz-appearance:textfield}
-.fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(21,21,26,.06)}
+.fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(79,91,213,.10)}
 button:focus-visible,.tpl-card:focus-visible,.clr-dot:focus-visible,.export-opt:focus-visible,
 a:focus-visible,[tabindex]:focus-visible{
   outline:2.5px solid var(--ac);outline-offset:2px;border-radius:6px;
@@ -257,14 +257,14 @@ a:focus-visible,[tabindex]:focus-visible{
 .sk-tag button:hover{color:#fff;background:var(--err)}
 .sk-row{display:flex;gap:9px}
 /* Social links */
-.social-link-card{background:var(--card);border:1.5px solid var(--bdr);border-radius:14px;padding:13px 14px;margin-bottom:9px}
+.social-link-card{background:#FFFFFF;border:1px solid #E4E2DC;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .social-link-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .social-type-pill{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--bdr);border-radius:999px;padding:4px 10px 4px 9px;font-family:var(--ff-b);font-size:12px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--ink);transition:border-color .15s,background .15s;user-select:none}
 .social-type-pill:hover{border-color:var(--ac);background:var(--surf)}
 .social-type-pill svg{opacity:.5;transition:opacity .15s}
 .social-type-pill:hover svg{opacity:1}
 /* Dropdown — uses position:fixed to escape overflow:auto clipping */
-.social-type-menu{position:fixed;background:var(--card);border:1.5px solid var(--bdr);border-radius:16px;padding:6px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.14);display:none;min-width:190px;max-height:280px;overflow-y:auto}
+.social-type-menu{position:fixed;background:var(--card);border:1.5px solid var(--bdr);border-radius:16px;padding:6px;z-index:9999;box-shadow:0 3px 14px rgba(0,0,0,.07);display:none;min-width:190px;max-height:280px;overflow-y:auto}
 .social-type-menu.open{display:grid;grid-template-columns:1fr 1fr;gap:3px}
 .social-type-item{border:none;background:none;border-radius:9px;padding:8px 11px;font-family:var(--ff-b);font-size:12.5px;font-weight:500;cursor:pointer;text-align:left;color:var(--ink);transition:background .1s;white-space:nowrap}
 .social-type-item:hover{background:var(--surf)}
@@ -363,12 +363,12 @@ a:focus-visible,[tabindex]:focus-visible{
 /* Section completion dots */
 .sec-done .lbl::after{content:'✓';margin-left:6px;color:#1AA371;font-size:11px;font-weight:700;letter-spacing:0;text-transform:none}
 /* Recruiter Simulation */
-.sim-box{background:var(--surf);border:1.5px solid var(--bdr);border-radius:16px;padding:16px}
+.sim-box{background:#FFFFFF;border:1px solid #E4E2DC;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
 /* ── TOOLTIP SYSTEM ── */
 .tip{position:relative;display:inline-flex;align-items:center;cursor:help}
 .tip-icon{width:16px;height:16px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);color:var(--muted);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .15s,color .15s,transform .15s;font-family:var(--ff-b);line-height:1}
 .tip:hover .tip-icon{border-color:var(--ac);color:var(--ac);transform:scale(1.1)}
-.tip-box{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#F0EDE8;font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;white-space:normal;width:240px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:999;font-family:var(--ff-b);font-weight:400;box-shadow:0 4px 20px rgba(0,0,0,.25);text-transform:none;letter-spacing:0}
+.tip-box{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1A1A2E;color:#F0EDE8;font-size:12px;line-height:1.55;padding:9px 12px;border-radius:10px;white-space:normal;width:240px;pointer-events:none;opacity:0;transition:opacity .18s;z-index:999;font-family:var(--ff-b);font-weight:400;box-shadow:0 2px 10px rgba(0,0,0,.08);text-transform:none;letter-spacing:0}
 .tip-box::after{content:'';position:absolute;bottom:100%;top:auto;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#1A1A2E}
 .tip:hover .tip-box{opacity:1}
 .sim-source-row{display:flex;gap:8px;margin-bottom:4px}
@@ -388,7 +388,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-sync-dot{width:8px;height:8px;border-radius:50%;background:#1AA371;flex-shrink:0;margin-top:4px;animation:sync-pulse 2.5s infinite}
 @keyframes sync-pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .sim-improvement{align-items:flex-start!important;gap:10px}
-.sim-apply-btn{margin-left:auto;flex-shrink:0;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.sim-apply-btn{margin-left:auto;flex-shrink:0;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.07)}
 .sim-apply-btn:hover{opacity:.85;transform:translateY(-1px)}
 .sim-apply-btn:disabled{opacity:.5;cursor:default;transform:none}
 .sim-out{background:#fff;border-radius:14px;padding:16px 18px;margin-top:14px;border:1.5px solid var(--bdr)}
@@ -414,11 +414,11 @@ a:focus-visible,[tabindex]:focus-visible{
 .cv-ctrl{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .cv-tl{font-family:var(--ff-d);font-size:13px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
 .cv-tl-val{font-size:14px;color:var(--muted)}
-.paper{background:#fff;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 48px rgba(0,0,0,.09);min-height:920px;overflow:hidden;transition:box-shadow .2s}
+.paper{background:#fff;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 16px rgba(0,0,0,.05);min-height:920px;overflow:hidden}
 
 /* ── MODAL ── */
 .modal-bg{position:fixed;inset:0;background:rgba(15,15,20,.5);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease;padding:20px}
-.modal{background:#fff;border-radius:20px;padding:28px;width:460px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.25);animation:modalIn .2s cubic-bezier(.34,1.56,.64,1);box-sizing:border-box}
+.modal{background:#fff;border-radius:20px;padding:28px;width:460px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,.08);animation:modalIn .2s cubic-bezier(.34,1.56,.64,1);box-sizing:border-box}
 @keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .modal-title{font-family:var(--ff-d);font-size:18px;font-weight:600;margin-bottom:18px}
 .modal-btns{display:flex;gap:10px;margin-top:18px}
@@ -1003,8 +1003,8 @@ a:focus-visible,[tabindex]:focus-visible{
 <div id="mobile-gate">
   <div class="gate-card">
     <div class="logo" style="margin-bottom:22px">cv<span>craft</span>.ai</div>
-    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:18px">
-      <rect x="2" y="4" width="20" height="13" rx="2" fill="var(--ac)" opacity=".15"/><rect x="2" y="4" width="20" height="13" rx="2" stroke="var(--ac)" stroke-width="1.6" fill="none"/><line x1="8" y1="21" x2="16" y2="21" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="11" r="2" fill="var(--ac)" opacity=".4"/>
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:18px">
+      <rect x="2" y="4" width="20" height="13" rx="2" fill="var(--ac)" opacity=".15"/><rect x="2" y="4" width="20" height="13" rx="2" stroke="var(--ac)" stroke-width="1.8" fill="none"/><line x1="8" y1="21" x2="16" y2="21" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="11" r="2" fill="var(--ac)" opacity=".4"/>
     </svg>
     <div class="gate-title">Open on a laptop or desktop</div>
     <p class="gate-body">CVCraft AI needs a wider screen to show the editor and live preview side by side. It works best on a laptop or desktop browser.</p>
@@ -1066,7 +1066,7 @@ a:focus-visible,[tabindex]:focus-visible{
       </button>
       <div class="bar-menu-divider"></div>
       <button class="bar-menu-item bar-menu-item-danger" onclick="confirmStartOver();closeBarMenu()">
-        <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="11" x2="10" y2="17" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/><line x1="14" y1="11" x2="14" y2="17" stroke="#C0392B" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="11" x2="10" y2="17" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"/><line x1="14" y1="11" x2="14" y2="17" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"/></svg>
         Start over
       </button>
     </div>
@@ -1085,7 +1085,7 @@ a:focus-visible,[tabindex]:focus-visible{
     <!-- CONTEXTUAL NUDGE STRIP -->
     <div id="cv-nudge" class="cv-nudge" style="display:none" onclick="if(window._nudgeTab)swTab(window._nudgeTab,document.querySelector('.tab'))">
       <span id="cv-nudge-text"></span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
 
     <!-- CV COMPLETENESS PROGRESS BAR -->
@@ -1098,7 +1098,7 @@ a:focus-visible,[tabindex]:focus-visible{
     <!-- CONTEXTUAL NUDGE STRIP — guides users to their next best action -->
     <div id="cv-nudge" class="cv-nudge" style="display:none" onclick="if(window._nudgeTab)swTab(window._nudgeTab,document.querySelector('.tab'))">
       <span id="cv-nudge-text"></span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
     <!-- CV Completeness Progress -->
     <div id="build-progress-ring" class="build-progress-wrap">
@@ -1245,7 +1245,7 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="sec" style="border-bottom:none;padding-top:0">
       <div class="ai-check-box">
         <div class="ai-check-title">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ac)" opacity=".15"/><circle cx="12" cy="12" r="10" stroke="var(--ac)" stroke-width="1.5"/><path d="M8 12l3 3 5-5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--ac)" opacity=".15"/><circle cx="12" cy="12" r="10" stroke="var(--ac)" stroke-width="1.8"/><path d="M8 12l3 3 5-5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           AI Polish Check
         </div>
         <p class="ai-check-desc">Spot grammar issues, weak phrasing, ATS problems and missing keywords — then apply fixes in one click.</p>
@@ -1316,7 +1316,7 @@ a:focus-visible,[tabindex]:focus-visible{
   <div class="pnl" id="pnl-ats">
     <div class="sec">
       <div class="lbl">Score Breakdown <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS Score = structural/parseable quality. Recruiter Score = human appeal in the first 8 seconds. Both update live as you type.</span></span></div>
-      <details class="ats-methodology"><summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);list-style:none;display:flex;align-items:center;gap:5px;padding:8px 0;user-select:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>How scoring works</summary>
+      <details class="ats-methodology"><summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);list-style:none;display:flex;align-items:center;gap:5px;padding:8px 0;user-select:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>How scoring works</summary>
         <div class="ats-meth-title">How scores are calculated <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS checks measure parser readability. Recruiter checks measure human appeal. Each item shows maximum points — fill in your CV to see your actual score.</span></span></div>
         <div class="ats-meth-grid">
           <div class="ats-meth-row"><span class="ats-meth-pts ats-meth-ats">8pts</span><span><strong>ATS:</strong> Full name present</span></div>
@@ -1344,11 +1344,11 @@ a:focus-visible,[tabindex]:focus-visible{
         <!-- Source toggle -->
         <div class="sim-source-row">
           <button class="sim-source-btn active" id="sim-src-form" onclick="simSetSource('form')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             Use my CV data
           </button>
           <button class="sim-source-btn" id="sim-src-upload" onclick="simSetSource('upload')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Upload a CV
           </button>
         </div>
@@ -1362,7 +1362,7 @@ a:focus-visible,[tabindex]:focus-visible{
         <!-- Upload zone — only shows in upload mode -->
         <div id="sim-upload-zone" style="display:none">
           <div class="sim-upload-drop" id="sim-upload-drop" onclick="gi('sim-cv-file').click()">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 12 15 15"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 12 15 15"/></svg>
             <div class="sim-upload-text">Click to upload your CV</div>
             <div class="sim-upload-sub">PDF, DOCX or TXT — extracted automatically</div>
           </div>
@@ -1393,7 +1393,7 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="sec" style="border-bottom:none">
       <div class="lbl">ATS Best Practices</div>
       <div id="ats-tips" style="margin-bottom:14px"></div>
-      <div class="ats-disclaimer-box" style="font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:7px;padding:10px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;opacity:.6"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><line x1="12" y1="16" x2="12" y2="11" stroke-linecap="round"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg><span>Scores model documented ATS mechanics — not any specific company's proprietary algorithm. Recruiter Simulation is an AI persona, not a real person.</span></div>
+      <div class="ats-disclaimer-box" style="font-size:12px;color:var(--muted);display:flex;align-items:flex-start;gap:7px;padding:10px 14px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px;opacity:.6"><circle cx="12" cy="12" r="10" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="11" stroke-linecap="round"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg><span>Scores model documented ATS mechanics — not any specific company's proprietary algorithm. Recruiter Simulation is an AI persona, not a real person.</span></div>
     </div>
   </div>
 
@@ -1406,7 +1406,7 @@ a:focus-visible,[tabindex]:focus-visible{
       </div>
       <div class="paper" id="paper">
         <div class="paper-empty" id="paper-empty">
-          <div class="paper-empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity=".3"/><polyline points="14 2 14 8 20 8" opacity=".3"/><line x1="8" y1="13" x2="16" y2="13" opacity=".5"/><line x1="8" y1="17" x2="12" y2="17" opacity=".5"/></svg></div>
+          <div class="paper-empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity=".3"/><polyline points="14 2 14 8 20 8" opacity=".3"/><line x1="8" y1="13" x2="16" y2="13" opacity=".5"/><line x1="8" y1="17" x2="12" y2="17" opacity=".5"/></svg></div>
           <div class="paper-empty-title">Your CV preview</div>
           <div class="paper-empty-sub">Fill in your details on the left and watch your CV build here</div>
           <div style="width:100%;text-align:left"><div class="skel skel-name"></div><div class="skel skel-title"></div><div style="height:1px;background:var(--bdr);margin:12px 0"></div><div class="skel skel-line" style="width:90%"></div><div class="skel skel-line"></div><div class="skel skel-line" style="width:78%"></div></div>
@@ -1438,7 +1438,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
       <!-- Print option: ATS-safe text PDF via browser -->
       <div class="export-opt" id="opt-print" role="button" tabindex="0" onclick="selExport('print',this)">
-        <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" opacity=".15"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.6" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.6" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+        <div class="export-icon" style="background:#DEF4EA;color:#1AA371"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" opacity=".15"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" fill="none"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Save as PDF (Print) <span class="export-badge export-badge-best">ATS-safe text</span></div>
           <div class="export-info-s">Opens browser print dialog → choose "Save as PDF". Produces a real text-layer PDF that ATS systems can parse. Filename will use your name.</div>
@@ -1447,7 +1447,7 @@ a:focus-visible,[tabindex]:focus-visible{
 
       <!-- Image PDF: direct download, selected by default -->
       <div class="export-opt sel" id="opt-pdf" role="button" tabindex="0" onclick="selExport('pdf',this)">
-        <div class="export-icon" style="background:#FFF7ED;color:#C2790A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" opacity=".12"/><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="8.5" cy="8.5" r="2" fill="currentColor" opacity=".5"/><polyline points="21 15 15 9 5 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
+        <div class="export-icon" style="background:#FFF7ED;color:#C2790A"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" opacity=".12"/><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="8.5" cy="8.5" r="2" fill="currentColor" opacity=".5"/><polyline points="21 15 15 9 5 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Download PDF <span class="export-badge">Direct download</span></div>
           <div class="export-info-s">Downloads directly as <strong>[Your Name]-cv.pdf</strong> — no print dialog. Preserves your template design and colours exactly. Best for sharing.</div>
@@ -1455,7 +1455,7 @@ a:focus-visible,[tabindex]:focus-visible{
       </div>
 
       <div class="export-opt" id="opt-html" role="button" tabindex="0" onclick="selExport('html',this)">
-        <div class="export-icon" style="background:#F4F4FF;color:#4F5BD5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="12" cy="9" r="5" fill="currentColor" opacity=".15"/><path d="M9 6.5l-2 2.5 2 2.5M15 6.5l2 2.5-2 2.5M11 6l2 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
+        <div class="export-icon" style="background:#F4F4FF;color:#4F5BD5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><circle cx="12" cy="9" r="5" fill="currentColor" opacity=".15"/><path d="M9 6.5l-2 2.5 2 2.5M15 6.5l2 2.5-2 2.5M11 6l2 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
         <div class="export-info">
           <div class="export-info-t">Download HTML</div>
           <div class="export-info-s">Self-contained file you can open or edit anywhere.</div>
@@ -1833,8 +1833,8 @@ async function callAI(prompt,maxTokens=1200){
 function toast(msg,type='default',dur=3000){
   const t=gi('toast');
   const icons={
-    ok:'<svg class="toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4ADE80" opacity=".2"/><circle cx="12" cy="12" r="10" fill="none" stroke="#4ADE80" stroke-width="1.5"/><polyline points="8 12 11 15 16 9" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
-    err:'<svg class="toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#F87171" opacity=".2"/><circle cx="12" cy="12" r="10" fill="none" stroke="#F87171" stroke-width="1.5"/><line x1="15" y1="9" x2="9" y2="15" stroke="#F87171" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="9" x2="15" y2="15" stroke="#F87171" stroke-width="2" stroke-linecap="round"/></svg>',
+    ok:'<svg class="toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4ADE80" opacity=".2"/><circle cx="12" cy="12" r="10" fill="none" stroke="#4ADE80" stroke-width="1.8"/><polyline points="8 12 11 15 16 9" stroke="#4ADE80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+    err:'<svg class="toast-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#F87171" opacity=".2"/><circle cx="12" cy="12" r="10" fill="none" stroke="#F87171" stroke-width="1.8"/><line x1="15" y1="9" x2="9" y2="15" stroke="#F87171" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="9" x2="15" y2="15" stroke="#F87171" stroke-width="2" stroke-linecap="round"/></svg>',
     default:''
   };
   t.innerHTML=(icons[type]||'')+`<span>${msg}</span>`;
@@ -2007,7 +2007,7 @@ async function aiWriteExperience(modalEl){
   const existing=v('ex-d');
   const jt=v('ai-jt');
   btn.disabled=true;
-  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
+  btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
   out.style.display='block';
   out.innerHTML='<div class="ai-stream-preview" id="ai-bullet-stream" style="font-size:13px;color:var(--muted);line-height:1.7;min-height:40px;white-space:pre-wrap"></div>';
   const prompt=`Write 3-4 resume bullet points for this role. Output ONLY the bullet points, one per line, no numbering, no bullet characters, no preamble, no markdown — plain lines ready to paste into a CV.
@@ -2066,7 +2066,7 @@ async function aiWriteSummary(){
   const btn=gi('sum-ai-write-btn'),out=gi('sum-ai-write-out');
   const existing=v('f-sum');
   btn.disabled=true;
-  btn.innerHTML='<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
+  btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
   out.style.display='block';
   out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
   const expLine=exps.length?exps.map(e=>`${e.t} at ${e.co}${e.d?' — '+e.d.split('\n')[0]:''}`).join('; '):'(none listed yet)';
@@ -2220,7 +2220,7 @@ function renderExpList(){
       <div class="ei-t">${e.t}${e.co?' @ '+e.co:''}</div>
       <div class="ei-s">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -2234,7 +2234,7 @@ function renderEduList(){
       <div class="ei-t">${e.d}</div>
       <div class="ei-s">${[e.s,e.y].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -2251,7 +2251,7 @@ function renderProjList(){
       <div class="ei-t">${esc(p.nm)}${p.yr?' ('+p.yr+')':''}</div>
       <div class="ei-s">${p.url?'<span style="color:var(--ac);display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> '+esc(p.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])+'</span>':''}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="projs.splice(${i},1);renderProjList();rCV();upATS();toast('Project removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -2389,7 +2389,7 @@ function renderCertList(){
       <div class="ei-t">${c.name}</div>
       <div class="ei-s">${[c.issuer,c.year].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -2434,7 +2434,7 @@ function renderLangList(){
       <div class="ei-t">${l.name}</div>
       <div class="ei-s">${l.level}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove">✕</button>
       </div>
     </div>`).join('');
@@ -3058,7 +3058,7 @@ async function handleSimUpload(input){
       return;
     }
     simUploadedCVText=text;
-    show(`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>&nbsp;"${esc(file.name)}" ready — ${wordCount} words extracted`,'ok');
+    show(`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>&nbsp;"${esc(file.name)}" ready — ${wordCount} words extracted`,'ok');
     drop.innerHTML=`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1AA371" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="sim-upload-text" style="color:#1AA371">${esc(file.name)}</div><div class="sim-upload-sub">Click to change file</div>`;
   }catch(err){
     console.error('Upload error:',err);
@@ -3279,7 +3279,7 @@ function simApplyImprovement(suggestion,btn){
 async function importUploadedCV(btn){
   if(!simUploadedCVText){toast('No CV text to import','err');return;}
   btn.disabled=true;
-  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Extracting…`;
+  btn.innerHTML=`<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Extracting…`;
 
   const prompt=`You are a precise CV data extractor. Extract ONLY what is explicitly written in this CV — do not invent, infer, or paraphrase anything. Copy text verbatim where possible.
 
@@ -3414,7 +3414,7 @@ async function refineCVWithAI(improvements,btn){
   }
 
   btn.disabled=true;
-  btn.innerHTML=`<span class="spin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Refining…`;
+  btn.innerHTML=`<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/></svg></span> Refining…`;
 
   const expBlock=exps.map((e,idx)=>`[${idx}] ${e.t} at ${e.co}\nBullets: ${e.d||'none'}`).join('\n\n');
 
@@ -3608,7 +3608,7 @@ function renderSimOutput(raw,persona,canApply=false){
   ${questions?`<div class="sim-section-head">Questions I'd Ask</div>${bullets(questions,'#4F5BD5')}`:''}
   ${improvements?`<div class="sim-section-head" style="display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg> Improvements</div>${improvementBullets(improvements)}
   ${canApply?`<button class="btn-pill sim-refine-btn" data-key="${_simKey}" style="width:100%;justify-content:center;margin-top:12px;background:#0A0A12;font-size:13.5px" onclick="refineCVWithAI(window._simStore[this.dataset.key],this)">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
     Refine CV with AI
   </button>`:''}`:'' }
   ${decisionRaw?`<div class="sim-decision" style="background:${decBg};color:${decCol}">${decIcon} ${decisionRaw}</div>`:''}`;
@@ -3680,10 +3680,10 @@ function renderSocialLinks(){
       <div class="social-link-header">
         <button class="social-type-pill" data-idx="${i}" title="Change platform">
           <span>${typeLabel}</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <button class="social-link-rm" data-idx="${i}" title="Remove">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <input class="fi social-link-url" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://'}" value="${esc(s.url)}" style="margin-bottom:6px">
@@ -3814,7 +3814,7 @@ function projsHTML(d,sectionLabelClass,_unused,accentColor,darkMode){
     <div class="proj-card entry-card">
       <div class="proj-card-head">
         ${p.url
-          ?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link" style="${darkMode?'color:rgba(255,255,255,0.85);text-decoration-color:rgba(255,255,255,0.4)':''}">${esc(p.nm)}<svg class="proj-card-ext" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`
+          ?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link" style="${darkMode?'color:rgba(255,255,255,0.85);text-decoration-color:rgba(255,255,255,0.4)':''}">${esc(p.nm)}<svg class="proj-card-ext" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`
           :`<span class="proj-card-nm" style="${darkMode?'color:#F0EDE8':''}">${esc(p.nm)}</span>`}
         ${p.yr?`<span class="proj-card-yr">${esc(p.yr)}</span>`:''}
       </div>
@@ -4800,7 +4800,7 @@ function renderOnbStep(){
     illus.innerHTML=`
       <div style="font-size:48px;line-height:1;position:relative;z-index:1">${s.icon}</div>
       <div class="onb-illus-where" style="color:${s.accent}">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${s.accent}" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${s.accent}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
         ${s.where}
       </div>`;
     stepLbl.style.display='block';
