@@ -30,7 +30,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 /* ── ONBOARDING TOUR ── */
 #onb-overlay{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(2px)}
 #onb-overlay.active{display:flex}
-.onb-modal{background:#FFFFFF;border-radius:20px;padding:0;width:440px;max-width:calc(100vw - 32px);box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;animation:modalIn .25s cubic-bezier(.34,1.3,.64,1)}
+.onb-modal{background:#fff;border-radius:22px;padding:0;width:440px;max-width:calc(100vw - 32px);box-shadow:0 8px 40px rgba(0,0,0,.10);overflow:hidden;animation:modalIn .25s cubic-bezier(.34,1.3,.64,1)}
 /* Confirm modal */
 #confirm-modal{display:none}
 #confirm-modal.open{display:flex}
@@ -95,13 +95,13 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .sim-section-head svg{flex-shrink:0;opacity:.65}
 .bar-menu-btn:hover svg{opacity:.7;transform:rotate(90deg)}
 /* Contextual nudge strip */
-.cv-nudge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 22px;background:var(--ac);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:none;transition:background .2s}
+.cv-nudge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 22px;background:var(--ac);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;border-bottom:none;transition:background .2s}
 .cv-nudge:hover{filter:brightness(.95)}
 /* JD Match teaser */
 .jd-teaser{display:flex;gap:14px;align-items:flex-start;background:var(--surf);border-radius:14px;padding:16px;margin-bottom:16px}
 .jd-teaser svg{flex-shrink:0;color:var(--ac);margin-top:2px}
 .tab:hover{color:var(--ink);background:rgba(21,21,26,.05)}
-.tab.on{background:var(--ink);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.tab.on{background:var(--ink);color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07)}
 /* ── Compact score badge in the bar ── */
 .score-badge{margin-left:auto;display:inline-flex;align-items:center;gap:0;background:var(--surf);border:1.5px solid var(--bdr);border-radius:999px;padding:0;cursor:pointer;transition:all .18s;overflow:hidden;height:38px}
 .score-badge:hover{background:var(--bg);border-color:var(--ink)}
@@ -156,7 +156,7 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 #ats-arc{transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke .4s}
 /* Template card lift */
 .tpl-card:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.1)}
-.tpl-card:active{transform:translateY(-1px)!important;box-shadow:0 2px 6px rgba(0,0,0,.05)!important}
+.tpl-card:active{transform:translateY(-1px)!important;box-shadow:0 4px 10px rgba(0,0,0,.07)!important}
 /* Export option interactive */
 .export-opt{border:1.5px solid var(--bdr);border-radius:16px;padding:16px 18px;cursor:pointer;margin-bottom:10px;transition:all .18s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:14px}
 .export-opt:hover{border-color:var(--ink);background:var(--surf);transform:translateX(3px)}
@@ -174,9 +174,9 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ── FORMS ── */
-.cv-progress-wrap{padding:12px 22px 10px;border-bottom:1px solid #E9E7E2;background:#F5F5F3}
+.cv-progress-wrap{padding:12px 22px 10px;border-bottom:1px solid var(--bdr);background:var(--bg)}
 .cv-progress-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:7px}
-.cv-progress-track{height:3px;background:#E4E2DC;border-radius:999px;overflow:hidden;margin-bottom:8px}
+.cv-progress-track{height:4px;background:var(--surf);border-radius:999px;overflow:hidden;margin-bottom:8px}
 .cv-progress-bar{height:100%;border-radius:999px;background:var(--ac);transition:width .4s cubic-bezier(.4,0,.2,1)}
 .cv-step-chips{display:flex;gap:5px;flex-wrap:wrap}
 .cv-step-chip{font-size:10.5px;padding:2px 8px;border-radius:999px;font-weight:600;white-space:nowrap}
@@ -388,7 +388,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .sim-sync-dot{width:8px;height:8px;border-radius:50%;background:#1AA371;flex-shrink:0;margin-top:4px;animation:sync-pulse 2.5s infinite}
 @keyframes sync-pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .sim-improvement{align-items:flex-start!important;gap:10px}
-.sim-apply-btn{margin-left:auto;flex-shrink:0;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.sim-apply-btn{margin-left:auto;flex-shrink:0;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:var(--ff-b);font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .sim-apply-btn:hover{opacity:.85;transform:translateY(-1px)}
 .sim-apply-btn:disabled{opacity:.5;cursor:default;transform:none}
 .sim-out{background:#fff;border-radius:14px;padding:16px 18px;margin-top:14px;border:1.5px solid var(--bdr)}
@@ -414,7 +414,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .cv-ctrl{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .cv-tl{font-family:var(--ff-d);font-size:13px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
 .cv-tl-val{font-size:14px;color:var(--muted)}
-.paper{background:#fff;border-radius:6px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 16px rgba(0,0,0,.05);min-height:920px;overflow:hidden}
+.paper{background:#fff;border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.03),0 4px 16px rgba(0,0,0,.05);min-height:920px;overflow:hidden;transition:box-shadow .2s}
 
 /* ── MODAL ── */
 .modal-bg{position:fixed;inset:0;background:rgba(15,15,20,.5);z-index:500;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease;padding:20px}
@@ -976,6 +976,17 @@ a:focus-visible,[tabindex]:focus-visible{
 
 /* ── ANCHOR ── journalism/print editorial */
 .anchor{padding:36px 44px;background:#FAFAFA}.anchor-flag{font-family:Georgia,'Times New Roman',serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);border-top:3px solid var(--ink);border-bottom:1px solid var(--bdr);padding:8px 0;margin-bottom:20px;display:flex;justify-content:space-between}.anchor-nm{font-family:Georgia,'Times New Roman',serif;font-size:34px;font-weight:700;color:#0A0A0A;line-height:1.05;letter-spacing:-.5px}.anchor-ti{font-family:var(--ff-b);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:7px}.anchor-cs{font-family:var(--ff-b);font-size:11px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:9px;padding-bottom:16px;border-bottom:1px solid var(--bdr)}.anchor-cols{display:flex;gap:36px;margin-top:20px}.anchor-main{flex:1.4;min-width:0}.anchor-side{flex:1;min-width:0;padding-left:28px;border-left:1px solid var(--bdr)}.anchor-sl{font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:5px;margin-bottom:12px}.anchor-et{font-family:var(--ff-b);font-size:13.5px;font-weight:700;color:#0A0A0A}.anchor-ec{font-family:var(--ff-b);font-size:11.5px;font-weight:600;margin:2px 0 3px}.anchor-ed{font-family:var(--ff-m);font-size:10px;color:var(--muted);margin-bottom:6px}.anchor-ex{margin-bottom:14px}.anchor-sum{font-family:Georgia,'Times New Roman',serif;font-size:13px;color:#3D3D4E;line-height:1.8;border-left:3px solid;padding-left:13px;margin-bottom:16px;font-style:italic}.anchor-edu-d{font-family:var(--ff-b);font-size:13px;font-weight:700;color:#0A0A0A}.anchor-edu-s{font-family:var(--ff-b);font-size:11px;color:var(--muted);margin-top:2px;margin-bottom:9px}.anchor-sk-chip{font-family:var(--ff-b);font-size:11px;color:var(--muted);display:block;padding:3px 0;border-bottom:1px solid #E8E8E4}
+
+/* ATS Score sub-tabs */
+.ats-subtabs{display:flex;gap:0;padding:0 14px;border-bottom:1px solid #E9E7E2;background:#F5F5F3;flex-shrink:0}
+.ats-stab{border:none;background:none;font-family:var(--ff-b);font-size:13px;font-weight:600;color:#9A9A9E;padding:11px 14px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;position:relative;bottom:-1px}
+.ats-stab.active{color:var(--ink);border-bottom-color:var(--ac)}
+.ats-stab:hover:not(.active){color:var(--ink)}
+.ats-subpanel{display:flex;flex-direction:column;overflow-y:auto;height:calc(100% - 47px)}
+/* Sticky Run AI Check */
+.ai-check-sticky{position:sticky;bottom:0;padding:12px 22px 16px;background:#F5F5F3;border-top:1px solid #E9E7E2;z-index:10}
+/* Remove old ai-check-box card */
+.ai-check-box{background:none;border:none;padding:0}
 </style>
 </head>
 <body>
@@ -1215,7 +1226,7 @@ a:focus-visible,[tabindex]:focus-visible{
       <div class="fg">
         <div>
           <label class="date-lbl">Work authorization</label>
-          <select class="fi" id="f-workauth" onchange="rCV()" style="cursor:pointer">
+          <select class="fi" id="f-workauth" onchange="rCV()" style="cursor:pointer;width:100%;text-overflow:ellipsis">
             <option value="">Select authorization status…</option>
             <option>Authorized to work in the US</option>
             <option>US Citizen</option>
@@ -1255,6 +1266,8 @@ a:focus-visible,[tabindex]:focus-visible{
       </div>
     </div>
   </div>
+
+    </div><!-- /ats-sp-recruiter -->
 
   <!-- JD MATCH PANEL -->
   <div class="pnl" id="pnl-jd">
@@ -1314,6 +1327,17 @@ a:focus-visible,[tabindex]:focus-visible{
 
   <!-- ATS PANEL -->
   <div class="pnl" id="pnl-ats">
+    <div class="ats-subtabs">
+      <button class="ats-stab active" id="stab-score" onclick="swAtsTab('score',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        ATS Score
+      </button>
+      <button class="ats-stab" id="stab-recruiter" onclick="swAtsTab('recruiter',this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-5 3.6-8 8-8s8 3 8 8"/></svg>
+        Recruiter
+      </button>
+    </div>
+    <div class="ats-subpanel" id="ats-sp-score">
     <div class="sec">
       <div class="lbl">Score Breakdown <span class="tip"><span class="tip-icon">?</span><span class="tip-box">ATS Score = structural/parseable quality. Recruiter Score = human appeal in the first 8 seconds. Both update live as you type.</span></span></div>
       <details class="ats-methodology"><summary style="cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);list-style:none;display:flex;align-items:center;gap:5px;padding:8px 0;user-select:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>How scoring works</summary>
@@ -1334,6 +1358,8 @@ a:focus-visible,[tabindex]:focus-visible{
       <div id="ats-bd"><div style="padding:18px;text-align:center;font-size:14.5px;color:var(--muted)">Fill in your CV to see a full breakdown</div></div>
     </div>
 
+    </div><!-- /ats-sp-score -->
+    <div class="ats-subpanel" id="ats-sp-recruiter" style="display:none">
     <!-- RECRUITER SIMULATION — AI reads your CV cold -->
     <div class="sec">
       <div class="lbl">Recruiter Simulation
@@ -1844,6 +1870,14 @@ function toast(msg,type='default',dur=3000){
 }
 
 // ── TAB SWITCHING ──
+function swAtsTab(tab,btn){
+  ['score','recruiter'].forEach(t=>{
+    const sp=gi('ats-sp-'+t),st=gi('stab-'+t);
+    if(sp)sp.style.display=t===tab?'flex':'none';
+    if(st)st.classList.toggle('active',t===tab);
+  });
+}
+
 function swTab(t,btn){
   document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('active'));
   gi('pnl-'+t).classList.add('active');
@@ -1973,30 +2007,37 @@ function addExp(editIdx){
       <input class="fi" id="ex-t" placeholder="Job Title" value="${esc(ex.t)}" list="role-suggestions" autocomplete="off">
       <input class="fi" id="ex-co" placeholder="Company" value="${esc(ex.co)}">
       <div class="row2">
-        <div class="date-field">
-          <label class="date-lbl">Start date</label>
-          <input class="fi" id="ex-s" type="month" value="${esc(ex.s)}">
-        </div>
-        <div class="date-field">
-          <label class="date-lbl">End date</label>
-          <input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':ex.e)}" ${ex.present?'disabled':''}>
-        </div>
+        <div class="date-field"><label class="date-lbl">Start date</label><input class="fi" id="ex-s" type="month" value="${esc(ex.s)}"></div>
+        <div class="date-field"><label class="date-lbl">End date</label><input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':ex.e)}" ${ex.present?'disabled':''}></div>
       </div>
-      <label class="present-check">
-        <input type="checkbox" id="ex-present" ${ex.present?'checked':''} onchange="document.getElementById('ex-e').disabled=this.checked;if(this.checked)document.getElementById('ex-e').value=''">
-        <span>I currently work here</span>
-      </label>
-      <textarea class="fi" id="ex-d" rows="4" placeholder="Key achievements — one per line. Use numbers: 'Increased revenue by 40%'" oninput="const b=gi('ex-ai-write-btn');if(b)b.disabled=!this.value.trim()">${esc(ex.d)}</textarea>
-      <button class="btn-pill-outline ai-write-btn" id="ex-ai-write-btn" type="button" ${!ex.d?'disabled':''} title="${!ex.d?'Type some experience notes first, then AI will help rewrite them':''}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg> Write with AI</button>
+      <label class="present-check"><input type="checkbox" id="ex-present" ${ex.present?'checked':''} onchange="document.getElementById('ex-e').disabled=this.checked;if(this.checked)document.getElementById('ex-e').value=''"><span>I currently work here</span></label>
+      <textarea class="fi" id="ex-d" rows="4" placeholder="Describe what you did — rough notes work fine. AI will transform them into strong bullets.">${esc(ex.d)}</textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:2px">
+        <button class="btn-pill-outline ai-write-btn" id="ex-ai-write-btn" type="button" style="flex:1;justify-content:center" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg>
+          <span id="ex-ai-lbl">Write with AI</span>
+        </button>
+        <span id="ex-ai-hint" style="font-size:12px;color:var(--muted);line-height:1.4;flex:1">Add a few words to get started</span>
+      </div>
       <div class="ai-write-out" id="ex-ai-write-out" style="display:none"></div>
     </div>
     <div class="modal-btns">
       <button class="btn-pill" id="ex-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="ex-cancel-btn">Cancel</button>
     </div>`);
+  const descF=gi('ex-d'),aiBtn=gi('ex-ai-write-btn'),aiLbl=gi('ex-ai-lbl'),aiHint=gi('ex-ai-hint');
+  const isMeaningful=t=>{const w=t.trim().split(/\s+/).filter(x=>x.length>=2);return w.length>=3&&w.filter(x=>/[aeiou]/i.test(x)).length>=w.length*.5;};
+  const updateBtn=()=>{
+    const txt=descF.value.trim(),wc=txt.split(/\s+/).filter(Boolean).length;
+    if(!txt||wc<2){aiBtn.disabled=true;aiBtn.style.opacity='.4';aiLbl.textContent='Write with AI';aiHint.textContent='Add a few words to get started';aiHint.style.color='var(--muted)';}
+    else if(wc>=5&&isMeaningful(txt)){aiBtn.disabled=false;aiBtn.style.opacity='1';aiLbl.textContent='Rewrite with AI';aiHint.textContent='AI will polish and expand what you wrote';aiHint.style.color='#1AA371';}
+    else{aiBtn.disabled=false;aiBtn.style.opacity='1';aiLbl.textContent='Write with AI';aiHint.textContent='More context = better output';aiHint.style.color='#C8860D';}
+  };
+  descF.addEventListener('input',updateBtn);
+  updateBtn();
   gi('ex-save-btn').onclick=()=>saveExp(modalEl,editIdx);
   gi('ex-cancel-btn').onclick=()=>modalEl.remove();
-  gi('ex-ai-write-btn').onclick=()=>aiWriteExperience(modalEl);
+  aiBtn.onclick=()=>aiWriteExperience(modalEl);
   setTimeout(()=>gi('ex-t')?.focus(),60);
 }
 
