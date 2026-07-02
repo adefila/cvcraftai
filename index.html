@@ -1001,7 +1001,7 @@ a:focus-visible,[tabindex]:focus-visible{
         <div class="onb-modal-title" id="onb-title"></div>
         <div class="onb-modal-body" id="onb-body"></div>
         <div class="onb-footer">
-          <button class="onb-btn-next" id="onb-next">Next →</button>
+          <button class="onb-btn-next" id="onb-next">Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
           <button class="onb-btn-skip" onclick="endOnboarding()">Skip tour</button>
           <div class="onb-dots" id="onb-dots"></div>
         </div>
@@ -1058,7 +1058,7 @@ a:focus-visible,[tabindex]:focus-visible{
     </svg>
   </div>
   <button class="btn-pill" id="btn-export-pdf" onclick="openExport()">
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><rect x="2" y="2" width="20" height="20" rx="5" fill="rgba(255,255,255,0.15)"/><path d="M12 4v11M8 11l4 5 4-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="17" width="14" height="2" rx="1" fill="#fff" opacity=".7"/></svg>
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>
     Export PDF
   </button>
   <div class="bar-menu-wrap">
@@ -1260,7 +1260,7 @@ a:focus-visible,[tabindex]:focus-visible{
           AI Polish Check
         </div>
         <p class="ai-check-desc">Spot grammar issues, weak phrasing, ATS problems and missing keywords — then apply fixes in one click.</p>
-        <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Run AI Check ✦</button>
+        <button class="btn-pill" id="btn-ai" onclick="aiFullAnalysis()" style="width:100%;justify-content:center">Run AI Check <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></button>
         <div class="ai-out" id="ai-out"></div>
         <div class="ai-disclaimer" id="ai-disclaimer-box" style="display:none">ⓘ Scores model documented ATS mechanics — not any specific company's proprietary algorithm.</div>
       </div>
@@ -1984,7 +1984,7 @@ function addSk(){
 function rmSk(i){skills.splice(i,1);renderSk();rCV();upATS();}
 function renderSk(){
   gi('sk-tags').innerHTML=skills.map((s,i)=>
-    `<div class="sk-tag">${s}<button onclick="rmSk(${i})" title="Remove">✕</button></div>`).join('');
+    `<div class="sk-tag">${s}<button onclick="rmSk(${i})" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
 }
 
 // ── MODALS ──
@@ -2260,8 +2260,8 @@ function renderExpList(){
       <div class="ei-t">${e.t}${e.co?' @ '+e.co:''}</div>
       <div class="ei-s">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove">✕</button>
+        <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
+        <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>`).join('');
   makeDraggable('exp-list',exps,renderExpList,()=>{rCV();upATS();runJDMatch();saveDraft();});
@@ -2274,8 +2274,8 @@ function renderEduList(){
       <div class="ei-t">${e.d}</div>
       <div class="ei-s">${[e.s,e.y].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove">✕</button>
+        <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
+        <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>`).join('');
   makeDraggable('edu-list',edus,renderEduList,()=>{rCV();upATS();saveDraft();});
@@ -2291,8 +2291,8 @@ function renderProjList(){
       <div class="ei-t">${esc(p.nm)}${p.yr?' ('+p.yr+')':''}</div>
       <div class="ei-s">${p.url?'<span style="color:var(--ac);display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> '+esc(p.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])+'</span>':''}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="ei-rm" onclick="projs.splice(${i},1);renderProjList();rCV();upATS();toast('Project removed')" title="Remove">✕</button>
+        <button class="ei-edit" onclick="addProj(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
+        <button class="ei-rm" onclick="projs.splice(${i},1);renderProjList();rCV();upATS();toast('Project removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>`).join('');
   makeDraggable('proj-list',projs,renderProjList,()=>{rCV();upATS();saveDraft();});
@@ -2322,7 +2322,7 @@ function addProj(editIdx){
       <div>
         <label class="date-lbl">Tech stack / tools <span style="font-weight:400;color:var(--muted)">(press Enter or Add to tag each)</span></label>
         <div class="sk-tags" id="proj-stack-tags" style="margin-bottom:${stackTags.length?'11px':'0'};min-height:${stackTags.length?'auto':'0'}">
-          ${stackTags.map((t,i)=>`<span class="sk-tag" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();const wrap=document.getElementById('proj-stack-tags');if(!wrap.children.length)wrap.style.marginBottom='0';})()" type="button">×</button></span>`).join('')}
+          ${stackTags.map((t,i)=>`<span class="sk-tag" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();const wrap=document.getElementById('proj-stack-tags');if(!wrap.children.length)wrap.style.marginBottom='0';})()" type="button"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>`).join('')}
         </div>
         <div class="sk-row">
           <input class="fi" id="proj-stack-inp" placeholder="e.g. Framer, React, Figma…" autocomplete="off" style="flex:1" list="skill-suggestions">
@@ -2350,7 +2350,7 @@ function addProj(editIdx){
     const idx=Date.now();
     chip.className='sk-tag';
     chip.id='pst-'+idx;
-    chip.innerHTML=`${esc(val)}<button class="sk-rm" type="button">×</button>`;
+    chip.innerHTML=`${esc(val)}<button class="sk-rm" type="button"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
     chip.querySelector('.sk-rm').onclick=()=>{chip.remove();if(!wrap.children.length)wrap.style.marginBottom='0';};
     wrap.style.marginBottom='11px';
     wrap.appendChild(chip);
@@ -2429,8 +2429,8 @@ function renderCertList(){
       <div class="ei-t">${c.name}</div>
       <div class="ei-s">${[c.issuer,c.year].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove">✕</button>
+        <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
+        <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>`).join('');
 }
@@ -2474,8 +2474,8 @@ function renderLangList(){
       <div class="ei-t">${l.name}</div>
       <div class="ei-s">${l.level}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
-        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="4" fill="var(--ink)"/><path d="M15.5 6.5l2 2L9 17H7v-2l8.5-8.5z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove">✕</button>
+        <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
+        <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>`).join('');
 }
@@ -2567,7 +2567,7 @@ async function aiFullAnalysis(){
   const cvBlock=`Name: ${v('f-name')||'(none)'}
 Title: ${v('f-title')||'(none)'}
 Summary: ${v('f-sum')||'(none)'}
-Experience: ${exps.map(e=>`${e.t} at ${e.co} (${e.s}–${e.e}): ${e.d}`).join(' | ')||'(none)'}
+Experience: ${exps.map(e=>`${e.t} at ${e.co} (${e.s}–${e.present?'Present':e.e}): ${e.d}`).join(' | ')||'(none)'}
 Education: ${edus.map(e=>`${e.d}, ${e.s}`).join(' | ')||'(none)'}
 Skills: ${skills.join(', ')||'(none)'}`;
 
@@ -2600,7 +2600,7 @@ Rules for the IMPROVEMENTS and REWRITE sections:
 
   try{
     const tx=await callAI(prompt,1200);
-    if(!tx){out.innerHTML='<span style="color:var(--err);font-size:14px">No response. Try again.</span>';btn.disabled=false;const disc=gi('ai-disclaimer-box');if(disc)disc.style.display='';btn.innerHTML='Run AI Check ✦';return;}
+    if(!tx){out.innerHTML='<span style="color:var(--err);font-size:14px">No response. Try again.</span>';btn.disabled=false;const disc=gi('ai-disclaimer-box');if(disc)disc.style.display='';btn.innerHTML='Run AI Check <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>';return;}
 
     const scoreMatch=tx.match(/SCORE:\s*(\d+)/i);
     const impMatch=tx.match(/IMPROVEMENTS:\s*([\s\S]*?)(?=REWRITE:|KEYWORDS:|$)/i);
@@ -2646,7 +2646,7 @@ Rules for the IMPROVEMENTS and REWRITE sections:
     out.innerHTML=`<span style="color:var(--err);font-size:14px">${(err&&err.message)||'AI request failed. Check your connection and try again.'}</span>`;
   }
   btn.disabled=false;
-  const disc=gi('ai-disclaimer-box');if(disc)disc.style.display='';btn.innerHTML='Run AI Check ✦';
+  const disc=gi('ai-disclaimer-box');if(disc)disc.style.display='';btn.innerHTML='Run AI Check <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>';
 }
 
 function copyRewrite(btn){
@@ -3880,7 +3880,7 @@ const TPL={
     <div class="classic-hr"></div>
     <div class="classic-sl">Summary</div>
     <p class="classic-sum">${d.sum}</p>
-    ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skills.join(' • ')}</div>`:''}
     ${projsHTML(d,'classic-sl','classic-ex',AC)}${additionalInfoHTML(d,'classic-sl','classic-sum')}
@@ -3898,7 +3898,7 @@ const TPL={
     </div>
     <div class="nova-mn">
       <div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Profile</div><p style="font-size:13px;color:#4D4D5E;line-height:1.7">${d.sum}</p></div>
-      ${d.exps.length?`<div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Experience</div>${d.exps.map(e=>`<div class="nova-ex"><div class="nova-et">${e.t}</div><div class="nova-em">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
+      ${d.exps.length?`<div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Experience</div>${d.exps.map(e=>`<div class="nova-ex"><div class="nova-et">${e.t}</div><div class="nova-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
       ${d.edus.length?`<div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Education</div>${d.edus.map(e=>`<div class="nova-ex"><div class="nova-et">${e.d}</div><div class="nova-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}</div>`:''}
     </div></div>`,
 
@@ -3911,7 +3911,7 @@ const TPL={
       <div class="apex-mn">
         <div class="apex-sl" style="color:${AC}">Profile</div>
         <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:17px">${d.sum}</p>
-        ${d.exps.length?`<div class="apex-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="apex-ex"><div class="apex-eh"><div class="apex-et">${e.t}</div><div class="apex-ed">${[e.s,e.e].filter(Boolean).join('–')}</div></div><div class="apex-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="apex-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="apex-ex"><div class="apex-eh"><div class="apex-et">${e.t}</div><div class="apex-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join('–')}</div></div><div class="apex-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="apex-sl" style="color:${AC};margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:10px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div class="apex-sb">
@@ -3928,7 +3928,7 @@ const TPL={
     <div class="prism-bd">
       <div>
         <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:4px">${d.sum}</p>
-        ${d.exps.length?`<div class="prism-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="prism-ex"><div class="prism-et">${e.t} — ${e.co}</div><div class="prism-em">${[e.s,e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'prism-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="prism-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="prism-ex"><div class="prism-et">${e.t} — ${e.co}</div><div class="prism-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'prism-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="prism-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="prism-ex"><div class="prism-et">${e.d}</div><div class="prism-em">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
       </div>
       <div>
@@ -3944,7 +3944,7 @@ const TPL={
     <div style="font-size:13px;color:#4D4D5E;line-height:1.75;margin:17px 0;border-left:2.5px solid ${AC};padding-left:14px">${d.sum}</div>
     <div class="strand-bd">
       <div>
-        ${d.exps.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Experience</div>${d.exps.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.s||''}<br>${e.e||''}</div><div><div class="strand-et">${e.t}</div><div class="strand-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'strand-bl')}</div></div>`).join('')}`:''}
+        ${d.exps.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Experience</div>${d.exps.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.s||''}<br>${e.present?'Present':(e.e||'')}</div><div><div class="strand-et">${e.t}</div><div class="strand-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'strand-bl')}</div></div>`).join('')}`:''}
         ${d.edus.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Education</div>${d.edus.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.y||''}</div><div><div class="strand-et">${e.d}</div><div class="strand-ec" style="color:${AC}">${e.s}</div></div></div>`).join('')}`:''}
       </div>
       <div>
@@ -3963,7 +3963,7 @@ const TPL={
       <p class="folio-sum">${d.sum}</p>
       <div class="folio-grid">
         <div>
-          ${d.exps.length?`<div class="folio-sl">Experience</div>${d.exps.map(e=>`<div class="folio-ex"><div class="folio-et">${e.t}</div><div class="folio-em" style="color:${AC}">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${bls(e.d,'folio-bl')}</div>`).join('')}`:''}
+          ${d.exps.length?`<div class="folio-sl">Experience</div>${d.exps.map(e=>`<div class="folio-ex"><div class="folio-et">${e.t}</div><div class="folio-em" style="color:${AC}">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'folio-bl')}</div>`).join('')}`:''}
           ${d.edus.length?`<div class="folio-sl" style="margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:11px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
         </div>
         <div>
@@ -3982,7 +3982,7 @@ const TPL={
     <p class="zenith-sum">${d.sum}</p>
     <div class="zenith-cols">
       <div>
-        ${d.exps.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.t}</div><div class="zenith-ec" style="color:${AC}">${e.co}</div><div class="zenith-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'zenith-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.t}</div><div class="zenith-ec" style="color:${AC}">${e.co}</div><div class="zenith-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'zenith-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.d}</div><div class="zenith-ec" style="color:${AC}">${e.s}</div><div class="zenith-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
@@ -3999,7 +3999,7 @@ const TPL={
     <p class="carbon-sum" style="border-color:${AC}">${d.sum}</p>
     <div class="carbon-bd">
       <div>
-        ${d.exps.length?`<div class="carbon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="carbon-ex" style="border-color:${AC}"><div class="carbon-et">${e.t}</div><div class="carbon-em">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${bls(e.d,'carbon-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="carbon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="carbon-ex" style="border-color:${AC}"><div class="carbon-et">${e.t}</div><div class="carbon-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'carbon-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="carbon-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="carbon-edu"><div class="carbon-ede">${e.d}</div><div class="carbon-eds">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
       </div>
       <div>
@@ -4026,7 +4026,7 @@ const TPL={
     <p class="pulse-sum">${d.sum}</p>
     <div class="pulse-bd">
       <div class="pulse-mn">
-        ${d.exps.length?`<div class="pulse-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="pulse-ex"><div class="pulse-et"><span>${e.t}</span><span class="pulse-ed">${[e.s,e.e].filter(Boolean).join('–')}</span></div><div class="pulse-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'pulse-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="pulse-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="pulse-ex"><div class="pulse-et"><span>${e.t}</span><span class="pulse-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join('–')}</span></div><div class="pulse-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'pulse-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Education</div>${d.edus.map(e=>`<div class="pulse-ex"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}</div></div>`).join('')}`:''}
       </div>
       <div class="pulse-sb">
@@ -4049,7 +4049,7 @@ const TPL={
     <div class="merid-main">
       <div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">01</div>Profile</div>
       <p style="font-size:13px;color:#4D4D5E;line-height:1.75;margin-bottom:26px">${d.sum}</p>
-      ${d.exps.length?`<div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">02</div>Experience</div>${d.exps.map(e=>`<div class="merid-ex"><div class="merid-et">${e.t}</div><div class="merid-em">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="merid-bl"><span style="position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">02</div>Experience</div>${d.exps.map(e=>`<div class="merid-ex"><div class="merid-et">${e.t}</div><div class="merid-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="merid-bl"><span style="position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="merid-ml" style="margin-top:8px"><div class="merid-ml-num" style="background:${AC}">03</div>Education</div>${d.edus.map(e=>`<div class="merid-edu-row"><div><div class="merid-edu-d">${e.d}</div><div class="merid-edu-s">${e.s}</div></div><div class="merid-edu-y">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     </div></div>`,
 
@@ -4067,7 +4067,7 @@ const TPL={
       <p class="axis-sum">${d.sum}</p>
     </div>
     <div class="axis-body">
-      ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
+      ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">02</div><div class="axis-sec-title">Education</div></div>${d.edus.map(e=>`<div class="axis-grid-row"><div class="axis-date">${e.y||''}</div><div><div class="axis-et">${e.d}</div><div class="axis-em" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${d.skills.map(s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'axis-sec-title','axis-grid-row',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">04</div><div class="axis-sec-title">Additional Info</div></div><p class="axis-sum" style="margin:0 0 18px">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</p>`:''}
@@ -4082,7 +4082,7 @@ const TPL={
     </div>
     <div class="mono-body">
       <p class="mono-sum">${d.sum}</p>
-      ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.e].filter(Boolean).join(' — ')}</div>${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div>${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="mono-ex"><div class="mono-et">${e.d}</div><div class="mono-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">03</span>Skills</div><div class="mono-sk-row">${d.skills.map(s=>`<div class="mono-sk-item" style="border-color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'mono-sl','mono-ex',AC)}${additionalInfoHTML(d,'mono-sl','mono-sum')}
@@ -4097,7 +4097,7 @@ const TPL={
     <div class="lat-body">
       <div>
         <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:22px">${d.sum}</p>
-        ${d.exps.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="lat-ex"><div class="lat-eh"><div class="lat-et">${e.t}</div><div class="lat-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="lat-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="lat-bl"><span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="lat-ex"><div class="lat-eh"><div class="lat-et">${e.t}</div><div class="lat-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="lat-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="lat-bl"><span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       </div>
       <div>
         ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${d.skills.map(s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
@@ -4116,7 +4116,7 @@ const TPL={
     </div>
     <div class="aur-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
-      ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="aur-edu"><div class="aur-edu-d">${e.d}</div><div class="aur-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${d.skills.map(s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'aur-sl','aur-ex',AC)}${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
@@ -4130,7 +4130,7 @@ const TPL={
     </div>
     <div class="bcn-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75">${d.sum}</p>
-      ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="bcn-sl" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="bcn-edu-row entry-card"><div><div class="bcn-edu-d">${e.d}</div><div class="bcn-edu-s">${e.s}</div></div><div class="bcn-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="bcn-sl" style="border-color:${AC}">Skills</div><div class="bcn-sk-row">${d.skills.map(s=>`<div class="bcn-sk-chip">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'bcn-sl','bcn-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="bcn-sl" style="border-color:${AC}">Additional Info</div><div class="bcn-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -4149,7 +4149,7 @@ const TPL={
     <div class="csc-mn">
       <div class="csc-ml" style="border-color:${AC}">Profile</div>
       <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:22px">${d.sum}</p>
-      ${d.exps.length?`<div class="csc-ml" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="csc-ex entry-card"><div class="csc-et">${e.t}</div><div class="csc-em">${e.co}${e.s?' · '+e.s:''} ${e.e?'– '+e.e:''}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="csc-ml" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="csc-ex entry-card"><div class="csc-et">${e.t}</div><div class="csc-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="csc-ml" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="csc-edu-row entry-card"><div class="csc-edu-d">${e.d}</div><div class="csc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     </div></div>`,
 
@@ -4162,7 +4162,7 @@ const TPL={
     </div>
     <div class="vtx-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
-      ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="vtx-edu-row entry-card"><div class="vtx-edu-d">${e.d}</div><div class="vtx-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Skills</div><div class="vtx-sk-row">${d.skills.map(s=>`<div class="vtx-sk-chip" style="background:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'vtx-sl','vtx-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -4173,7 +4173,7 @@ const TPL={
     <div class="hbr-ti">${d.ti}</div>
     <div class="hbr-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="hbr-c">${c}</span>`).join('')}</div>
     <p class="hbr-sum">${d.sum}</p>
-    ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="hbr-sl" style="background:${AC}">Education</div>${d.edus.map(e=>`<div class="hbr-edu-row entry-card"><div><div class="hbr-edu-d">${e.d}</div><div class="hbr-edu-s">${e.s}</div></div><div class="hbr-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="hbr-sl" style="background:${AC}">Skills</div><div class="hbr-sk-row">${d.skills.map(s=>`<div class="hbr-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
     ${projsHTML(d,'hbr-sl','hbr-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="hbr-sl" style="background:${AC}">Additional Info</div><div class="hbr-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -4185,7 +4185,7 @@ const TPL={
     <div class="spc-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' · ')}${d.liLink?' · '+d.liLink:''}</div>
     <p class="spc-sum">${d.sum}</p>
     ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${d.skills.map((s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
-    ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${(d.edus.length||d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-foot">
       <div>${d.edus.length?`<div class="spc-sl">Education</div>${d.edus.map(e=>`<div class="spc-edu-row entry-card"><div class="spc-edu-d">${e.d}</div><div class="spc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}</div>
       <div>${projsHTML(d,'spc-sl','spc-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-sl">Additional Info</div><div class="spc-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}</div>
@@ -4198,7 +4198,7 @@ const TPL={
     <div class="org-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' • ')}${d.liLink?' • '+d.liLink:''}</div>
     <div class="org-hr"></div>
     <p class="org-sum">${d.sum}</p>
-    ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="org-edu-row entry-card"><div class="org-edu-d">${e.d}, ${e.s}</div><div class="org-edu-s">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">03</span>Skills</div><div class="org-sk-row">${d.skills.map(s=>`<div class="org-sk-chip">${s}</div>`).join('')}</div>`:''}
     ${projsHTML(d,'org-sl','org-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">04</span>Additional Info</div><div class="org-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -4618,11 +4618,11 @@ async function doExport(){
       const protectedSel=[
         '.entry-card','.classic-ex','.nova-ex','.nova-sk','.apex-ex',
         '.prism-ex','.strand-ti','.folio-ex','.zenith-ex','.carbon-ex',
-        '.carbon-edu','.pulse-ex','.merid-ex','.axis-grid-row','.mono-ex',
-        '.lat-ex','.lat-edu-card','.aur-ex','.bcn-ex','.csc-ex','.vtx-ex',
-        '.hbr-ex','.spc-ex','.org-ex','.edge-item','.sage-item','.blade-item',
+        '.carbon-edu','.pulse-ex','.merid-ex','.merid-edu-row','.axis-grid-row','.mono-ex',
+        '.lat-ex','.lat-edu-card','.aur-ex','.aur-edu','.bcn-ex','.csc-ex','.vtx-ex',
+        '.hbr-ex','.spc-ex','.org-ex','.edge-ex','.sage-ex','.blade-ex',
         '.frost-ex','.anchor-ex','.neon-ex','.ruled-ex','.slate-ex',
-        '.chron-item','.serif-ex','.split-ex','.prof-ex',
+        '.chr-ex','.serif-ex','.split-ex','.pro-ex',
       ].join(',');
 
       const TOP_PAD=36*SCALE;
@@ -4832,7 +4832,7 @@ function renderOnbStep(){
         ${s.features.map(f=>`<div style="display:flex;align-items:center;gap:9px;background:#F4F4FF;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;color:#3A3A6A"><span style="font-size:16px">${f.icon}</span><span>${f.label}</span></div>`).join('')}
       </div>
       <div class="onb-footer" style="border-top:1px solid var(--bdr);padding-top:16px">
-        <button class="onb-btn-next" id="onb-next" style="flex:1;background:var(--ac)">Get started →</button>
+        <button class="onb-btn-next" id="onb-next" style="flex:1;background:var(--ac)">Get started <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
         <button class="onb-btn-skip" onclick="endOnboarding()">Skip for now</button>
       </div>`;
   }else{
@@ -4851,7 +4851,7 @@ function renderOnbStep(){
       <div class="onb-modal-title">${s.title}</div>
       <div class="onb-modal-body" style="margin-bottom:20px">${s.body}</div>
       <div class="onb-footer">
-        <button class="onb-btn-next" id="onb-next" style="background:${s.accent}">${onbStep===total-1?'Start building ✓':'Next →'}</button>
+        <button class="onb-btn-next" id="onb-next" style="background:${s.accent}">${onbStep===total-1?'Start building <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'}</button>
         <button class="onb-btn-skip" onclick="endOnboarding()">Skip</button>
         <div class="onb-dots">${ONB_STEPS.map((_,i)=>i>0?`<div class="onb-dot${i===onbStep?' on':''}" style="${i===onbStep?'background:'+s.accent:''}"></div>`:'').join('')}</div>
       </div>`;
