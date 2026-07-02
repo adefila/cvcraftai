@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CVCraft AI — ATS-Optimized CV Builder</title>
+<meta name="description" content="Build an ATS-optimized CV in minutes. 33 professional templates, real-time ATS &amp; recruiter scoring, job description keyword matching, and AI-powered review — free, no sign-up required.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CVCraft AI — ATS-Optimized CV Builder">
+<meta property="og:description" content="Build an ATS-optimized CV in minutes. 33 professional templates, real-time ATS &amp; recruiter scoring, job description keyword matching, and AI-powered review.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CVCraft AI — ATS-Optimized CV Builder">
+<meta name="twitter:description" content="Build an ATS-optimized CV in minutes. 33 professional templates, real-time ATS &amp; recruiter scoring, and AI-powered review.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -65,13 +72,6 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 }
 .gate-title{font-family:var(--ff-d);font-size:21px;font-weight:700;color:var(--ink);margin-bottom:12px}
 .gate-body{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px}
-@media (max-width:1023px){
-  .bar,.ws{display:none!important}
-  #mobile-gate{
-    display:flex;position:fixed;inset:0;z-index:1000;background:var(--surf);
-    align-items:center;justify-content:center;padding:24px;
-  }
-}
 .tabs{display:flex;gap:4px;background:var(--surf);border-radius:999px;padding:4px}
 .tab{border:none;background:none;font-family:var(--ff-b);font-size:14px;font-weight:500;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);white-space:nowrap;display:flex;align-items:center;gap:6px}
 .tab-step{font-size:10px;font-weight:700;width:17px;height:17px;border-radius:50%;background:var(--surf);border:1.5px solid var(--bdr);display:inline-flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .18s}
@@ -137,6 +137,10 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .bar-menu-item:hover{background:var(--surf)}
 .bar-menu-item-danger{color:#C0392B}
 .bar-menu-item-danger:hover{background:#FFF0EE}
+/* Export lives as its own bar button on desktop; folded into the "..." menu
+   on tablet/phone instead (see the responsive block below) to keep the
+   wrapped top bar from getting crowded. */
+.bar-menu-item-export{display:none}
 .bar-menu-divider{height:1px;background:var(--bdr);margin:4px 0}
 .btn-pill:hover{background:#111;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.22)}
 .btn-pill:active{transform:scale(.95) translateY(0)!important;box-shadow:none}
@@ -172,6 +176,37 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:#F5F4F1;overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:28px 20px}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── RESPONSIVE: tablet/phone — stack editor above preview instead of a
+   side-by-side grid, and let the page scroll naturally instead of being
+   clipped to 100vh. #mobile-gate is no longer shown at any width. Must come
+   after the base .ws/.pnl/.pnl-r rules above — same-specificity CSS rules
+   are resolved by source order, so an earlier media query would lose to a
+   later plain rule even while its condition matches. ── */
+@media (max-width:1023px){
+  html,body{height:auto;overflow:auto}
+  .bar{position:static;height:auto}
+  .ws-outer{height:auto;min-height:100vh;display:block;padding-top:0}
+  .ws{display:block;height:auto;max-width:100%}
+  .pnl{display:none;height:auto;max-height:none;border-right:none;border-bottom:1px solid #E4E2DC;width:100%}
+  .pnl.active{display:flex}
+  .pnl-r{height:auto;width:100%;padding:20px 14px}
+  .bar-inner{flex-wrap:wrap;padding:12px 14px;gap:10px}
+  .tabs{order:3;width:100%;flex-shrink:0;overflow-x:auto}
+  .score-badge{display:none}
+  #btn-export-pdf{display:none}
+  .bar-menu-item-export{display:flex}
+  /* score-badge normally carries margin-left:auto to push the right-hand
+     controls away from the logo — with it hidden here, .bar-menu-wrap
+     needs to take over that job or it sits right next to the logo. */
+  .bar-menu-wrap{margin-left:auto}
+}
+@media (max-width:640px){
+  .bar-inner{gap:6px}
+  .logo{font-size:26px}
+  .btn-pill#btn-export-pdf{font-size:13px;padding:9px 14px}
+  .tab{padding:7px 11px;font-size:13px}
+}
 
 /* ── FORMS ── */
 .cv-progress-wrap{padding:12px 22px 10px;border-bottom:1px solid var(--bdr);background:var(--bg)}
@@ -411,6 +446,15 @@ a:focus-visible,[tabindex]:focus-visible{
 
 /* ── PREVIEW ── */
 .cv-wrap{width:100%;max-width:720px}
+/* Below 900px the per-template layouts (fixed padding, non-wrapping header
+   rows) no longer fit a phone/tablet viewport. Instead of redesigning all 33
+   templates, #paper renders at its normal 794px design width and JS
+   (fitPaperToViewport) scales it down to fit — same idea as a print-preview
+   zoom. See fitPaperToViewport(). */
+@media (max-width:900px){
+  .cv-wrap{max-width:100%;overflow:hidden}
+  #paper{width:794px;transform-origin:top left}
+}
 .cv-ctrl{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .cv-tl{font-family:var(--ff-d);font-size:13px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
 .cv-tl-val{font-size:14px;color:var(--muted)}
@@ -1066,6 +1110,11 @@ a:focus-visible,[tabindex]:focus-visible{
       <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
     </button>
     <div class="bar-menu-dropdown" id="bar-menu-dropdown">
+      <button class="bar-menu-item bar-menu-item-export" onclick="openExport();closeBarMenu()">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>
+        Export PDF
+      </button>
+      <div class="bar-menu-divider bar-menu-item-export"></div>
       <div class="bar-menu-section">Data backup</div>
       <button class="bar-menu-item" onclick="backupCV();closeBarMenu()">
         <svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M12 3v12M8 11l4 5 4-5" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -1984,7 +2033,7 @@ function addSk(){
 function rmSk(i){skills.splice(i,1);renderSk();rCV();upATS();}
 function renderSk(){
   gi('sk-tags').innerHTML=skills.map((s,i)=>
-    `<div class="sk-tag">${s}<button onclick="rmSk(${i})" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
+    `<div class="sk-tag">${esc(s)}<button onclick="rmSk(${i})" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
 }
 
 // ── MODALS ──
@@ -2257,8 +2306,8 @@ function renderExpList(){
   gi('exp-list').innerHTML=exps.map((e,i)=>`
     <div class="ei ei-editable" draggable="true">
       ${DRAG_HANDLE}
-      <div class="ei-t">${e.t}${e.co?' @ '+e.co:''}</div>
-      <div class="ei-s">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>
+      <div class="ei-t">${esc(e.t)}${e.co?' @ '+esc(e.co):''}</div>
+      <div class="ei-s">${[esc(e.s),e.present?'Present':esc(e.e)].filter(Boolean).join(' – ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
         <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -2271,8 +2320,8 @@ function renderEduList(){
   gi('edu-list').innerHTML=edus.map((e,i)=>`
     <div class="ei ei-editable" draggable="true">
       ${DRAG_HANDLE}
-      <div class="ei-t">${e.d}</div>
-      <div class="ei-s">${[e.s,e.y].filter(Boolean).join(' · ')}</div>
+      <div class="ei-t">${esc(e.d)}</div>
+      <div class="ei-s">${[esc(e.s),esc(e.y)].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addEdu(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
         <button class="ei-rm" onclick="edus.splice(${i},1);renderEduList();rCV();toast('Education removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -2426,8 +2475,8 @@ function saveCert(modalEl,editIdx){
 function renderCertList(){
   gi('cert-list').innerHTML=certs.map((c,i)=>`
     <div class="ei ei-editable">
-      <div class="ei-t">${c.name}</div>
-      <div class="ei-s">${[c.issuer,c.year].filter(Boolean).join(' · ')}</div>
+      <div class="ei-t">${esc(c.name)}</div>
+      <div class="ei-s">${[esc(c.issuer),esc(c.year)].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addCert(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
         <button class="ei-rm" onclick="certs.splice(${i},1);renderCertList();rCV();upATS();toast('Certification removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -2471,8 +2520,8 @@ function saveLang(modalEl,editIdx){
 function renderLangList(){
   gi('lang-list').innerHTML=langs.map((l,i)=>`
     <div class="ei ei-editable">
-      <div class="ei-t">${l.name}</div>
-      <div class="ei-s">${l.level}</div>
+      <div class="ei-t">${esc(l.name)}</div>
+      <div class="ei-s">${esc(l.level)}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addLang(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
         <button class="ei-rm" onclick="langs.splice(${i},1);renderLangList();rCV();upATS();toast('Language removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -3792,14 +3841,14 @@ function buildSocialLinksHTML(accentColor){
   const links=socials.filter(s=>s.url.trim()).map(s=>{
     const url=s.url.match(/^https?:\/\//)?s.url:'https://'+s.url;
     const label=(s.label&&s.label.trim())||SOCIAL_TYPES[s.type]?.label||'Link';
-    return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600;font-style:normal">${label}</a>`;
+    return`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600;font-style:normal">${esc(label)}</a>`;
   });
   if(!links.length){
     // Backwards compat: check old f-li field
     const raw=v('f-li');
     if(raw){
       const url=raw.match(/^https?:\/\//)?raw:'https://'+raw;
-      return`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600">LinkedIn</a>`;
+      return`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" style="color:${ac};text-decoration:underline;text-underline-offset:2px;font-weight:600">LinkedIn</a>`;
     }
     return'';
   }
@@ -3823,6 +3872,22 @@ function getData(){
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
     skills,exps,edus
+  };
+}
+
+// escData: HTML-escapes every free-text field before it reaches a template's
+// innerHTML. getData() itself must stay raw — its other callers (AI prompts,
+// ATS scoring) need the user's literal text, not &amp;-encoded text.
+function escData(d){
+  return{
+    ...d,
+    nm:esc(d.nm),ti:esc(d.ti),em:esc(d.em),ph:esc(d.ph),lo:esc(d.lo),
+    sum:esc(d.sum),workauth:esc(d.workauth),
+    skills:d.skills.map(s=>esc(s)),
+    exps:d.exps.map(e=>({...e,t:esc(e.t),co:esc(e.co),d:esc(e.d)})),
+    edus:d.edus.map(e=>({...e,d:esc(e.d),s:esc(e.s),y:esc(e.y),g:esc(e.g)})),
+    certs:d.certs.map(c=>({...c,name:esc(c.name),issuer:esc(c.issuer),year:esc(c.year)})),
+    langs:d.langs.map(l=>({...l,name:esc(l.name),level:esc(l.level)})),
   };
 }
 
@@ -4454,12 +4519,13 @@ function updateProgress(){
 
 function rCV(){
   const d=getData();
+  const safeD=escData(d);
   try{
     if(!TPL[CT]){console.warn('[CVCraft] Unknown template:',CT,'— falling back to classic');CT='classic';}
-    gi('paper').innerHTML=TPL[CT](d);
+    gi('paper').innerHTML=TPL[CT](safeD);
   }catch(e){
     console.error('[CVCraft] Template render error:',e);
-    try{CT='classic';gi('paper').innerHTML=TPL.classic(d);}catch(_){}
+    try{CT='classic';gi('paper').innerHTML=TPL.classic(safeD);}catch(_){}
   }
   // Show progress ring in build panel
   updateBuildProgress(d);
@@ -4467,7 +4533,28 @@ function rCV(){
   try{updateProgress();}catch(_){}
   try{updateSimFormPreview();}catch(_){}
   saveDraft();
+  try{fitPaperToViewport();}catch(_){}
 }
+
+// fitPaperToViewport: on phone/tablet widths (<=900px), #paper renders at its
+// normal 794px design width (see the @media rule on .cv-wrap/#paper), then
+// gets visually scaled down to fit — a CSS transform doesn't reflow layout,
+// so the wrapper's own height is set to match the scaled-down size, otherwise
+// the page would keep the full unscaled height as blank space below the card.
+function fitPaperToViewport(){
+  const paper=gi('paper'),wrap=paper?.closest('.cv-wrap');
+  if(!paper||!wrap)return;
+  if(innerWidth>900){
+    paper.style.transform='';
+    wrap.style.height='';
+    return;
+  }
+  const availW=wrap.getBoundingClientRect().width;
+  const scale=Math.min(1,availW/794);
+  paper.style.transform=`scale(${scale})`;
+  wrap.style.height=(paper.scrollHeight*scale)+'px';
+}
+window.addEventListener('resize',()=>{try{fitPaperToViewport();}catch(_){}});
 
 function updateBuildProgress(d){
   const ring=gi('build-progress-ring');
@@ -4917,5 +5004,6 @@ document.querySelectorAll('input.fi,textarea.fi').forEach(el=>{
 
 init();
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
