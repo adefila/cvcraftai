@@ -1045,8 +1045,8 @@ a:focus-visible,[tabindex]:focus-visible{
         <div class="onb-modal-title" id="onb-title"></div>
         <div class="onb-modal-body" id="onb-body"></div>
         <div class="onb-footer">
-          <button class="onb-btn-next" id="onb-next">Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
           <button class="onb-btn-skip" onclick="endOnboarding()">Skip tour</button>
+          <button class="onb-btn-next" id="onb-next">Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
           <div class="onb-dots" id="onb-dots"></div>
         </div>
       </div>
@@ -1499,8 +1499,8 @@ a:focus-visible,[tabindex]:focus-visible{
     <div class="confirm-title" id="confirm-title"></div>
     <div class="confirm-body" id="confirm-body"></div>
     <div class="confirm-actions">
-      <button class="btn-pill" id="confirm-ok" style="background:#0A0A12;flex:1;justify-content:center"></button>
       <button class="btn-pill-outline confirm-cancel" id="confirm-cancel">Cancel</button>
+      <button class="btn-pill" id="confirm-ok" style="background:#0A0A12;flex:1;justify-content:center"></button>
     </div>
   </div>
 </div>
@@ -1537,8 +1537,8 @@ a:focus-visible,[tabindex]:focus-visible{
       </div>
 
       <div class="modal-btns">
-        <button class="btn-pill" id="btn-do-export" onclick="doExport()" style="flex:1;justify-content:center">Download PDF</button>
         <button class="btn-pill-outline" onclick="closeExport()">Cancel</button>
+        <button class="btn-pill" id="btn-do-export" onclick="doExport()" style="flex:1;justify-content:center">Download PDF</button>
       </div>
     </div>
   </div>
@@ -2070,8 +2070,8 @@ function addExp(editIdx){
       <div class="ai-write-out" id="ex-ai-write-out" style="display:none"></div>
     </div>
     <div class="modal-btns">
-      <button class="btn-pill" id="ex-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="ex-cancel-btn">Cancel</button>
+      <button class="btn-pill" id="ex-save-btn" style="flex:1;justify-content:center">Save</button>
     </div>`);
   const descF=gi('ex-d'),aiBtn=gi('ex-ai-write-btn'),aiLbl=gi('ex-ai-lbl'),aiHint=gi('ex-ai-hint');
   const isMeaningful=t=>{const w=t.trim().split(/\s+/).filter(x=>x.length>=2);return w.length>=3&&w.filter(x=>/[aeiou]/i.test(x)).length>=w.length*.5;};
@@ -2238,8 +2238,8 @@ function addEdu(editIdx){
       </div>
     </div>
     <div class="modal-btns">
-      <button class="btn-pill" id="edu-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="edu-cancel-btn">Cancel</button>
+      <button class="btn-pill" id="edu-save-btn" style="flex:1;justify-content:center">Save</button>
     </div>`);
   gi('edu-save-btn').onclick=()=>saveEdu(modalEl,editIdx);
   gi('edu-cancel-btn').onclick=()=>modalEl.remove();
@@ -2384,8 +2384,8 @@ function addProj(editIdx){
       </div>
     </div>
     <div class="modal-btns">
-      <button class="btn-pill" id="proj-save-btn" style="flex:1;justify-content:center">Save Project</button>
       <button class="btn-pill-outline" id="proj-cancel-btn">Cancel</button>
+      <button class="btn-pill" id="proj-save-btn" style="flex:1;justify-content:center">Save Project</button>
     </div>`);
 
   // Wire up Enter key and Add button to add chips in the stack input
@@ -2454,8 +2454,8 @@ function addCert(editIdx){
       <input class="fi" id="cert-year" placeholder="Year obtained" value="${esc(c.year)}">
     </div>
     <div class="modal-btns">
-      <button class="btn-pill" id="cert-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="cert-cancel-btn">Cancel</button>
+      <button class="btn-pill" id="cert-save-btn" style="flex:1;justify-content:center">Save</button>
     </div>`);
   gi('cert-save-btn').onclick=()=>saveCert(modalEl,editIdx);
   gi('cert-cancel-btn').onclick=()=>modalEl.remove();
@@ -2499,8 +2499,8 @@ function addLang(editIdx){
       </div>
     </div>
     <div class="modal-btns">
-      <button class="btn-pill" id="lang-save-btn" style="flex:1;justify-content:center">Save</button>
       <button class="btn-pill-outline" id="lang-cancel-btn">Cancel</button>
+      <button class="btn-pill" id="lang-save-btn" style="flex:1;justify-content:center">Save</button>
     </div>`);
   gi('lang-save-btn').onclick=()=>saveLang(modalEl,editIdx);
   gi('lang-cancel-btn').onclick=()=>modalEl.remove();
@@ -4919,8 +4919,8 @@ function renderOnbStep(){
         ${s.features.map(f=>`<div style="display:flex;align-items:center;gap:9px;background:#F4F4FF;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;color:#3A3A6A"><span style="font-size:16px">${f.icon}</span><span>${f.label}</span></div>`).join('')}
       </div>
       <div class="onb-footer" style="border-top:1px solid var(--bdr);padding-top:16px">
-        <button class="onb-btn-next" id="onb-next" style="flex:1;background:var(--ac)">Get started <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
         <button class="onb-btn-skip" onclick="endOnboarding()">Skip for now</button>
+        <button class="onb-btn-next" id="onb-next" style="flex:1;background:var(--ac)">Get started <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
       </div>`;
   }else{
     illus.style.cssText=`background:${s.color};display:flex;align-items:center;justify-content:center;gap:18px;padding:0 32px;position:relative;overflow:hidden`;
@@ -4938,8 +4938,8 @@ function renderOnbStep(){
       <div class="onb-modal-title">${s.title}</div>
       <div class="onb-modal-body" style="margin-bottom:20px">${s.body}</div>
       <div class="onb-footer">
-        <button class="onb-btn-next" id="onb-next" style="background:${s.accent}">${onbStep===total-1?'Start building <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'}</button>
         <button class="onb-btn-skip" onclick="endOnboarding()">Skip</button>
+        <button class="onb-btn-next" id="onb-next" style="background:${s.accent}">${onbStep===total-1?'Start building <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'}</button>
         <div class="onb-dots">${ONB_STEPS.map((_,i)=>i>0?`<div class="onb-dot${i===onbStep?' on':''}" style="${i===onbStep?'background:'+s.accent:''}"></div>`:'').join('')}</div>
       </div>`;
   }
