@@ -17,7 +17,7 @@ The AI features call Anthropic through a serverless proxy (`api/ai.js`) so the A
 Without the key, AI features show a clear error. Everything else — templates, scoring, JD matching, exports, saved versions — works with no key.
 
 **Proxy limits** (`api/ai.js`)
-- Only accepts requests from `localhost`, `127.0.0.1`, or an `https://*.vercel.app` host containing `cvcraftai`. **A custom domain will get `403 Forbidden` until you add it to `isAllowedOrigin`.**
+- Only accepts requests from `localhost`, `127.0.0.1`, an `https://*.vercel.app` host containing `cvcraftai`, or the custom hosts listed in the `ALLOWED_HOSTS` environment variable (comma-separated, default `cv.adefilasamuel.com`). **Any other domain gets `403 Forbidden`.** Applies to `api/ai.js` and `api/tts.js`.
 - 20 requests per minute per IP (in-memory, best effort) and responses capped at 1,500 tokens.
 - Two request shapes: `{ prompt }` (up to 8,000 characters) or `{ system, messages }` for multi-turn use (`system` up to 9,000 characters; up to 40 messages of at most 12,000 characters each and 30,000 in total, roles `user`/`assistant`, starting and ending with `user`). Add `stream: true` for server-sent events. The model is fixed server-side.
 

@@ -2,11 +2,17 @@
 // Handles both streaming (SSE) and non-streaming requests to Anthropic.
 // Security: origin-checked + per-IP rate limit (best-effort, in-memory).
 
+// Custom domains that may call this API. Override in Vercel with ALLOWED_HOSTS
+// (comma-separated hostnames, e.g. "cv.example.com,www.example.com").
+const CUSTOM_HOSTS = (process.env.ALLOWED_HOSTS || 'cv.adefilasamuel.com')
+  .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   try {
     const { hostname, protocol } = new URL(origin);
     if (hostname === 'localhost' || hostname === '127.0.0.1') return true;
+    if (protocol === 'https:' && CUSTOM_HOSTS.includes(hostname.toLowerCase())) return true;
     return protocol === 'https:' && hostname.endsWith('.vercel.app') && hostname.includes('cvcraftai');
   } catch {
     return false;
