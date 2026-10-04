@@ -56,7 +56,9 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY. Add it in Vercel Project Settings → Environment Variables.' });
 
-  const { prompt, system, messages, max_tokens, stream: wantStream } = req.body || {};
+  const { prompt, system, messages, max_tokens, temperature, stream: wantStream } = req.body || {};
+  // Optional: lower randomness (0 to 1) for tasks that should be steady, such as scoring.
+  const safeTemp = typeof temperature === 'number' && temperature >= 0 && temperature <= 1 ? temperature : undefined;
 
   // Two input shapes: a single "prompt" string (most features), or a multi-turn
   // "messages" array (the mock interview). Both are length-capped; the caller
@@ -90,6 +92,7 @@ export default async function handler(req, res) {
     model: 'claude-sonnet-4-6',
     max_tokens: safeTokens,
     ...(system ? { system } : {}),
+    ...(safeTemp !== undefined ? { temperature: safeTemp } : {}),
     messages: msgs,
     ...extra
   });

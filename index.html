@@ -605,6 +605,17 @@ body.meet-open{overflow:hidden}
 .iv-score{display:flex;align-items:center;gap:14px;margin-bottom:12px}
 .iv-score-num{font-family:var(--ff-d);font-size:42px;font-weight:800;line-height:1}
 .iv-score-lbl{font-size:12px;color:var(--muted);line-height:1.4}
+.iv-report-actions{flex-wrap:wrap}
+.ivh-when{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.ivh-trend{background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:10px 12px 8px;margin:8px 0 10px}
+.ivh-trend-lbl{font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px}
+.ivh-list{display:flex;flex-direction:column;gap:8px}
+.ivh-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;font-family:var(--ff-b);background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:10px 14px;cursor:pointer;color:var(--ink);transition:border-color .15s}
+.ivh-row:hover{border-color:var(--ac)}
+.ivh-main{display:flex;flex-direction:column;min-width:0;font-size:12.5px;color:var(--muted);line-height:1.4}
+.ivh-main strong{font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ivh-score{font-family:var(--ff-d);font-size:22px;font-weight:800;flex-shrink:0}
+.ivh-clear{margin-top:10px;background:none;color:var(--muted);border:1.5px solid var(--bdr)}
 .iv-verdict{font-size:14px;line-height:1.6;color:var(--ink);margin-bottom:16px}
 .iv-title{font-family:var(--ff-d);font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
 .iv-list{list-style:none;margin:0;padding:0}
@@ -1690,6 +1701,7 @@ body.meet-open{overflow:hidden}
         <option value="8">8 questions · about 20 min</option>
       </select>
       <button class="btn-pill" id="iv-start" type="button" onclick="ivStart()" style="width:100%;justify-content:center;margin-top:14px">Start interview</button>
+      <div id="iv-history"></div>
     </div>
     <!-- 2. Live interview -->
     <div class="iv-chat" id="iv-chat" style="display:none">
@@ -1992,10 +2004,10 @@ function confirmStartOver(){
   showConfirm({
     icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`,
     title:'Start over?',
-    body:'This will clear everything in your CV — name, experience, skills, and all sections. This cannot be undone.',
+    body:'This will clear everything in your CV: name, experience, skills, and all sections. Your saved practice interviews are cleared too. This cannot be undone.',
     okLabel:'Yes, clear everything',
     danger:true,
-    onOk:()=>{clearDraft();location.reload();}
+    onOk:()=>{clearDraft();try{localStorage.removeItem('cvcraftai-interviews-v1');}catch(e){}location.reload();}
   });
 }
 
@@ -2065,7 +2077,7 @@ function openPrivacy(){
   const modalEl=mkModal(`
     <div class="modal-title">Your data</div>
     <ul class="priv-list">
-      <li><strong>Your CV stays in this browser.</strong> There are no accounts and no database.</li>
+      <li><strong>Your CV and past practice interviews stay in this browser.</strong> There are no accounts and no database.</li>
       <li><strong>AI features send text out.</strong> Your CV and the job post go to an AI service (Anthropic) so it can write a reply. CVCraft doesn't keep it.</li>
       <li><strong>Voice calls use speech tools.</strong> Your browser's speech service may process your audio. If the optional Studio voice is on, only the interviewer's words go to a speech service, never your voice. Your camera never leaves your device.</li>
       <li><strong>Visit and button counts.</strong> Vercel Analytics counts page views and which features get used (for example "exported a PDF"). It never sees your CV, answers or name.</li>
@@ -4219,7 +4231,7 @@ function ivBegin(){
   voShutdown();
   const voice=v('iv-mode')==='voice'&&voiceSupported();
   track('interview_started',voice?'voice':'text');
-  Object.assign(IV,{type:v('iv-type')||'recruiter',total:parseInt(v('iv-count'))||5,asked:0,turns:[],msgs:[],followed:false,active:true,busy:false,pendingKind:'main',report:null,voice,warned:false,hinting:false});
+  Object.assign(IV,{type:v('iv-type')||'recruiter',total:parseInt(v('iv-count'))||5,asked:0,turns:[],msgs:[],followed:false,active:true,busy:false,pendingKind:'main',report:null,voice,warned:false,hinting:false,runId:'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)});
   VO.spoken=false;
   IV.durationSec=IV.total>=8?1200:600;
   IV.endsAt=Date.now()+IV.durationSec*1000;
@@ -4471,10 +4483,10 @@ function ivReset(){
   clearInterval(IV.timer);
   voShutdown();
   meetClose();
-  Object.assign(IV,{active:false,busy:false,turns:[],msgs:[],report:null,voice:false});
+  Object.assign(IV,{active:false,busy:false,turns:[],msgs:[],report:null,voice:false,view:null});
   gi('iv-msgs').innerHTML='';
   gi('iv-chat').style.display='none';gi('iv-report').style.display='none';gi('iv-setup').style.display='';
-  ivRefreshChecks();
+  ivRefreshChecks();ivhRender();
 }
 function ivFinish(reason){
   IV.sid++;IV.active=false;IV.busy=false;
@@ -4518,13 +4530,15 @@ async function ivScore(){
   try{
     const raw=await callAI('',1500,{
       system:`${IV_SCORER}\n\n${ivContext(7300)}`,
-      messages:[{role:'user',content:`INTERVIEW TRANSCRIPT (${n} main question${n>1?'s':''} answered):\n\n${lines.join('\n')}`}]
+      messages:[{role:'user',content:`INTERVIEW TRANSCRIPT (${n} main question${n>1?'s':''} answered):\n\n${lines.join('\n')}`}],
+      temperature:0.2          // steadier scores: the same answers should land close together
     });
     if(sid!==IV.sid)return;
     const r=ivParseReport(raw);
     if(!r)throw new Error('The feedback came back in an unreadable format.');
     IV.report=r;
     track('interview_scored');
+    ivSaveHistory(r);
     ivRenderReport(r);
   }catch(err){
     if(sid!==IV.sid)return;
@@ -4552,9 +4566,110 @@ function ivParseReport(raw){
     }))
   };
 }
-function ivRenderReport(r){
-  const mains=IV.turns.filter(t=>t.kind==='main'&&t.a!==null);
-  const col=r.score>=70?'#1AA371':r.score>=45?'#C8860D':'#E14B4B';
+// ── Saved interviews ──
+// Every scored interview is kept in this browser (newest first, up to 20) so progress can be
+// seen over time. Nothing leaves the device. "Start over" clears it with the CV.
+const IVH_KEY='cvcraftai-interviews-v1',IVH_MAX=20;
+const IV_TYPE_NAMES={recruiter:'Recruiter screen',manager:'Hiring manager',technical:'Technical lead',panel:'Tough panel'};
+const ivScoreCol=s=>s>=70?'#1AA371':s>=45?'#C8860D':'#E14B4B';
+// The AI's number can wobble a few points between runs, so it is shown as a likely range.
+const ivBand=s=>({lo:Math.max(0,s-5),hi:Math.min(100,s+5)});
+function ivhGet(){
+  try{const a=JSON.parse(localStorage.getItem(IVH_KEY));return Array.isArray(a)?a:[];}catch(e){return[];}
+}
+function ivhPut(list){
+  try{localStorage.setItem(IVH_KEY,JSON.stringify(list));return true;}
+  catch(e){toast('Storage is full. Delete an old interview first','err',4000);return false;}
+}
+function ivSaveHistory(r){
+  const turns=IV.turns.filter(t=>t.a!==null).map(t=>({k:t.kind,q:t.q,a:t.a,s:!!t.skipped,h:!!t.hinted}));
+  const entry={id:IV.runId,at:Date.now(),job:v('f-title').trim()||'Practice',type:IV.type,voice:!!IV.voice,r,turns};
+  let list=ivhGet();
+  const i=list.findIndex(x=>x.id===entry.id);
+  if(i>=0)list[i]=entry;else list.unshift(entry);
+  if(ivhPut(list.slice(0,IVH_MAX)))ivhRender();
+}
+function ivhRender(){
+  const box=gi('iv-history');if(!box)return;
+  const list=ivhGet();
+  if(!list.length){box.innerHTML='';return;}
+  const dateOf=t=>new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+  // progress line: oldest to newest, last 10
+  let trend='';
+  const sc=list.slice(0,10).map(e=>e.r.score).reverse();
+  if(sc.length>=2){
+    const W=260,H=54,P=6,step=(W-2*P)/(sc.length-1);
+    const pts=sc.map((s,i)=>`${(P+i*step).toFixed(1)},${(H-P-(s/100)*(H-2*P)).toFixed(1)}`);
+    const last=pts[pts.length-1].split(',');
+    trend=`<div class="ivh-trend"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Score trend"><polyline points="${pts.join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="var(--ac)"/></svg>
+      <div class="ivh-trend-lbl">Latest ${sc[sc.length-1]} · best ${Math.max(...sc)} · ${sc.length} practices. Look at the trend, not one number.</div></div>`;
+  }
+  const rows=list.map(e=>`<button class="ivh-row" type="button" data-id="${esc(e.id)}">
+      <span class="ivh-main"><strong>${esc(e.job)}</strong><span>${esc(IV_TYPE_NAMES[e.type]||'Interview')} · ${e.voice?'Voice':'Text'} · ${esc(dateOf(e.at))}</span></span>
+      <span class="ivh-score" style="color:${ivScoreCol(e.r.score)}">${e.r.score}</span></button>`).join('');
+  box.innerHTML=`<div class="ivh"><div class="lbl" style="margin-top:22px">Past interviews</div>${trend}<div class="ivh-list">${rows}</div>
+    <button class="btn-pill-sm ivh-clear" type="button" id="ivh-clear">Clear all</button></div>`;
+  box.querySelectorAll('.ivh-row').forEach(b=>b.onclick=()=>ivhOpen(b.dataset.id));
+  gi('ivh-clear').onclick=()=>showConfirm({
+    icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>',
+    title:'Clear past interviews?',body:'This deletes every saved interview from this browser. It cannot be undone.',okLabel:'Clear all',danger:true,
+    onOk:()=>{try{localStorage.removeItem(IVH_KEY);}catch(e){}ivhRender();}
+  });
+}
+function ivhOpen(id){
+  const e=ivhGet().find(x=>x.id===id);if(!e)return;
+  const turns=e.turns.map(t=>({kind:t.k,q:t.q,a:t.a,skipped:t.s,hinted:t.h}));
+  gi('iv-setup').style.display='none';gi('iv-chat').style.display='none';gi('iv-report').style.display='block';
+  ivRenderReport(e.r,turns,e);
+}
+function ivhDelete(id){
+  showConfirm({
+    icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>',
+    title:'Delete this interview?',body:'It will be removed from this browser.',okLabel:'Delete',danger:true,
+    onOk:()=>{ivhPut(ivhGet().filter(x=>x.id!==id));ivReset();}
+  });
+}
+function ivReportText(view,full){
+  const{r,turns,entry}=view;
+  const mains=turns.filter(t=>t.kind==='main'&&t.a!==null);
+  const b=ivBand(r.score);
+  const when=new Date(entry?entry.at:Date.now()).toLocaleString();
+  const head=[`Mock interview: ${(entry&&entry.job)||v('f-title').trim()||'Practice'}`,
+    `${IV_TYPE_NAMES[entry?entry.type:IV.type]||'Interview'} · ${(entry?entry.voice:IV.voice)?'Voice':'Text'} · ${when}`,
+    `Practice score: about ${b.lo} to ${b.hi} out of 100 (AI estimate, exact ${r.score})`,r.verdict,''];
+  const body=[
+    r.strengths.length&&'What went well:\n'+r.strengths.map(s=>'- '+s).join('\n'),
+    r.improvements.length&&'Work on:\n'+r.improvements.map(s=>'- '+s).join('\n'),
+    ...r.answers.map(a=>`\nQ${a.q}: ${mains[a.q-1]?mains[a.q-1].q:''}\n${a.rating.toUpperCase()}: ${a.feedback}\nStronger: ${a.better}`)
+  ];
+  const lines=[...head,...body];
+  if(full){
+    lines.push('\n\n--- Full transcript ---');
+    let n=0;
+    turns.filter(t=>t.a!==null).forEach(t=>{
+      if(t.kind==='main'){n++;lines.push(`\nQ${n}: ${t.q}`);}else lines.push(`\nFollow-up: ${t.q}`);
+      lines.push(t.skipped?'You: (skipped)':`You${t.hinted?' (used a suggestion)':''}: ${t.a}`);
+    });
+  }
+  lines.push('\nAI practice feedback. It is an estimate and cannot judge your voice or delivery.');
+  return lines.filter(x=>x!==''&&x!==false).join('\n');
+}
+function ivDownloadReport(){
+  if(!IV.view)return;
+  const safe=(v('f-name').trim()||'interview').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const url=URL.createObjectURL(new Blob([ivReportText(IV.view,true)+'\n'],{type:'text/plain;charset=utf-8'}));
+  const a=document.createElement('a');
+  a.href=url;a.download=`${safe||'interview'}-mock-interview.txt`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Interview downloaded','ok');
+}
+function ivRenderReport(r,turns,entry){
+  turns=turns||IV.turns;
+  IV.view={r,turns,entry:entry||null};
+  const mains=turns.filter(t=>t.kind==='main'&&t.a!==null);
+  const col=ivScoreCol(r.score);
+  const band=ivBand(r.score);
   const li=(arr,dot)=>arr.map(s=>`<li style="--dot:${dot}">${esc(s)}</li>`).join('');
   const cards=r.answers.map(a=>{
     const q=mains[a.q-1];
@@ -4566,26 +4681,25 @@ function ivRenderReport(r){
     </div>`;
   }).join('');
   gi('iv-report').innerHTML=`<div class="iv-report">
-    <div class="iv-score"><div class="iv-score-num" style="color:${col}">${r.score}</div><div class="iv-score-lbl">out of 100<br>mock interview score</div></div>
+    ${entry?`<div class="ivh-when">${esc(entry.job)} · ${esc(IV_TYPE_NAMES[entry.type]||'Interview')} · ${new Date(entry.at).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}</div>`:''}
+    <div class="iv-score"><div class="iv-score-num" style="color:${col}">${band.lo}–${band.hi}</div><div class="iv-score-lbl">out of 100<br>likely range, AI estimate</div></div>
     ${r.verdict?`<p class="iv-verdict">${esc(r.verdict)}</p>`:''}
+    <p class="iv-note" style="margin:0 0 4px">This is practice feedback. The score can be a few points off, and it can't judge your voice or delivery. Watch the trend across practices.</p>
     ${r.strengths.length?`<div class="iv-title">What went well</div><ul class="iv-list">${li(r.strengths,'#1AA371')}</ul>`:''}
     ${r.improvements.length?`<div class="iv-title">Work on</div><ul class="iv-list">${li(r.improvements,'#C8860D')}</ul>`:''}
     ${cards?`<div class="iv-title">Question by question</div>${cards}`:''}
     <div class="iv-report-actions">
-      <button class="btn-pill-outline" type="button" onclick="ivCopyReport()">Copy feedback</button>
-      <button class="btn-pill" type="button" onclick="ivReset()" style="flex:1;justify-content:center">Practise again</button>
+      ${entry?`<button class="btn-pill-outline" type="button" onclick="ivhDelete('${esc(entry.id)}')">Delete</button>`:''}
+      <button class="btn-pill-outline" type="button" onclick="ivCopyReport()">Copy</button>
+      <button class="btn-pill-outline" type="button" onclick="ivDownloadReport()">Download</button>
+      <button class="btn-pill" type="button" onclick="ivReset()" style="flex:1;justify-content:center">${entry?'Back':'Practise again'}</button>
     </div>
   </div>`;
   gi('pnl-interview').scrollTop=0;
 }
 function ivCopyReport(){
-  const r=IV.report;if(!r)return;
-  const mains=IV.turns.filter(t=>t.kind==='main'&&t.a!==null);
-  const txt=[`Mock interview score: ${r.score}/100`,r.verdict,'',
-    r.strengths.length&&'What went well:\n'+r.strengths.map(s=>'- '+s).join('\n'),
-    r.improvements.length&&'Work on:\n'+r.improvements.map(s=>'- '+s).join('\n'),
-    ...r.answers.map(a=>`\nQ${a.q}: ${mains[a.q-1]?mains[a.q-1].q:''}\n${a.rating.toUpperCase()}: ${a.feedback}\nStronger: ${a.better}`)
-  ].filter(x=>x!==''&&x!==false).join('\n');
+  if(!IV.view)return;
+  const txt=ivReportText(IV.view,false);
   const done=()=>toast('Feedback copied','ok',1800);
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done).catch(()=>toast('Could not copy','err'));
   else toast('Copy is not available in this browser','err');
@@ -4598,6 +4712,7 @@ gi('iv-answer').addEventListener('input',()=>{
 });
 voConfigureSetup();
 ivTypeNote();
+ivhRender();
 // Browsers load their voice list late; refresh the lobby's list when it arrives.
 if('speechSynthesis' in window&&speechSynthesis.addEventListener)speechSynthesis.addEventListener('voiceschanged',()=>{if(MEET.open&&MEET.stage==='lobby')lobbyFillVoices();});
 document.addEventListener('keydown',e=>{
