@@ -629,6 +629,13 @@ body.meet-open{overflow:hidden}
 .priv-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .priv-list li{font-size:14px;line-height:1.55;color:var(--ink);padding-left:16px;position:relative}
 .priv-list li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--ac)}
+/* Beta pill + feedback */
+.logo-wrap{display:flex;align-items:center;gap:8px;min-width:0}
+.beta-pill{font-family:var(--ff-b);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1.5px solid var(--bdr);background:var(--surf);color:var(--muted);cursor:pointer;line-height:1.2}
+.beta-pill:hover{border-color:var(--ac);color:var(--ac)}
+.fb-types{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.fb-type{font-family:var(--ff-b);font-size:13px;padding:7px 13px;border-radius:999px;border:1.5px solid var(--bdr);background:#fff;color:var(--ink);cursor:pointer}
+.fb-type.on{border-color:var(--ac);background:var(--ac);color:#fff}
 /* Build with AI */
 .ai-build{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 22px;background:var(--surf);border-bottom:1px solid var(--bdr)}
 .ai-build-txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 200px;font-size:12.5px;color:var(--muted);line-height:1.4}
@@ -1235,7 +1242,7 @@ body.meet-open{overflow:hidden}
 <!-- TOPBAR -->
 <div class="bar">
  <div class="bar-inner">
-  <div class="logo">cv<span>craft</span>.ai</div>
+  <div class="logo-wrap"><div class="logo">cv<span>craft</span>.ai</div><button class="beta-pill" type="button" onclick="openBeta()" title="This is an early version. Tap to read more">Beta</button></div>
   <div class="tabs">
     <button class="tab on" onclick="swTab('build',this)"><span class="tab-step">1</span>Build</button>
     <button class="tab" onclick="swTab('jd',this)"><span class="tab-step">2</span>JD Match</button>
@@ -1296,6 +1303,10 @@ body.meet-open{overflow:hidden}
       <button class="bar-menu-item" onclick="openPrivacy();closeBarMenu()">
         <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Your data
+      </button>
+      <button class="bar-menu-item" onclick="openFeedback();closeBarMenu()">
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Send feedback
       </button>
       <div class="bar-menu-divider"></div>
       <button class="bar-menu-item bar-menu-item-danger" onclick="confirmStartOver();closeBarMenu()">
@@ -2058,10 +2069,52 @@ function openPrivacy(){
       <li><strong>AI can be wrong.</strong> Check anything it writes before you send it.</li>
     </ul>
     <p class="ver-help" style="margin:12px 0 0">Want it gone? "Start over" in this menu clears everything on this device.</p>
-    <p class="ver-help" style="margin:8px 0 0">Your choice: <strong>${getConsent()==='yes'?'AI and visit counts allowed':getConsent()==='no'?'Ask me before each AI use, no visit counts':'not set yet'}</strong>.</p>
+    <p class="ver-help" style="margin:8px 0 0">${AIUSE.left!==null?`AI uses left today: <strong>${AIUSE.left} of ${AIUSE.limit}</strong>. It resets every day. A full interview uses about 20.<br>`:'Each person gets a daily number of AI uses. It resets every day.<br>'}Your choice: <strong>${getConsent()==='yes'?'AI and visit counts allowed':getConsent()==='no'?'Ask me before each AI use, no visit counts':'not set yet'}</strong>.</p>
     <div class="modal-btns"><button class="btn-pill-outline" id="priv-change" type="button">Change choice</button><button class="btn-pill" id="priv-ok" type="button" style="flex:1;justify-content:center">Got it</button></div>`);
   gi('priv-ok').onclick=()=>modalEl.remove();
   gi('priv-change').onclick=()=>{modalEl.remove();showConsent();};
+}
+
+// ── EARLY VERSION NOTICE + FEEDBACK ──
+// Change this address to where you want feedback to arrive. Nothing is sent by CVCraft itself:
+// the form just opens the visitor's own email app with their message filled in.
+const FEEDBACK_EMAIL='samuel@adefilasamuel.com';
+function openBeta(){
+  const m=mkModal(`
+    <div class="modal-title">You're using an early version</div>
+    <ul class="priv-list">
+      <li><strong>Scores are estimates.</strong> They are not what a real employer's system would give you.</li>
+      <li><strong>AI can be wrong.</strong> Read every line before you send a CV.</li>
+      <li><strong>Voice calls</strong> work in Edge, Chrome and Safari, and sound best in Edge. Text mode works everywhere.</li>
+      <li><strong>Your CV is only saved in this browser.</strong> Use "Save backup file" in the "..." menu so you never lose it.</li>
+      <li><strong>Something broken or confusing?</strong> Please tell us. It helps a lot.</li>
+    </ul>
+    <div class="modal-btns"><button class="btn-pill-outline" id="beta-fb" type="button">Send feedback</button><button class="btn-pill" id="beta-ok" type="button" style="flex:1;justify-content:center">Got it</button></div>`);
+  gi('beta-ok').onclick=()=>m.remove();
+  gi('beta-fb').onclick=()=>{m.remove();openFeedback();};
+}
+function openFeedback(){
+  track('feedback_opened');
+  const TYPES=['Something broke','Confusing','An idea','Something I liked'];
+  const m=mkModal(`
+    <div class="modal-title">Send feedback</div>
+    <p class="ver-help" style="margin:0 0 10px">What is it about?</p>
+    <div class="fb-types" id="fb-types">${TYPES.map((t,i)=>`<button class="fb-type${i===0?' on':''}" type="button" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+    <textarea class="fi" id="fb-text" rows="5" maxlength="1500" placeholder="Tell us what happened or what you would change. Please don't paste private details from your CV."></textarea>
+    <p class="ver-help" style="margin:10px 0 0">This opens your email app with the message ready. CVCraft doesn't send or keep it. Or email ${esc(FEEDBACK_EMAIL)}.</p>
+    <div class="modal-btns"><button class="btn-pill-outline" id="fb-cancel" type="button">Cancel</button><button class="btn-pill" id="fb-send" type="button" style="flex:1;justify-content:center">Open email</button></div>`);
+  let type=TYPES[0];
+  m.querySelectorAll('.fb-type').forEach(b=>b.onclick=()=>{
+    type=b.dataset.t;m.querySelectorAll('.fb-type').forEach(x=>x.classList.toggle('on',x===b));
+  });
+  gi('fb-cancel').onclick=()=>m.remove();
+  gi('fb-send').onclick=()=>{
+    const text=gi('fb-text').value.trim();
+    if(text.length<5){toast('Write a few words first','err',2500);return;}
+    location.href=`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('CVCraft feedback: '+type)}&body=${encodeURIComponent(text+'\n\n(From cv.adefilasamuel.com)')}`;
+    m.remove();toast('Opening your email app…','ok',2500);
+  };
+  setTimeout(()=>gi('fb-text')?.focus(),60);
 }
 
 // ── PRIVACY CHOICE ──
@@ -2272,7 +2325,8 @@ function abReview(gaps){
     <ul class="priv-list" id="ab-gaps"></ul>
     <div class="modal-btns"><button class="btn-pill" id="ab-done" type="button" style="flex:1;justify-content:center">Review my CV</button></div>`);
   const ul=gi('ab-gaps');
-  (list.length?list:['Make sure every job, date and school is correct']).forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li);});
+  list.push('Save a backup file from the "..." menu so you never lose this draft');
+  (list.length>1?list:['Make sure every job, date and school is correct',...list]).forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li);});
   gi('ab-done').onclick=()=>m.remove();
 }
 
@@ -2516,13 +2570,44 @@ const AI_VOICE='Write like a friendly, direct person giving quick advice, not li
 // Returns the full accumulated text when done.
 // Falls back to the non-streaming path gracefully if streaming fails.
 // `extra` may carry {system, messages} for multi-turn calls (the mock interview).
+// Each browser gets a random anonymous id so the server can give every user their own daily
+// allowance (no accounts, nothing personal). Without storage it falls back to the network address.
+let cidMem='';
+function clientId(){
+  const ok=s=>/^[A-Za-z0-9_-]{16,48}$/.test(s||'');
+  try{
+    let id=localStorage.getItem('cvcraftai-cid');
+    if(!ok(id)){
+      id=Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>b.toString(36).padStart(2,'0')).join('').slice(0,24);
+      localStorage.setItem('cvcraftai-cid',id);
+    }
+    return id;
+  }catch(e){
+    if(!cidMem)cidMem=Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+'xxxxxxxxxxxxxxxx';
+    return cidMem.slice(0,24);
+  }
+}
+const apiHeaders=()=>({'Content-Type':'application/json','X-Client-Id':clientId()});
+// How many AI uses this user has left today, read from the server's reply headers.
+const AIUSE={left:null,limit:null,warned:{}};
+function noteUsage(r){
+  const left=parseInt(r.headers.get('x-daily-remaining')),limit=parseInt(r.headers.get('x-daily-limit'));
+  if(!isFinite(left)||!isFinite(limit))return;
+  AIUSE.left=left;AIUSE.limit=limit;
+  const t=[3,10,20].find(x=>left<=x);
+  if(t&&!AIUSE.warned[t]&&left>0){
+    [3,10,20].filter(x=>x>=t).forEach(x=>AIUSE.warned[x]=true);
+    toast(`${left} AI use${left===1?'':'s'} left today`,'default',3500);
+  }
+}
 async function callAIStream(prompt,maxTokens=1200,onChunk,extra={}){
   if(!await aiAllowed())throw new Error('AI is off. Nothing was sent.');
   const r=await fetch('/api/ai',{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:apiHeaders(),
     body:JSON.stringify({prompt,max_tokens:maxTokens,stream:true,...extra})
   });
+  noteUsage(r);
   if(!r.ok){
     const data=await r.json().catch(()=>({}));
     throw new Error(data?.error||`Request failed (${r.status})`);
@@ -2563,9 +2648,10 @@ async function callAI(prompt,maxTokens=1200,extra={}){
   if(!await aiAllowed())throw new Error('AI is off. Nothing was sent.');
   const r=await fetch('/api/ai',{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:apiHeaders(),
     body:JSON.stringify({prompt,max_tokens:maxTokens,...extra})
   });
+  noteUsage(r);
   const data=await r.json();
   if(!r.ok){
     throw new Error(data?.error||`Request failed (${r.status})`);
@@ -3782,7 +3868,7 @@ async function voProbe(){
 const voStudioOK=()=>VO.cloud===true&&VO.cloudFails<2&&(getConsent()==='yes'||aiSession)&&(VO.voiceName===''||VO.voiceName==='__studio');
 async function voStudioFetch(text){
   try{
-    const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,voice:(IV_TYPES[IV.type]||IV_TYPES.recruiter).tts})});
+    const r=await fetch('/api/tts',{method:'POST',headers:apiHeaders(),body:JSON.stringify({text,voice:(IV_TYPES[IV.type]||IV_TYPES.recruiter).tts})});
     if(r.status===501){VO.cloud=false;return null;}
     if(!r.ok)throw new Error('tts '+r.status);
     const b=await r.blob();VO.cloudFails=0;return b;
@@ -4108,6 +4194,7 @@ function meetRender(){
 function ivStart(){
   const r=ivReady();
   if(!r.ok){toast(r.cvOk?'Paste the job description first':'Add your name and one role first','err',3500);return;}
+  if(AIUSE.left!==null&&AIUSE.left<20){toast(`Only ${AIUSE.left} AI uses left today. A full interview needs about 20`,'err',4500);}
   if(v('iv-mode')==='voice'&&voiceSupported()){meetOpenLobby();return;}   // join the call first; the interview starts when you do
   ivBegin();
 }

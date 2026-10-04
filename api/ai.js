@@ -7,6 +7,8 @@
 const CUSTOM_HOSTS = (process.env.ALLOWED_HOSTS || 'cv.adefilasamuel.com')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 
+import { checkDaily, clientIdFrom } from './_limits.js';
+
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   try {
@@ -31,13 +33,21 @@ function isRateLimited(ip) {
   return arr.length > MAX_PER_WINDOW;
 }
 
+// Daily limits (see _limits.js). A full interview is roughly 15 to 40 requests.
+// Tune in Vercel: DAILY_LIMIT_PER_USER, DAILY_LIMIT_PER_IP (shared networks), DAILY_LIMIT_TOTAL.
+const LIMITS = {
+  perUser: parseInt(process.env.DAILY_LIMIT_PER_USER) || 120,
+  perIp: parseInt(process.env.DAILY_LIMIT_PER_IP) || 300,
+  total: parseInt(process.env.DAILY_LIMIT_TOTAL) || 4000
+};
+
 export default async function handler(req, res) {
   const origin = req.headers.origin;
   const allowed = isAllowedOrigin(origin);
 
   res.setHeader('Access-Control-Allow-Origin', allowed ? origin : 'null');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Client-Id');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -45,6 +55,19 @@ export default async function handler(req, res) {
 
   const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
   if (isRateLimited(ip)) return res.status(429).json({ error: 'Too many requests. Please wait a moment and try again.' });
+
+  const day = await checkDaily({ prefix: 'ai', ip, cid: clientIdFrom(req), limits: LIMITS });
+  res.setHeader('X-Daily-Limit', String(day.limit));
+  res.setHeader('X-Daily-Remaining', String(day.remaining));
+  res.setHeader('Access-Control-Expose-Headers', 'X-Daily-Limit, X-Daily-Remaining');
+  if (!day.ok) {
+    const msg = day.reason === 'user'
+      ? `You have used your ${day.limit} AI uses for today. They reset tomorrow. Everything else still works.`
+      : day.reason === 'ip'
+        ? 'Too many AI requests from this network today. Please try again tomorrow.'
+        : 'The AI is very busy today. Please try again tomorrow.';
+    return res.status(429).json({ error: msg });
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY. Add it in Vercel Project Settings → Environment Variables.' });

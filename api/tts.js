@@ -9,6 +9,8 @@
 const CUSTOM_HOSTS = (process.env.ALLOWED_HOSTS || 'cv.adefilasamuel.com')
   .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 
+import { checkDaily, clientIdFrom } from './_limits.js';
+
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   try {
@@ -33,6 +35,14 @@ function isRateLimited(ip) {
   return arr.length > MAX_PER_WINDOW;
 }
 
+// Daily limits (see _limits.js). One request is one chunk of speech; a call uses 1 to 3 per question.
+// Tune in Vercel: TTS_DAILY_PER_USER, TTS_DAILY_PER_IP, TTS_DAILY_TOTAL.
+const LIMITS = {
+  perUser: parseInt(process.env.TTS_DAILY_PER_USER) || 150,
+  perIp: parseInt(process.env.TTS_DAILY_PER_IP) || 400,
+  total: parseInt(process.env.TTS_DAILY_TOTAL) || 5000
+};
+
 const VOICES = ['coral', 'nova', 'sage', 'shimmer', 'alloy', 'ash', 'onyx', 'echo', 'fable', 'verse', 'ballad'];
 const STYLE = 'Speak like a real person on a work video call: relaxed, warm and conversational, with natural pauses and small changes in pace and tone. Never sound like a presenter, a narrator or a robot. Keep it brisk and friendly.';
 
@@ -42,7 +52,7 @@ export default async function handler(req, res) {
 
   res.setHeader('Access-Control-Allow-Origin', allowed ? origin : 'null');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Client-Id');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -59,6 +69,10 @@ export default async function handler(req, res) {
   const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
   if (isRateLimited(ip)) return res.status(429).json({ error: 'Too many requests. Please wait a moment.' });
 
+  if (apiKey) {
+    const day = await checkDaily({ prefix: 'tts', ip, cid: clientIdFrom(req), limits: LIMITS });
+    if (!day.ok) return res.status(429).json({ error: 'Daily voice limit reached.' });
+  }
   if (!apiKey) return res.status(501).json({ error: 'Studio voice is not set up.' });
 
   const { text, voice } = req.body || {};
