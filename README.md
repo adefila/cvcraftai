@@ -33,7 +33,7 @@ Without the key, AI features show a clear error. Everything else — templates, 
 - Autosave to the browser, plus backup/restore as a JSON file
 - **CV versions** — save named copies (e.g. "Google — Product Manager") and switch between them in one click
 - Live page-length indicator (1 page / ≈1.4 pages / long)
-- Works on phone, tablet and desktop (the editor stacks above the preview below 1024px)
+- Works on phone, tablet and desktop (the editor stacks above the preview below 1024px). The desktop layout is capped at 1180px wide and centred; see [DESIGN.md](DESIGN.md) for the design system
 
 **Scoring and tailoring**
 - Live ATS score and recruiter score, with an interview-likelihood read-out

@@ -20,9 +20,16 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#15151A;--bg:#F5F5F3;--surf:#EDEDEA;--card:#FFFFFF;--muted:#74747B;
-  --maxw:1680px;
-  --ac:#4F5BD5;--ok:#1AA371;--err:#E14B4B;--warn:#C8860D;--bdr:#E7E6E2;
+  --ink:#17171C;--bg:#F6F5F2;--surf:#EFEEEA;--card:#FFFFFF;--muted:#6B6B73;
+  --maxw:1180px;
+  --ac:#4F5BD5;--ok:#1AA371;--err:#E14B4B;--warn:#C8860D;--bdr:#E8E6E1;--bdr-strong:#D8D5CE;
+  --ac-soft:rgba(79,91,213,.10);--ac-ring:rgba(79,91,213,.24);
+  /* radius, elevation and motion tokens (see DESIGN.md) */
+  --r-sm:10px;--r-md:14px;--r-lg:20px;
+  --sh-1:0 1px 2px rgba(23,23,28,.05),0 0 0 1px rgba(23,23,28,.03);
+  --sh-2:0 6px 18px rgba(23,23,28,.08);
+  --sh-3:0 20px 50px rgba(23,23,28,.18);
+  --ease:cubic-bezier(.22,1,.36,1);--t1:.12s;--t2:.2s;--t3:.36s;
   --ff-d:'Plus Jakarta Sans',sans-serif;--ff-b:'Inter',sans-serif;--ff-m:'IBM Plex Mono',monospace;
 }
 html,body{height:100%;overflow:hidden}
@@ -223,7 +230,7 @@ input[type=number].no-spin{-moz-appearance:textfield}
 .fi:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(79,91,213,.10)}
 button:focus-visible,.tpl-card:focus-visible,.clr-dot:focus-visible,.export-opt:focus-visible,
 a:focus-visible,[tabindex]:focus-visible{
-  outline:2.5px solid var(--ac);outline-offset:2px;border-radius:6px;
+  outline:2px solid var(--ac);outline-offset:2px;   /* the outline follows each element's own rounded shape */
 }
 .fi::placeholder{color:#B4B2AC;font-size:15px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -644,9 +651,8 @@ body.meet-open{overflow:hidden}
 /* Beta pill + feedback */
 .logo-wrap{display:flex;align-items:center;gap:8px;min-width:0}
 .beta-pill{font-family:var(--ff-b);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1.5px solid var(--bdr);background:var(--surf);color:var(--muted);cursor:pointer;line-height:1.2}
-.beta-pill{transform:translateY(4px)}   /* the logo is lowercase, so its visual middle sits below the line box middle */
+.beta-pill{transform:translateY(3px)}   /* the logo is lowercase, so its visual middle sits below the line box middle */
 .beta-pill:hover{border-color:var(--ac);color:var(--ac)}
-@media (max-width:640px){.beta-pill{transform:translateY(3px)}}   /* logo is 26px here */
 .fb-types{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .fb-type{font-family:var(--ff-b);font-size:13px;padding:7px 13px;border-radius:999px;border:1.5px solid var(--bdr);background:#fff;color:var(--ink);cursor:pointer}
 .fb-type.on{border-color:var(--ac);background:var(--ac);color:#fff}
@@ -1237,6 +1243,109 @@ body.meet-open{overflow:hidden}
 .ats-subpanel{display:flex;flex-direction:column;overflow-y:auto;height:calc(100% - 47px)}
 /* Sticky Run AI Check */
 .ai-check-sticky{position:sticky;bottom:0;padding:12px 22px 16px;background:#F5F5F3;border-top:1px solid #E9E7E2;z-index:10}
+
+/* ═══════════════ INTERFACE OVERHAUL ═══════════════
+   Calm, compact, premium. Warm neutrals, one accent, soft elevated panels, short purposeful
+   motion. Tokens are in :root (see DESIGN.md). This block is last on purpose: it refines the
+   components above by source order, so remove it to get the old look back.
+   Layout changes are desktop-only (>=1024px); phone and tablet keep the stacked layout. */
+body{background:var(--bg);font-size:15px;line-height:1.55}
+::selection{background:var(--ac-soft)}
+
+/* Header: frosted, shorter, quieter */
+.logo{font-size:26px;letter-spacing:-.8px}
+.bar{background:rgba(255,255,255,.82);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);border-bottom:1px solid rgba(23,23,28,.07)}
+.score-badge{height:34px;background:#fff;border-color:var(--bdr-strong)}
+.score-badge:hover{background:#fff;border-color:var(--ink);box-shadow:var(--sh-1)}
+.bar-menu-btn{width:34px;height:34px;border-color:var(--bdr-strong)}
+.bar-menu-dropdown{border:1px solid var(--bdr);border-radius:var(--r-md);box-shadow:var(--sh-3)}
+.bar-menu-item{border-radius:var(--r-sm);transition:background var(--t1)}
+
+/* Tabs: a segmented control, the active tab lifts like a card */
+.tabs{background:var(--surf);padding:3px;gap:2px}
+.tab{font-size:13.5px;padding:7px 14px;transition:color var(--t1),background var(--t2) var(--ease),box-shadow var(--t2) var(--ease)}
+.tab:hover{background:rgba(255,255,255,.65);color:var(--ink)}
+.tab.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:var(--sh-1)}
+.tab-step{background:transparent}
+
+/* Buttons: one set of states. rest, hover (lift), pressed (settle), focus (ring), disabled */
+.btn-pill{font-size:14px;padding:10px 20px;transition:transform var(--t2) var(--ease),background var(--t1),box-shadow var(--t2) var(--ease)}
+.btn-pill:hover:not(:disabled){transform:translateY(-1px);box-shadow:var(--sh-2)}
+.btn-pill:active{transform:translateY(0) scale(.98)!important;box-shadow:none}
+.btn-pill-outline{font-size:14px;padding:9.5px 18px;border-color:var(--bdr-strong);transition:border-color var(--t1),background var(--t1),transform var(--t1) var(--ease)}
+.btn-pill-outline:hover{border-color:var(--ink);background:#fff}
+.btn-pill-outline:active{transform:scale(.98)}
+.btn-pill-sm{font-size:13px;padding:7px 14px;transition:transform var(--t1) var(--ease),background var(--t1),box-shadow var(--t2) var(--ease)}
+.btn-pill-sm:hover:not(:disabled){box-shadow:var(--sh-1)}
+.btn-add{border-color:var(--bdr-strong);transition:border-color var(--t1),color var(--t1),background var(--t1)}
+.btn-add:hover{background:var(--bg)}
+
+/* Fields */
+.fi{border:1px solid var(--bdr-strong);border-radius:var(--r-sm);padding:10px 13px;background-color:#FDFCFB;transition:border-color var(--t1),box-shadow var(--t2) var(--ease),background-color var(--t1)}
+.fi:hover{border-color:#C6C3BB}
+.fi:focus{background-color:#fff;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-ring);transform:none}
+select.fi{padding-right:36px}
+.fi::placeholder{color:#A09E97}
+.sec{padding:16px 20px;border-bottom:1px solid var(--bdr)}
+.lbl{font-size:11.5px;letter-spacing:.9px;margin-bottom:11px}
+.ei{border-radius:var(--r-md)}
+.sk-tag{border-width:1px;border-color:var(--bdr-strong);background:#fff}
+
+/* The "next step" strip: one soft accent tint instead of a loud block */
+.cv-nudge{background:#EEEFFB;color:#3B46B4;border-bottom:1px solid rgba(79,91,213,.16);padding:9px 20px;transition:background var(--t1)}
+.cv-nudge:hover{background:#E4E6F9;filter:none}
+
+/* Cards and chips */
+.tpl-card{border:1.5px solid var(--bdr);border-radius:var(--r-md);transition:border-color var(--t1),box-shadow var(--t2) var(--ease),transform var(--t2) var(--ease)}
+.tpl-card:hover{border-color:var(--bdr-strong);transform:translateY(-2px);box-shadow:var(--sh-2)}
+.tpl-card.sel{border-color:var(--ac);background:#fff;box-shadow:0 0 0 3px var(--ac-ring)}
+.tpl-cat-chip{border-width:1px;border-color:var(--bdr-strong)}
+.ats-subtabs,.ai-check-sticky{background:#fff}
+.score-dual-card,.tpl-desc-box,.ats-methodology,.ats-disclaimer-box{border-radius:var(--r-md)}
+.paper{border-radius:6px;box-shadow:var(--sh-2)}
+
+/* Overlays: frosted backdrop, soft elevation */
+.modal-bg{background:rgba(18,18,24,.42);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.modal,.confirm-box,.onb-modal{border-radius:var(--r-lg);box-shadow:var(--sh-3);animation:modalIn var(--t3) var(--ease)}
+.modal-title{font-size:19px;font-weight:700;letter-spacing:-.2px}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.toast{border-radius:14px;box-shadow:var(--sh-3);font-size:14px;padding:11px 18px}
+.consent{border:1px solid var(--bdr);border-radius:var(--r-lg);box-shadow:var(--sh-3);animation:riseIn var(--t3) var(--ease)}
+
+/* Calm scrollbars */
+.pnl,.pnl-r,.modal,.ats-subpanel{scrollbar-width:thin;scrollbar-color:#D3D0C8 transparent}
+.pnl::-webkit-scrollbar,.pnl-r::-webkit-scrollbar,.modal::-webkit-scrollbar,.ats-subpanel::-webkit-scrollbar{width:8px}
+.pnl::-webkit-scrollbar-thumb,.pnl-r::-webkit-scrollbar-thumb,.modal::-webkit-scrollbar-thumb,.ats-subpanel::-webkit-scrollbar-thumb{background:#D3D0C8;border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+
+/* Desktop layout: smaller maximum width, the editor is a floating panel beside the preview */
+@media (min-width:1024px){
+  .bar{height:60px}
+  .bar-inner{padding:0 20px;gap:16px}
+  .ws-outer{padding-top:60px;background:var(--bg)}
+  .ws{grid-template-columns:clamp(380px,36%,440px) 1fr;gap:16px;height:calc(100vh - 60px);padding:14px 16px 16px}
+  .pnl{background:#fff;border:1px solid var(--bdr);border-radius:var(--r-lg);box-shadow:var(--sh-1)}
+  .pnl-r{background:transparent;padding:4px 4px 20px}
+  .fi{font-size:14.5px}
+  .fi::placeholder{font-size:14px}
+}
+
+/* Motion: one easing, three durations. Sections rise in when a tab opens (staggered),
+   template cards follow. State changes (hover, press, focus) are 120 to 200ms. */
+@keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){
+  .pnl.active>.sec,.pnl.active>.ai-sec,.pnl.active>.ai-build,.pnl.active>.cv-progress-wrap{animation:riseIn var(--t3) var(--ease) backwards}
+  .pnl.active>:nth-child(2){animation-delay:30ms}.pnl.active>:nth-child(3){animation-delay:60ms}
+  .pnl.active>:nth-child(4){animation-delay:90ms}.pnl.active>:nth-child(5){animation-delay:120ms}
+  .pnl.active>:nth-child(6){animation-delay:150ms}.pnl.active>:nth-child(7){animation-delay:180ms}
+  .pnl.active>:nth-child(n+8){animation-delay:200ms}
+  .pnl.active .tpl-card{animation:riseIn var(--t3) var(--ease) backwards}
+  .tpl-grid>.tpl-card:nth-child(2){animation-delay:30ms}.tpl-grid>.tpl-card:nth-child(3){animation-delay:60ms}
+  .tpl-grid>.tpl-card:nth-child(4){animation-delay:90ms}.tpl-grid>.tpl-card:nth-child(5){animation-delay:120ms}
+  .tpl-grid>.tpl-card:nth-child(6){animation-delay:150ms}.tpl-grid>.tpl-card:nth-child(n+7){animation-delay:180ms}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 <body>
@@ -6494,7 +6603,7 @@ function updateProgress(){
     }
     if(msg){
       nudge.style.display='flex';
-      nudge.style.background=bg;
+      nudge.style.background='';          // colour comes from the stylesheet (one calm tint)
       nudgeText.textContent=msg;
       window._nudgeTab=tab;
     }else{
