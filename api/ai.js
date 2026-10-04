@@ -43,11 +43,43 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Server is missing ANTHROPIC_API_KEY. Add it in Vercel Project Settings → Environment Variables.' });
 
-  const { prompt, max_tokens, stream: wantStream } = req.body || {};
-  if (!prompt || typeof prompt !== 'string') return res.status(400).json({ error: 'Missing "prompt" string.' });
-  if (prompt.length > 8000) return res.status(400).json({ error: 'Prompt is too long.' });
+  const { prompt, system, messages, max_tokens, stream: wantStream } = req.body || {};
+
+  // Two input shapes: a single "prompt" string (most features), or a multi-turn
+  // "messages" array (the mock interview). Both are length-capped; the caller
+  // can't pick the model, so this stays a bounded proxy.
+  let msgs;
+  if (Array.isArray(messages)) {
+    if (messages.length < 1 || messages.length > 40) return res.status(400).json({ error: 'Invalid "messages" length.' });
+    let total = 0;
+    for (const m of messages) {
+      if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.content !== 'string' || !m.content.trim() || m.content.length > 12000) {
+        return res.status(400).json({ error: 'Invalid message in "messages".' });
+      }
+      total += m.content.length;
+    }
+    if (total > 30000) return res.status(400).json({ error: 'Conversation is too long.' });
+    if (messages[0].role !== 'user' || messages[messages.length - 1].role !== 'user') {
+      return res.status(400).json({ error: '"messages" must start and end with a user message.' });
+    }
+    msgs = messages.map(({ role, content }) => ({ role, content }));
+  } else {
+    if (!prompt || typeof prompt !== 'string') return res.status(400).json({ error: 'Missing "prompt" string.' });
+    if (prompt.length > 8000) return res.status(400).json({ error: 'Prompt is too long.' });
+    msgs = [{ role: 'user', content: prompt }];
+  }
+  if (system !== undefined && (typeof system !== 'string' || system.length > 9000)) {
+    return res.status(400).json({ error: 'Invalid "system" prompt.' });
+  }
 
   const safeTokens = Math.min(Math.max(parseInt(max_tokens) || 1200, 1), 1500);
+  const upstreamBody = (extra = {}) => JSON.stringify({
+    model: 'claude-sonnet-4-6',
+    max_tokens: safeTokens,
+    ...(system ? { system } : {}),
+    messages: msgs,
+    ...extra
+  });
 
   try {
     if (wantStream) {
@@ -61,12 +93,7 @@ export default async function handler(req, res) {
           'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
         },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: safeTokens,
-          stream: true,
-          messages: [{ role: 'user', content: prompt }]
-        })
+        body: upstreamBody({ stream: true })
       });
 
       if (!upstream.ok) {
@@ -110,11 +137,7 @@ export default async function handler(req, res) {
           'x-api-key': apiKey,
           'anthropic-version': '2023-06-01'
         },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: safeTokens,
-          messages: [{ role: 'user', content: prompt }]
-        })
+        body: upstreamBody()
       });
 
       const data = await upstream.json();

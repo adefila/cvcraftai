@@ -18,7 +18,8 @@ Without the key, AI features show a clear error. Everything else — templates, 
 
 **Proxy limits** (`api/ai.js`)
 - Only accepts requests from `localhost`, `127.0.0.1`, or an `https://*.vercel.app` host containing `cvcraftai`. **A custom domain will get `403 Forbidden` until you add it to `isAllowedOrigin`.**
-- 20 requests per minute per IP (in-memory, best effort), prompts up to 8,000 characters, responses capped at 1,500 tokens.
+- 20 requests per minute per IP (in-memory, best effort) and responses capped at 1,500 tokens.
+- Two request shapes: `{ prompt }` (up to 8,000 characters) or `{ system, messages }` for multi-turn use (`system` up to 9,000 characters; up to 40 messages of at most 12,000 characters each and 30,000 in total, roles `user`/`assistant`, starting and ending with `user`). Add `stream: true` for server-sent events. The model is fixed server-side.
 
 ## Features
 
@@ -37,6 +38,7 @@ Without the key, AI features show a clear error. Everything else — templates, 
 - JD Match: keyword coverage, missing keywords you can add in one click
 - AI: Polish Check, JD gap analysis, "Write with AI" for summaries and bullets, recruiter simulation
 - **Cover letter** — drafted from your CV and the pasted job description, using only facts already in your CV
+- **Mock interview** — an AI interviewer that has read your CV and the job description. Pick the interviewer (recruiter screen, hiring manager, technical lead, tough panel) and length (5 or 8 questions). It asks one question at a time, mixes opening, project, gap-in-your-CV, behavioural and situational questions, follows up once when an answer is thin, and ends with a scorecard: score out of 100, strengths, what to work on, and a stronger version of each answer built only from facts in your CV
 
 **Export**
 - PDF download (image-based, keeps the template design)
