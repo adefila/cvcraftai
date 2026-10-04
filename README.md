@@ -49,7 +49,7 @@ Without the key, AI features show a clear error. Everything else — templates, 
   - **Spoken answers are cleaned up** before they go in: misheard words, punctuation and "um/uh" are fixed, with no new facts added.
   - **Studio voice (optional)** — set `OPENAI_API_KEY` in Vercel to give interviewers a natural voice through `api/tts.js` (model `gpt-4o-mini-tts`). Only the interviewer's words are sent. Without the key the app keeps using browser voices.
 - **Build my CV with AI** — for people who can't write a CV: they describe themselves in plain words (typed or spoken) and AI drafts the whole CV. It only uses what they say, saves the old CV as a version first, and lists what to double-check. Found on the Build tab and the "..." menu.
-- **Early-version notice and feedback** — a "Beta" pill by the logo explains the limits in plain words; "Send feedback" (in the "..." menu) opens the visitor's email app with their message filled in. Set the address in `FEEDBACK_EMAIL` in `index.html`.
+- **Early-version notice and feedback** — a "Beta" pill by the logo explains the limits in plain words. "Send feedback" (in the "..." menu) posts the message (type, text, optional reply email) to `api/feedback.js`, which emails it to you through [Resend](https://resend.com). It never opens the visitor's email app and sends nothing from the CV. Setup: create a Resend account, add `RESEND_API_KEY` in Vercel, and optionally `FEEDBACK_TO` (default `samuel@adefilasamuel.com`; until you verify a domain in Resend this must be the email you signed up with) and `FEEDBACK_FROM`. Without the key the form says feedback isn't switched on yet. Limit: 5 messages a day per person.
 - **Your data** note in the "..." menu explains in plain words what stays in the browser and what is sent to AI services
 - **Privacy choice** — a first-visit banner (Accept / No thanks). CVCraft sets no cookies. Accept allows AI requests and loads Vercel Analytics. No thanks keeps analytics off and asks before the first AI request of each visit. With Accept, anonymous feature counts are also sent as Vercel Analytics custom events (`ai_cv_built`, `interview_started`, `interview_hint`, `interview_scored`, `cv_exported`, `cover_letter`), carrying only the event name and a short label like `pdf` or `voice`. Custom events need a Vercel plan that supports them. The choice is stored under `cvcraftai-consent-v1` and can be changed from "Your data".
 
@@ -77,6 +77,8 @@ cvcraftai/
 ├── index.html     # the whole frontend: HTML, CSS and JS
 ├── api/ai.js      # serverless proxy to Anthropic (streaming + non-streaming)
 ├── api/tts.js     # optional natural interviewer voice (needs OPENAI_API_KEY)
+├── api/feedback.js# emails visitor feedback to you (needs RESEND_API_KEY)
+├── api/_limits.js # shared: allowed origins + daily per-user limits (not a route)
 ├── vercel.json    # SPA rewrite; /api/* and /_vercel/* are excluded from it
 └── README.md
 ```

@@ -21,6 +21,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --ink:#15151A;--bg:#F5F5F3;--surf:#EDEDEA;--card:#FFFFFF;--muted:#74747B;
+  --maxw:1680px;
   --ac:#4F5BD5;--ok:#1AA371;--err:#E14B4B;--warn:#C8860D;--bdr:#E7E6E2;
   --ff-d:'Plus Jakarta Sans',sans-serif;--ff-b:'Inter',sans-serif;--ff-m:'IBM Plex Mono',monospace;
 }
@@ -29,7 +30,7 @@ body{font-family:var(--ff-b);font-size:16px;line-height:1.6;background:var(--sur
 
 /* ── TOPBAR ── */
 .bar{position:fixed;top:0;left:0;right:0;height:68px;background:#FFFFFF;border-bottom:1px solid #ECEAE5;z-index:200;display:flex;justify-content:center}
-.bar-inner{width:100%;max-width:1300px;display:flex;align-items:center;padding:0 22px;gap:18px}
+.bar-inner{width:100%;max-width:var(--maxw);display:flex;align-items:center;padding:0 22px;gap:18px}
 .logo{font-family:var(--ff-d);font-weight:800;font-size:32px;letter-spacing:-1px;white-space:nowrap;color:var(--ink);line-height:1}
 .logo span{color:var(--ac)}
 
@@ -152,8 +153,8 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .btn-pill-sm:disabled{opacity:.4;cursor:not-allowed}
 
 /* ── LAYOUT ── */
-.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:68px;background:#fff}
-.ws{display:grid;grid-template-columns:420px 1fr;height:calc(100vh - 68px);width:100%;max-width:1300px}
+.ws-outer{display:flex;justify-content:center;height:100vh;padding-top:68px;background:#F5F4F1}
+.ws{display:grid;grid-template-columns:minmax(420px,34%) 1fr;height:calc(100vh - 68px);width:100%;max-width:var(--maxw)}
 .pnl{background:#F5F5F3;border-right:1px solid #E4E2DC;overflow-y:auto;height:100%;display:none;flex-direction:column;animation:pnlIn .22s cubic-bezier(.4,0,.2,1)}
 .pnl.active{display:flex;animation:fadeIn .2s ease}
 .pnl-r{background:#F5F4F1;overflow-y:auto;height:100%;display:flex;flex-direction:column;align-items:center;padding:28px 20px}
@@ -632,7 +633,9 @@ body.meet-open{overflow:hidden}
 /* Beta pill + feedback */
 .logo-wrap{display:flex;align-items:center;gap:8px;min-width:0}
 .beta-pill{font-family:var(--ff-b);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1.5px solid var(--bdr);background:var(--surf);color:var(--muted);cursor:pointer;line-height:1.2}
+.beta-pill{transform:translateY(4px)}   /* the logo is lowercase, so its visual middle sits below the line box middle */
 .beta-pill:hover{border-color:var(--ac);color:var(--ac)}
+@media (max-width:640px){.beta-pill{transform:translateY(3px)}}   /* logo is 26px here */
 .fb-types{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .fb-type{font-family:var(--ff-b);font-size:13px;padding:7px 13px;border-radius:999px;border:1.5px solid var(--bdr);background:#fff;color:var(--ink);cursor:pointer}
 .fb-type.on{border-color:var(--ac);background:var(--ac);color:#fff}
@@ -2067,6 +2070,7 @@ function openPrivacy(){
       <li><strong>Voice calls use speech tools.</strong> Your browser's speech service may process your audio. If the optional Studio voice is on, only the interviewer's words go to a speech service, never your voice. Your camera never leaves your device.</li>
       <li><strong>Visit and button counts.</strong> Vercel Analytics counts page views and which features get used (for example "exported a PDF"). It never sees your CV, answers or name.</li>
       <li><strong>AI can be wrong.</strong> Check anything it writes before you send it.</li>
+      <li><strong>Feedback you send is emailed to us.</strong> We only get what you type in the form, plus your email if you add one.</li>
     </ul>
     <p class="ver-help" style="margin:12px 0 0">Want it gone? "Start over" in this menu clears everything on this device.</p>
     <p class="ver-help" style="margin:8px 0 0">${AIUSE.left!==null?`AI uses left today: <strong>${AIUSE.left} of ${AIUSE.limit}</strong>. It resets every day. A full interview uses about 20.<br>`:'Each person gets a daily number of AI uses. It resets every day.<br>'}Your choice: <strong>${getConsent()==='yes'?'AI and visit counts allowed':getConsent()==='no'?'Ask me before each AI use, no visit counts':'not set yet'}</strong>.</p>
@@ -2076,9 +2080,7 @@ function openPrivacy(){
 }
 
 // ── EARLY VERSION NOTICE + FEEDBACK ──
-// Change this address to where you want feedback to arrive. Nothing is sent by CVCraft itself:
-// the form just opens the visitor's own email app with their message filled in.
-const FEEDBACK_EMAIL='samuel@adefilasamuel.com';
+// The feedback form posts to /api/feedback, which emails the owner (see api/feedback.js).
 function openBeta(){
   const m=mkModal(`
     <div class="modal-title">You're using an early version</div>
@@ -2101,18 +2103,32 @@ function openFeedback(){
     <p class="ver-help" style="margin:0 0 10px">What is it about?</p>
     <div class="fb-types" id="fb-types">${TYPES.map((t,i)=>`<button class="fb-type${i===0?' on':''}" type="button" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
     <textarea class="fi" id="fb-text" rows="5" maxlength="1500" placeholder="Tell us what happened or what you would change. Please don't paste private details from your CV."></textarea>
-    <p class="ver-help" style="margin:10px 0 0">This opens your email app with the message ready. CVCraft doesn't send or keep it. Or email ${esc(FEEDBACK_EMAIL)}.</p>
-    <div class="modal-btns"><button class="btn-pill-outline" id="fb-cancel" type="button">Cancel</button><button class="btn-pill" id="fb-send" type="button" style="flex:1;justify-content:center">Open email</button></div>`);
+    <input class="fi" id="fb-email" type="email" maxlength="120" placeholder="Your email (only if you want a reply)" autocomplete="email" style="margin-top:10px">
+    <p class="ver-help" style="margin:10px 0 0" id="fb-note">We email your message to the team. We only get what you type here, nothing from your CV.</p>
+    <div class="modal-btns"><button class="btn-pill-outline" id="fb-cancel" type="button">Cancel</button><button class="btn-pill" id="fb-send" type="button" style="flex:1;justify-content:center">Send</button></div>`);
   let type=TYPES[0];
   m.querySelectorAll('.fb-type').forEach(b=>b.onclick=()=>{
     type=b.dataset.t;m.querySelectorAll('.fb-type').forEach(x=>x.classList.toggle('on',x===b));
   });
   gi('fb-cancel').onclick=()=>m.remove();
-  gi('fb-send').onclick=()=>{
-    const text=gi('fb-text').value.trim();
+  gi('fb-send').onclick=async()=>{
+    const text=gi('fb-text').value.trim(),email=gi('fb-email').value.trim();
     if(text.length<5){toast('Write a few words first','err',2500);return;}
-    location.href=`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('CVCraft feedback: '+type)}&body=${encodeURIComponent(text+'\n\n(From cv.adefilasamuel.com)')}`;
-    m.remove();toast('Opening your email app…','ok',2500);
+    if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){toast('That email does not look right','err',2800);return;}
+    const btn=gi('fb-send'),note=gi('fb-note');
+    btn.disabled=true;btn.textContent='Sending…';
+    try{
+      const r=await fetch('/api/feedback',{method:'POST',headers:apiHeaders(),body:JSON.stringify({type,message:text,email})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(r.status===501?'Feedback is not switched on yet. Please try again later.':(d&&d.error)||'Could not send. Please try again.');
+      track('feedback_sent',type);
+      m.remove();toast('Thank you. Your message was sent','ok',3500);
+    }catch(err){
+      if(!document.body.contains(m))return;
+      btn.disabled=false;btn.textContent='Try again';
+      note.textContent=(err&&err.message)||'Could not send. Please try again.';
+      note.style.color='var(--err)';
+    }
   };
   setTimeout(()=>gi('fb-text')?.focus(),60);
 }

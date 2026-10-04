@@ -8,6 +8,23 @@
 // reset when Vercel recycles the function and are not shared between instances.
 // The file name starts with an underscore so Vercel does not expose it as a route.
 
+// Custom domains that may call the APIs. Override in Vercel with ALLOWED_HOSTS
+// (comma-separated hostnames, e.g. "cv.example.com,www.example.com").
+const CUSTOM_HOSTS = (process.env.ALLOWED_HOSTS || 'cv.adefilasamuel.com')
+  .split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+export function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  try {
+    const { hostname, protocol } = new URL(origin);
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return true;
+    if (protocol === 'https:' && CUSTOM_HOSTS.includes(hostname.toLowerCase())) return true;
+    return protocol === 'https:' && hostname.endsWith('.vercel.app') && hostname.includes('cvcraftai');
+  } catch {
+    return false;
+  }
+}
+
 const mem = { day: '', counts: new Map() };
 
 function today() {
