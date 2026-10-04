@@ -3642,7 +3642,9 @@ const voCtor=()=>window.SpeechRecognition||window.webkitSpeechRecognition;
 const voiceSupported=()=>!!voCtor()&&'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
 // state: idle | thinking | speaking | listening | muted
 const VO={rec:null,state:'idle',muted:false,base:'',final:'',silenceTimer:null,silenceMs:5000,failures:0,speakToken:0,finishPrev:null,voiceName:'',spoken:false,cloud:null,cloudFails:0,audio:null,audioEnd:null};
-try{VO.voiceName=localStorage.getItem('cvcraftai-voice')||'';}catch(e){}
+// The chosen voice is remembered per gender (a woman's voice must not be reused for a man).
+const voPrefKey=g=>'cvcraftai-voice-'+(g==='m'?'m':'f');
+function voLoadPref(g){try{VO.voiceName=localStorage.getItem(voPrefKey(g))||'';}catch(e){VO.voiceName='';}}
 
 // Cuts off whatever is being spoken and settles its promise as "interrupted", without
 // relying on the browser to fire an event for a cancelled utterance (they differ).
@@ -3675,8 +3677,21 @@ function voConfigureSetup(){
 // Picking the least robotic voice available. Browsers ship very different voices:
 // "Natural" / "Neural" / "Online" voices (Edge, Windows, macOS premium) sound far more
 // human than the older built-in ones, so those win; known dated or novelty voices lose.
-const VO_FEMALE=/aria|jenny|sonia|libby|michelle|emma|samantha|ava|allison|susan|karen|moira|serena|zira|female|natasha|clara|hazel|joanna|salli|jane|sara/i;
-const VO_MALE=/guy|ryan|davis|brian|christopher|daniel|alex|oliver|fred|male|david|mark|james|thomas|eric|roger|william|george/i;
+// Works out whether a voice is female or male from its name. Names are matched as whole
+// words (after turning punctuation into spaces) so "American" never counts as "Eric" and
+// "female" never counts as "male". Unknown names return '?' and are treated as neutral.
+const VO_F_NAMES='aria|jenny|sonia|libby|maisie|michelle|emma|samantha|ava|allison|susan|karen|moira|serena|zira|natasha|clara|hazel|joanna|salli|jane|sara|sarah|ana|elizabeth|eva|heera|katja|denise|nanami|kimberly|kendra|ivy|nicole|amy|tessa|veena|fiona|victoria|kate|lisa|linda|jessa|ashley|monica|paulina|helena|laura|catherine|tracy|yuna|xiaoxiao|mia|ruth|joanne|shelley|sandy|flo|grandma|zoe|nora|lucia|isabella|julia|siri female|google uk english female|google us english female';
+const VO_M_NAMES='guy|ryan|davis|brian|christopher|daniel|alex|oliver|fred|david|mark|james|thomas|eric|roger|william|george|andrew|brandon|steffan|tony|jason|aaron|arthur|gordon|rishi|ravi|liam|prabhat|mitchell|jacob|jorge|diego|reed|rocko|eddy|evan|henry|kenneth|lee|nathan|junior|ralph|bruce|bahh|neil|sam|matthew|ethan|michael|peter|richard|paul|john|bob|grandpa|luca|marco';
+const VO_F_RE=new RegExp(' ('+VO_F_NAMES+')(neural)? ');
+const VO_M_RE=new RegExp(' ('+VO_M_NAMES+')(neural)? ');
+function voGender(vc){
+  const n=' '+String(vc.name||'').toLowerCase().replace(/[^a-z]+/g,' ')+' ';
+  if(/ (female|woman|girl) /.test(n))return 'f';
+  if(/ (male|man|boy) /.test(n))return 'm';
+  if(VO_F_RE.test(n))return 'f';
+  if(VO_M_RE.test(n))return 'm';
+  return '?';
+}
 const VO_ROBOTIC=/espeak|compact|novelty|whisper|trinoids|cellos|jester|organ|bells|bubbles|boing|bahh|albert|deranged|hysterical|good news|bad news|superstar|junior|ralph|kathy|zarvox/i;
 function voVoices(){
   const vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[];
@@ -3692,8 +3707,9 @@ function voScore(vc,gender){
   if(!vc.localService)s+=8;
   if(VO_ROBOTIC.test(n))s-=60;
   if(/microsoft (david|zira|mark|hazel)\b/.test(n)&&!/online|natural/.test(n))s-=25;   // older built-in voices sound dated
-  if(gender==='f'&&VO_FEMALE.test(n))s+=15;
-  if(gender==='m'&&VO_MALE.test(n))s+=15;
+  // the voice must match the interviewer's name: a mismatch sinks below every other voice
+  const g=voGender(vc);
+  if(g===gender)s+=30;else if(g!=='?')s-=150;
   if(vc.lang.toLowerCase()===(navigator.language||'en-US').toLowerCase())s+=6;
   return s;
 }
@@ -3701,11 +3717,19 @@ function voRanked(type){
   const g=(IV_TYPES[type]||IV_TYPES.recruiter).gender;
   return voVoices().map(x=>[voScore(x,g),x]).sort((a,b)=>b[0]-a[0]).map(p=>p[1]);
 }
+// Default voice for an interviewer. The two interviewers of the same gender get different
+// voices when the device has a second matching one, so they don't sound like the same person.
+function voDefaultVoice(type,ranked){
+  const g=(IV_TYPES[type]||IV_TYPES.recruiter).gender;
+  const alt=(type==='technical'||type==='panel')?ranked[1]:null;
+  if(alt&&voGender(alt)===g)return alt;
+  return ranked[0];
+}
 function voChooseVoice(){
   const ranked=voRanked(IV.type);
   if(!ranked.length)return null;
   if(VO.voiceName){const picked=ranked.find(x=>x.name===VO.voiceName);if(picked)return picked;}
-  return ranked[0];
+  return voDefaultVoice(IV.type,ranked);
 }
 // Talks in short sentences with small changes in pace and pitch and a beat between them,
 // instead of one flat run. Resolves true when it finished (or speech isn't possible),
@@ -3913,14 +3937,28 @@ async function camSet(on){
 }
 function lobbyFillVoices(){
   const sel=gi('lobby-voice');if(!sel)return;
-  const ranked=voRanked(v('iv-type'));
-  const label=x=>x.name.replace(/^Microsoft\s+/,'').replace(/\s+-\s+.*$/,'');
+  const type=v('iv-type')||'recruiter';
+  const persona=IV_TYPES[type]||IV_TYPES.recruiter;
+  const ranked=voRanked(type);
+  const tag=x=>{const g=voGender(x);return g==='f'?' · female':g==='m'?' · male':'';};
+  const label=x=>x.name.replace(/^Microsoft\s+/,'').replace(/\s+-\s+.*$/,'')+tag(x);
   const studio=VO.cloud===true&&VO.cloudFails<2;
-  sel.innerHTML=(studio?'<option value="__studio">Studio voice (most natural)</option>':'')+'<option value="">Best on this device</option>'+ranked.map(x=>`<option value="${esc(x.name)}">${esc(label(x))}</option>`).join('');
-  if(studio&&(VO.voiceName===''||VO.voiceName==='__studio'))sel.value='__studio';
-  else sel.value=ranked.some(x=>x.name===VO.voiceName)?VO.voiceName:'';
-  VO.voiceName=studio&&sel.value==='__studio'?'':sel.value;
-  gi('lobby-note').textContent=studio&&sel.value==='__studio'
+  sel.innerHTML=(studio?'<option value="__studio">Studio voice (most natural)</option>':'')+'<option value="__device">Best on this device</option>'+ranked.map(x=>`<option value="${esc(x.name)}">${esc(label(x))}</option>`).join('');
+  // '' = nothing chosen yet: studio if the site has it, otherwise the best matching device voice
+  let pick=VO.voiceName||(studio?'__studio':'__device');
+  if(pick==='__studio'&&!studio)pick='__device';
+  if(pick!=='__studio'&&pick!=='__device'&&!ranked.some(x=>x.name===pick))pick=studio?'__studio':'__device';
+  sel.value=pick;
+  VO.voiceName=pick==='__studio'?'':pick;
+  // warn when this device has no voice that matches the interviewer's name
+  const warn=gi('lobby-warn');
+  const used=pick==='__studio'?null:(ranked.find(x=>x.name===pick)||voDefaultVoice(type,ranked));
+  const ug=used?voGender(used):'?';
+  if(used&&ug!=='?'&&ug!==persona.gender){
+    warn.textContent=`This device has no ${persona.gender==='f'?'female':'male'} voice, so ${persona.name.split(' ')[0]} will sound ${ug==='f'?'female':'male'}. Try Edge for more voices, or pick another interviewer.`;
+    warn.hidden=false;
+  }else warn.hidden=true;
+  gi('lobby-note').textContent=pick==='__studio'
     ?'Studio voice sends only the interviewer\'s words to a speech service, never your voice. Your camera stays on this device. CVCraft doesn\'t record anything.'
     :'Your camera stays on this device. Your browser\'s speech service may process your voice. CVCraft doesn\'t record it.';
 }
@@ -3931,7 +3969,8 @@ function lobbyLiveChanged(){
 function lobbyVoiceChanged(){
   const val=gi('lobby-voice').value;
   VO.voiceName=val==='__studio'?'':val;
-  try{localStorage.setItem('cvcraftai-voice',val);}catch(e){}
+  const g=(IV_TYPES[v('iv-type')]||IV_TYPES.recruiter).gender;
+  try{localStorage.setItem(voPrefKey(g),val);}catch(e){}
   lobbyFillVoices();
 }
 function lobbyTestVoice(){
@@ -3951,6 +3990,8 @@ function meetOpenLobby(){
   gi('lobby-warn').hidden=true;gi('lobby-join').disabled=false;
   try{MEET.live=localStorage.getItem('cvcraftai-live-hints')!=='off';}catch(e){}
   gi('lobby-live').checked=MEET.live;
+  voLoadPref(p.gender);
+  if(VO.voiceName==='__studio')VO.voiceName='';
   lobbyFillVoices();lobbyRender();
   voProbe().then(ok=>{if(ok&&MEET.open&&MEET.stage==='lobby')lobbyFillVoices();});
   setTimeout(()=>{const b=gi('lobby-join');if(b)b.focus();},50);
