@@ -21,7 +21,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --ink:#17171C;--bg:#F6F5F2;--surf:#EFEEEA;--card:#FFFFFF;--muted:#6B6B73;
-  --maxw:1180px;
+  --maxw:1300px;
   --ac:#4F5BD5;--ok:#1AA371;--err:#E14B4B;--warn:#C8860D;--bdr:#E8E6E1;--bdr-strong:#D8D5CE;
   --ac-soft:rgba(79,91,213,.10);--ac-ring:rgba(79,91,213,.24);
   /* radius, elevation and motion tokens (see DESIGN.md) */
@@ -1285,6 +1285,15 @@ body{background:var(--bg);font-size:15px;line-height:1.55}
 .fi:hover{border-color:#C6C3BB}
 .fi:focus{background-color:#fff;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-ring);transform:none}
 select.fi{padding-right:36px}
+/* Personal details are one per row so names, job titles and emails are never cut off */
+.row2.stack{grid-template-columns:1fr}
+/* Phones: dialogs use the full width, and the save-version row wraps instead of squeezing the name field */
+@media (max-width:480px){
+  .modal-bg{padding:12px}
+  .modal{padding:22px 18px}
+  .ver-save-row{flex-wrap:wrap}
+  .ver-save-row .fi{flex:1 1 100%}
+}
 .fi::placeholder{color:#A09E97}
 .sec{padding:16px 20px;border-bottom:1px solid var(--bdr)}
 .lbl{font-size:11.5px;letter-spacing:.9px;margin-bottom:11px}
@@ -1322,12 +1331,23 @@ select.fi{padding-right:36px}
   .bar{height:60px}
   .bar-inner{padding:0 20px;gap:16px}
   .ws-outer{padding-top:60px;background:var(--bg)}
-  .ws{grid-template-columns:clamp(380px,36%,440px) 1fr;gap:16px;height:calc(100vh - 60px);padding:14px 16px 16px}
+  .ws{grid-template-columns:clamp(400px,36%,470px) 1fr;gap:16px;height:calc(100vh - 60px);padding:14px 16px 16px}
   .pnl{background:#fff;border:1px solid var(--bdr);border-radius:var(--r-lg);box-shadow:var(--sh-1)}
   .pnl-r{background:transparent;padding:4px 4px 20px}
   .fi{font-size:14.5px}
   .fi::placeholder{font-size:14px}
 }
+
+/* Laptop widths: the header gets compact so nothing is squeezed or cut off.
+   Export keeps its icon (and tooltip), the score badge drops its word label. */
+@media (min-width:1024px) and (max-width:1199px){
+  .bar-inner{gap:10px}
+  .tab{padding:7px 10px}
+  .exp-lbl,.score-badge-prob-lbl,.score-badge-divider{display:none}
+  #btn-export-pdf{padding:10px 12px}
+  .score-badge-prob{padding:0 4px 0 10px}
+}
+.score-badge{flex-shrink:0}
 
 /* Motion: one easing, three durations. Sections rise in when a tab opens (staggered),
    template cards follow. State changes (hover, press, focus) are 120 to 200ms. */
@@ -1391,9 +1411,9 @@ select.fi{padding-right:36px}
       </span>
     </span>
   </div>
-  <button class="btn-pill" id="btn-export-pdf" onclick="openExport()">
+  <button class="btn-pill" id="btn-export-pdf" onclick="openExport()" aria-label="Export PDF" title="Export PDF">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>
-    Export PDF
+    <span class="exp-lbl">Export PDF</span>
   </button>
   <div class="bar-menu-wrap">
     <button class="bar-menu-btn" id="bar-menu-btn" onclick="toggleBarMenu()" title="Backup, restore, or start over">
@@ -1471,7 +1491,7 @@ select.fi{padding-right:36px}
     <div class="sec">
       <div class="lbl sec-lbl-row"><span>Personal Info</span><span class="sec-done" id="lbl-personal"></span></div>
       <div class="fg">
-        <div class="row2">
+        <div class="row2 stack">
           <input class="fi" id="f-name" placeholder="Full Name" oninput="rCV()">
           <input class="fi" id="f-title" placeholder="Job Title" oninput="rCV()" list="role-suggestions" autocomplete="off">
           <datalist id="role-suggestions">
@@ -1491,7 +1511,7 @@ select.fi{padding-right:36px}
             <option>Finance Manager</option><option>Financial Analyst</option><option>Accountant</option>
           </datalist>
         </div>
-        <div class="row2">
+        <div class="row2 stack">
           <input class="fi" id="f-email" placeholder="Email address" oninput="rCV()">
           <input class="fi" id="f-phone" placeholder="Phone number" oninput="rCV()">
         </div>
@@ -2224,8 +2244,8 @@ function openFeedback(){
     <p class="ver-help" style="margin:0 0 10px">What is it about?</p>
     <div class="fb-types" id="fb-types">${TYPES.map((t,i)=>`<button class="fb-type${i===0?' on':''}" type="button" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
     <textarea class="fi" id="fb-text" rows="5" maxlength="1500" placeholder="Tell us what happened or what you would change. Please don't paste private details from your CV."></textarea>
-    <input class="fi" id="fb-email" type="email" maxlength="120" placeholder="Your email (only if you want a reply)" autocomplete="email" style="margin-top:10px">
-    <p class="ver-help" style="margin:10px 0 0" id="fb-note">We email your message to the team. We only get what you type here, nothing from your CV.</p>
+    <input class="fi" id="fb-email" type="email" maxlength="120" placeholder="Email (optional)" autocomplete="email" style="margin-top:10px">
+    <p class="ver-help" style="margin:10px 0 0" id="fb-note">Add your email only if you want a reply. We email your message to the team and get only what you type here, nothing from your CV.</p>
     <div class="modal-btns"><button class="btn-pill-outline" id="fb-cancel" type="button">Cancel</button><button class="btn-pill" id="fb-send" type="button" style="flex:1;justify-content:center">Send</button></div>`);
   let type=TYPES[0];
   m.querySelectorAll('.fb-type').forEach(b=>b.onclick=()=>{
@@ -2359,7 +2379,7 @@ function openAIBuilder(){
     <div class="fg">
       <input class="fi" id="ab-job" placeholder="Job you want, e.g. Customer Service Assistant" value="${esc(v('f-title'))}" maxlength="80" autocomplete="off">
       <input class="fi" id="ab-name" placeholder="Your full name" value="${esc(v('f-name'))}" maxlength="80" autocomplete="name">
-      <div class="row2">
+      <div class="row2 stack">
         <input class="fi" id="ab-email" type="email" placeholder="Email" value="${esc(v('f-email'))}" maxlength="80">
         <input class="fi" id="ab-phone" placeholder="Phone" value="${esc(v('f-phone'))}" maxlength="30">
       </div>
@@ -2518,7 +2538,7 @@ function openVersions(){
     <div class="modal-title">CV versions</div>
     <p class="ver-help">Save a named copy of your CV for each kind of role you apply to, then switch between them in one click. Stored in this browser only — use Save backup to keep a file copy.</p>
     <div class="ver-save-row">
-      <input class="fi" id="ver-name" maxlength="60" placeholder="Name it, e.g. Google — Product Manager" autocomplete="off">
+      <input class="fi" id="ver-name" maxlength="60" placeholder="Name it, e.g. Google PM" autocomplete="off">
       <button class="btn-pill" id="ver-save-btn" type="button">Save current</button>
     </div>
     <div class="ver-list" id="ver-list"></div>
@@ -3134,8 +3154,8 @@ function addEdu(editIdx){
       <input class="fi" id="edu-d" placeholder="Degree & Field of Study" value="${esc(ed.d)}">
       <input class="fi" id="edu-s" placeholder="University / Institution" value="${esc(ed.s)}">
       <div class="row2">
-        <input class="fi" id="edu-y" placeholder="Graduation Year" value="${esc(ed.y)}">
-        <input class="fi" id="edu-g" placeholder="GPA (optional)" value="${esc(ed.g)}">
+        <input class="fi" id="edu-y" placeholder="Grad. year" value="${esc(ed.y)}">
+        <input class="fi" id="edu-g" placeholder="GPA" title="GPA (optional)" value="${esc(ed.g)}">
       </div>
     </div>
     <div class="modal-btns">
@@ -3259,11 +3279,11 @@ function addProj(editIdx){
     <div class="fg">
       <div>
         <label class="date-lbl">Project name <span style="color:var(--err)">*</span></label>
-        <input class="fi" id="proj-nm" placeholder="e.g. Open Source Dashboard, Personal Portfolio" value="${esc(p.nm)}">
+        <input class="fi" id="proj-nm" placeholder="e.g. Personal Portfolio" value="${esc(p.nm)}">
       </div>
       <div>
         <label class="date-lbl">Live URL / GitHub link <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-        <input class="fi" id="proj-url" placeholder="e.g. github.com/you/project  or  yourproject.com" value="${esc(p.url)}" type="url" inputmode="url">
+        <input class="fi" id="proj-url" placeholder="github.com/you/project" value="${esc(p.url)}" type="url" inputmode="url">
       </div>
       <div>
         <label class="date-lbl">Description <span style="font-weight:400;color:var(--muted)">(1–2 sentences)</span></label>
@@ -3275,7 +3295,7 @@ function addProj(editIdx){
           ${stackTags.map((t,i)=>`<span class="sk-tag" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();const wrap=document.getElementById('proj-stack-tags');if(!wrap.children.length)wrap.style.marginBottom='0';})()" type="button"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>`).join('')}
         </div>
         <div class="sk-row">
-          <input class="fi" id="proj-stack-inp" placeholder="e.g. Framer, React, Figma…" autocomplete="off" style="flex:1" list="skill-suggestions">
+          <input class="fi" id="proj-stack-inp" placeholder="e.g. Figma, React" autocomplete="off" style="flex:1" list="skill-suggestions">
           <button class="btn-add-inline" id="proj-stack-add-btn" type="button">Add</button>
         </div>
       </div>
@@ -5881,7 +5901,7 @@ function renderSocialLinks(){
         </button>
       </div>
       <input class="fi social-link-url" type="url" inputmode="url" data-idx="${i}" placeholder="${SOCIAL_TYPES[s.type]?.placeholder||'https://'}" value="${esc(s.url)}" style="margin-bottom:6px">
-      <input class="fi social-link-label" data-idx="${i}" placeholder="Custom label — e.g. 'My Portfolio' (leave blank to use '${typeLabel}')" value="${esc(s.label||'')}" style="font-size:13px;padding:9px 12px">
+      <input class="fi social-link-label" data-idx="${i}" placeholder="Custom label (optional)" title="Leave blank to show '${esc(typeLabel)}'" value="${esc(s.label||'')}" style="font-size:13px;padding:9px 12px">
     </div>`;
   }).join('');
 
