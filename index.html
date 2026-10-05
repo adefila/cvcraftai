@@ -17,6 +17,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>try{if(localStorage.getItem('cvcraftai-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -204,7 +205,7 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .cv-progress-track{height:4px;background:var(--surf);border-radius:999px;overflow:hidden;margin-bottom:8px}
 .cv-progress-bar{height:100%;border-radius:999px;background:var(--ac);transition:width .4s cubic-bezier(.4,0,.2,1)}
 .cv-step-chips{display:flex;gap:5px;flex-wrap:wrap}
-.cv-step-chip{font-size:10.5px;padding:2px 8px;border-radius:999px;font-weight:600;white-space:nowrap}
+.cv-step-chip{font-size:12px;padding:2px 9px;border-radius:999px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
 .cv-step-chip.done{background:#DEF4EA;color:#0E6B49}
 .cv-step-chip.todo{background:var(--surf);color:var(--muted);border:1px solid var(--bdr)}
 /* skeleton */
@@ -656,10 +657,95 @@ body.meet-open{overflow:hidden}
 .fb-types{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .fb-type{font-family:var(--ff-b);font-size:13px;padding:7px 13px;border-radius:999px;border:1.5px solid var(--bdr);background:#fff;color:var(--ink);cursor:pointer}
 .fb-type.on{border-color:var(--ac);background:var(--ac);color:#fff}
-/* Build with AI */
-.ai-build{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 22px;background:var(--surf);border-bottom:1px solid var(--bdr)}
-.ai-build-txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 200px;font-size:12.5px;color:var(--muted);line-height:1.4}
-.ai-build-txt strong{font-size:13.5px;color:var(--ink)}
+/* First-run start screen */
+.start-card{padding:18px 20px 12px;border-bottom:1px solid var(--bdr);background:linear-gradient(180deg,#F6F6FE 0%,#fff 100%)}
+.start-title{font-family:var(--ff-d);font-size:16px;font-weight:700;letter-spacing:-.2px;margin-bottom:12px}
+.start-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 14px;margin-bottom:8px;border:1px solid var(--bdr-strong);border-radius:var(--r-md);background:#fff;font-family:var(--ff-b);color:var(--ink);cursor:pointer;transition:border-color var(--t1),box-shadow var(--t2) var(--ease),transform var(--t2) var(--ease)}
+.start-opt:hover{border-color:var(--ac);box-shadow:var(--sh-2);transform:translateY(-1px)}
+.start-opt:active{transform:scale(.99)}
+.start-ico{width:34px;height:34px;border-radius:10px;background:var(--ac-soft);color:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.start-txt{display:flex;flex-direction:column;font-size:12.5px;color:var(--muted);line-height:1.4;min-width:0}
+.start-txt strong{font-size:14px;color:var(--ink)}
+.start-opt.primary{background:var(--ac);border-color:var(--ac);color:#fff}
+.start-opt.primary .start-txt,.start-opt.primary .start-txt strong{color:#fff}
+.start-opt.primary .start-txt span{opacity:.85}
+.start-opt.primary .start-ico{background:rgba(255,255,255,.18);color:#fff}
+.start-opt.primary:hover{border-color:var(--ac);box-shadow:0 8px 20px rgba(79,91,213,.35)}
+/* Import dialog */
+.imp-drop{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;padding:22px 16px;border:1.5px dashed var(--bdr-strong);border-radius:var(--r-md);background:#FDFCFB;color:var(--muted);font-family:var(--ff-b);font-size:13px;cursor:pointer;transition:border-color var(--t1),background var(--t1)}
+.imp-drop:hover,.imp-drop.drag{border-color:var(--ac);background:var(--ac-soft)}
+.imp-drop strong{font-size:14px;color:var(--ink)}
+.imp-drop.ok{border-style:solid;border-color:#B8E8CE;background:#F2FAF6}
+/* Persistent field labels (they stay visible while typing) */
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld-l{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.1px}
+/* Loading skeleton for AI answers */
+.ai-skel{display:flex;flex-direction:column;gap:8px;padding:6px 0}
+.ai-skel i{display:block;height:10px;border-radius:5px;background:linear-gradient(90deg,#EFEEEA 25%,#E2E0DB 50%,#EFEEEA 75%);background-size:800px 100%;animation:shimmer 1.6s infinite linear}
+.ai-skel i:nth-child(1){width:100%}.ai-skel i:nth-child(2){width:92%}.ai-skel i:nth-child(3){width:64%}
+.ico-ck{flex-shrink:0;vertical-align:-1px}
+.sec-done{display:inline-flex;align-items:center;gap:4px}
+/* Small-text floor: nothing important under 12px */
+.score-badge-key,.bar-menu-section,.score-section-head,.sec-done,.cv-progress-label,.ats-meth-pts,.ats-gap-months,.onb-step-label,.sim-section-head,.ats-sub,.score-dual-sub,.tab-step{font-size:12px}
+.date-lbl,.weak-word-field,.sim-persona-role,.rewrite-lbl,.ats-tip-inline,.sim-upload-sub,.tip-box{font-size:12.5px}
+.tab-step{font-size:11px;width:18px;height:18px}
+/* Phones: a floating button jumps between the form and the CV preview */
+.fab-preview{display:none}
+@media (max-width:1023px){
+  .fab-preview{display:inline-flex;align-items:center;gap:8px;position:fixed;right:16px;bottom:16px;z-index:190;padding:11px 18px;border:none;border-radius:999px;background:var(--ink);color:#fff;font-family:var(--ff-b);font-size:14px;font-weight:600;box-shadow:var(--sh-3);cursor:pointer;transition:transform var(--t2) var(--ease),opacity var(--t2)}
+  .fab-preview:active{transform:scale(.96)}
+  .fab-preview svg{transition:transform var(--t2) var(--ease)}
+  .fab-preview.up svg{transform:rotate(180deg)}
+  body.meet-open .fab-preview{display:none}
+}
+/* Collapsible Build sections, a quieter secondary-button style, and a next-step strip that stays in view */
+.sec.acc>.lbl{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;border-radius:var(--r-sm);transition:color var(--t1)}
+.sec.acc>.lbl:hover{color:var(--ink)}
+.sec.acc>.lbl.sec-lbl-row{justify-content:flex-start}
+.sec.acc>.lbl.sec-lbl-row .sec-done{margin-left:auto}
+.acc-chev{margin-left:auto;display:inline-flex;color:var(--muted);transition:transform var(--t2) var(--ease)}
+.sec.acc>.lbl.sec-lbl-row .acc-chev{margin-left:0}
+.sec.collapsed .acc-chev{transform:rotate(-90deg)}
+.sec.collapsed>:not(.lbl){display:none!important}
+.sec.collapsed>.lbl{margin-bottom:0}
+.acc-all{border:none;background:none;font-family:var(--ff-b);font-size:12px;font-weight:600;color:var(--ac);cursor:pointer;padding:0 6px;border-radius:6px}
+.acc-all:hover{text-decoration:underline}
+.cv-nudge{position:sticky;top:0;z-index:6}
+.btn-pill-sm{background:var(--surf);color:var(--ink);border:1px solid var(--bdr-strong)}
+.btn-pill-sm:hover:not(:disabled){background:#fff;border-color:var(--ink)}
+.meet .btn-pill-sm{background:#3C4043;color:#E8EAED;border:1px solid #5F6368}
+.meet .btn-pill-sm:hover:not(:disabled){background:#4A4D51;border-color:#5F6368}
+/* Interview setup: interviewer cards and segmented switches */
+.iv-fl{display:block;margin:14px 0 6px}
+.iv-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.iv-card-pick{display:flex;gap:10px;align-items:flex-start;text-align:left;padding:10px;border:1.5px solid var(--bdr);border-radius:var(--r-md);background:#fff;cursor:pointer;font-family:var(--ff-b);transition:border-color var(--t1),box-shadow var(--t2) var(--ease),transform var(--t2) var(--ease)}
+.iv-card-pick:hover{border-color:var(--bdr-strong);transform:translateY(-1px)}
+.iv-card-pick.on{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-ring)}
+.iv-av{width:32px;height:32px;border-radius:50%;background:hsl(var(--h) 42% 40%);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.iv-card-t{display:flex;flex-direction:column;min-width:0;font-size:12px;color:var(--muted);line-height:1.35}
+.iv-card-t strong{font-size:13px;color:var(--ink)}
+.iv-card-t em{font-style:normal;margin-top:3px}
+.iv-seg{display:flex;background:var(--surf);border-radius:999px;padding:3px;gap:2px}
+.iv-seg button{flex:1;border:none;background:none;padding:8px 10px;border-radius:999px;font-family:var(--ff-b);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;line-height:1.25;transition:background var(--t2) var(--ease),color var(--t1),box-shadow var(--t2) var(--ease)}
+.iv-seg button small{display:block;font-size:11.5px;font-weight:500;opacity:.8}
+.iv-seg button:hover:not(:disabled):not(.on){background:rgba(255,255,255,.6);color:var(--ink)}
+.iv-seg button.on{background:#fff;color:var(--ink);box-shadow:var(--sh-1)}
+.iv-seg button:disabled{opacity:.45;cursor:not-allowed}
+@media (max-width:420px){.iv-cards{grid-template-columns:1fr}}
+/* Target job chip and quick template switcher in the preview header */
+.cv-ctrl{flex-wrap:wrap;gap:8px 12px}
+.target-chip{display:inline-flex;align-items:center;gap:6px;max-width:260px;padding:5px 12px;border:1px solid var(--bdr-strong);border-radius:999px;background:#fff;color:var(--ink);font-family:var(--ff-b);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color var(--t1),background var(--t1)}
+.target-chip:hover{border-color:var(--ac);background:var(--ac-soft)}
+.target-chip svg{flex-shrink:0;color:var(--ac)}
+.target-chip.none{color:var(--muted);font-weight:500;border-style:dashed}
+.tpl-quick{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.tpl-quick select{border:1px solid var(--bdr-strong);border-radius:999px;padding:5px 28px 5px 12px;font-family:var(--ff-b);font-size:13px;font-weight:600;color:var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B73' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 10px center;-webkit-appearance:none;appearance:none;cursor:pointer;max-width:150px;transition:border-color var(--t1)}
+.tpl-quick select:hover{border-color:var(--ink)}
+.jd-empty-cards{display:flex;flex-direction:column;gap:8px}
+.jd-empty-cards>div{display:flex;flex-direction:column;padding:10px 14px;border:1px dashed var(--bdr-strong);border-radius:var(--r-md);font-size:12.5px;color:var(--muted);line-height:1.4}
+.jd-empty-cards strong{font-size:13.5px;color:var(--ink)}
+/* Example label while the CV is still empty */
+.cv-empty .cv-tl::after{content:' · example';text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)}
 .ab-mic{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%}
 .ab-mic.active{background:#FDE8E8;border-color:#F3C4C4;color:#9A2E2E}
 /* Privacy choice banner */
@@ -1319,6 +1405,7 @@ select.fi{padding-right:36px}
 .modal-title{font-size:19px;font-weight:700;letter-spacing:-.2px}
 @keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
 .toast{border-radius:14px;box-shadow:var(--sh-3);font-size:14px;padding:11px 18px}
+@media (max-width:1023px){.toast{bottom:76px;right:16px}}   /* clear of the preview button */
 .consent{border:1px solid var(--bdr);border-radius:var(--r-lg);box-shadow:var(--sh-3);animation:riseIn var(--t3) var(--ease)}
 
 /* Calm scrollbars */
@@ -1353,7 +1440,7 @@ select.fi{padding-right:36px}
    template cards follow. State changes (hover, press, focus) are 120 to 200ms. */
 @keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
-  .pnl.active>.sec,.pnl.active>.ai-sec,.pnl.active>.ai-build,.pnl.active>.cv-progress-wrap{animation:riseIn var(--t3) var(--ease) backwards}
+  .pnl.active>.sec,.pnl.active>.ai-sec,.pnl.active>.start-card,.pnl.active>.cv-progress-wrap{animation:riseIn var(--t3) var(--ease) backwards}
   .pnl.active>:nth-child(2){animation-delay:30ms}.pnl.active>:nth-child(3){animation-delay:60ms}
   .pnl.active>:nth-child(4){animation-delay:90ms}.pnl.active>:nth-child(5){animation-delay:120ms}
   .pnl.active>:nth-child(6){animation-delay:150ms}.pnl.active>:nth-child(7){animation-delay:180ms}
@@ -1366,6 +1453,84 @@ select.fi{padding-right:36px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* ═══════════════ DARK THEME (opt-in from the "..." menu) ═══════════════
+   Tokens first; then the surfaces that have hard-coded light colours. The CV itself always stays
+   white, because it is a document that gets printed and exported. */
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#ECECF1;--bg:#121215;--surf:#1D1D22;--card:#18181C;--muted:#9C9CA6;--bdr:#2B2B32;--bdr-strong:#3B3B44;
+  --ac-soft:rgba(130,140,245,.16);--ac-ring:rgba(130,140,245,.38);
+  --sh-1:0 1px 2px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04);--sh-2:0 6px 18px rgba(0,0,0,.45);--sh-3:0 20px 50px rgba(0,0,0,.6);
+}
+html[data-theme="dark"] .paper,html[data-theme="dark"] #print-target{
+  --ink:#17171C;--bg:#F6F5F2;--surf:#EFEEEA;--card:#FFFFFF;--muted:#6B6B73;--bdr:#E8E6E1;--bdr-strong:#D8D5CE;
+  color:#17171C;color-scheme:light;
+}
+html[data-theme="dark"] body,html[data-theme="dark"] .ws-outer{background:var(--bg)}
+html[data-theme="dark"] .bar{background:rgba(18,18,21,.84);border-bottom-color:rgba(255,255,255,.08)}
+html[data-theme="dark"] .pnl{background:#18181C}
+html[data-theme="dark"] .fi{background-color:#222228;color:var(--ink)}
+html[data-theme="dark"] .fi:focus{background-color:#1B1B20}
+html[data-theme="dark"] .fi::placeholder{color:#7E7E88}
+html[data-theme="dark"] .fi:hover{border-color:#52525C}
+html[data-theme="dark"] .tab:hover{background:rgba(255,255,255,.07)}
+html[data-theme="dark"] .tab.on,html[data-theme="dark"] .iv-seg button.on{background:#2C2C34;color:var(--ink)}
+html[data-theme="dark"] .iv-seg button:hover:not(:disabled):not(.on){background:rgba(255,255,255,.07)}
+html[data-theme="dark"] .btn-pill{background:#ECECF1;color:#141417}
+html[data-theme="dark"] .btn-pill:hover:not(:disabled){background:#fff}
+html[data-theme="dark"] .btn-pill-outline:hover,html[data-theme="dark"] .btn-pill-sm:hover:not(:disabled){background:#2A2A31;border-color:#6A6A75}
+html[data-theme="dark"] .btn-add:hover{background:#222228}
+html[data-theme="dark"] .score-badge,html[data-theme="dark"] .score-badge:hover,html[data-theme="dark"] .target-chip,html[data-theme="dark"] .start-opt,html[data-theme="dark"] .imp-drop,html[data-theme="dark"] .iv-card-pick,html[data-theme="dark"] .tpl-card,html[data-theme="dark"] .tpl-card.sel,html[data-theme="dark"] .ivh-row,html[data-theme="dark"] .ivh-trend,html[data-theme="dark"] .sim-box,html[data-theme="dark"] .sim-out,html[data-theme="dark"] .social-link-card,html[data-theme="dark"] .sk-tag,html[data-theme="dark"] .ai-out,html[data-theme="dark"] .rewrite-box,html[data-theme="dark"] .ai-score-pill,html[data-theme="dark"] .iv-card,html[data-theme="dark"] .fb-type,html[data-theme="dark"] .tpl-cat-chip{background:#1F1F25}
+html[data-theme="dark"] .tpl-quick select{background-color:#1F1F25;color:var(--ink)}
+html[data-theme="dark"] .target-chip:hover,html[data-theme="dark"] .imp-drop:hover,html[data-theme="dark"] .imp-drop.drag{background:var(--ac-soft)}
+html[data-theme="dark"] .start-card{background:linear-gradient(180deg,#1C1C2A 0%,#18181C 100%)}
+html[data-theme="dark"] .start-opt.primary{background:var(--ac);color:#fff}
+html[data-theme="dark"] .ai-sec{background:linear-gradient(180deg,#1C1C2A 0%,#18181C 100%);border-bottom-color:#2B2B3C}
+html[data-theme="dark"] .ei:hover{background:#26262D}
+html[data-theme="dark"] .ei-edit,html[data-theme="dark"] .ei-rm,html[data-theme="dark"] .sk-tag button{background:#2C2C34;color:var(--muted)}
+html[data-theme="dark"] .modal,html[data-theme="dark"] .confirm-box,html[data-theme="dark"] .onb-modal,html[data-theme="dark"] .bar-menu-dropdown,html[data-theme="dark"] .consent,html[data-theme="dark"] .social-type-menu{background:#1F1F25;border-color:var(--bdr)}
+html[data-theme="dark"] .toast{background:#2C2C34;color:#fff}
+html[data-theme="dark"] .cv-nudge{background:rgba(130,140,245,.14);color:#B8BEFF;border-bottom-color:rgba(130,140,245,.25)}
+html[data-theme="dark"] .cv-nudge:hover{background:rgba(130,140,245,.22)}
+html[data-theme="dark"] .cv-step-chip.done{background:#12382A;color:#7FE0B5}
+html[data-theme="dark"] .kw-pill{background:#25253A;color:#B8BEFF}
+html[data-theme="dark"] .kw-pill:hover{background:#ECECF1;color:#141417}
+html[data-theme="dark"] .jd-miss-kw,html[data-theme="dark"] .weak-word-hit,html[data-theme="dark"] .ats-gap-section{background:#2E2712;border-color:#5A4A1E;color:#F2C879}
+html[data-theme="dark"] .jd-found-kw{background:#12382A;border-color:#1E5A42;color:#7FE0B5}
+html[data-theme="dark"] .weak-word-flag{background:#3A2F14;color:#F2C879}
+html[data-theme="dark"] .weak-word-sug,html[data-theme="dark"] .ats-gap-title,html[data-theme="dark"] .ats-gap-months,html[data-theme="dark"] .rewrite-text,html[data-theme="dark"] .ai-out{color:var(--ink)}
+html[data-theme="dark"] .ats-subtabs,html[data-theme="dark"] .ai-check-sticky{background:#18181C}
+html[data-theme="dark"] .iv-msg.bot{background:#1F1F25;color:var(--ink)}
+html[data-theme="dark"] .iv-msg.me{background:var(--ac);color:#fff}
+html[data-theme="dark"] .iv-input,html[data-theme="dark"] .iv-msgs{background:transparent}
+html[data-theme="dark"] .ai-skel i{background:linear-gradient(90deg,#26262D 25%,#33333B 50%,#26262D 75%);background-size:800px 100%}
+html[data-theme="dark"] .skel{background:linear-gradient(90deg,#26262D 25%,#33333B 50%,#26262D 75%);background-size:800px 100%}
+html[data-theme="dark"] .modal-bg{background:rgba(0,0,0,.62)}
+html[data-theme="dark"] .fab-preview{background:#ECECF1;color:#141417}
+html[data-theme="dark"] .consent-more{color:#B8BEFF}
+html[data-theme="dark"] .pnl-r{background:transparent}
+html[data-theme="dark"] .score-badge-sep{color:#7A7A86}
+html[data-theme="dark"] .interview-prob-desc{color:var(--ink)}
+html[data-theme="dark"] .iv-check.ok{color:#5FD9A8}
+html[data-theme="dark"] .iv-check.miss{color:#F2C879}
+html[data-theme="dark"] .ats-meth-rec,html[data-theme="dark"] .ai-write-btn,html[data-theme="dark"] .sim-source-btn:hover{color:#A9B1FF}
+html[data-theme="dark"] .ats-meth-ats{color:#5FD9A8}
+html[data-theme="dark"] .btn-add-inline,html[data-theme="dark"] .onb-btn-next,html[data-theme="dark"] .tpl-cat-chip.on{background:#ECECF1;color:#141417}
+html[data-theme="dark"] .check-fix-btn{background:#ECECF1;color:#141417}
+html[data-theme="dark"] #confirm-ok{background:#ECECF1!important;color:#141417!important}
+html[data-theme="dark"] .sim-source-btn.active{background:#25253A;border-color:var(--ac);color:#A9B1FF}
+html[data-theme="dark"] .jd-match-bar{background:#2C2C34}
+html[data-theme="dark"] .ai-write-btn:hover:not(:disabled){background:#25253A}
+/* Text and tints that scripts write inline: lighter versions of the same hues so they stay readable */
+html[data-theme="dark"] [style*="color:#0E6B49"],html[data-theme="dark"] [style*="color: rgb(14, 107, 73)"]{color:#5FD9A8!important}
+html[data-theme="dark"] [style*="color:#9A2E2E"],html[data-theme="dark"] [style*="color: rgb(154, 46, 46)"],html[data-theme="dark"] [style*="color:#5C2222"],html[data-theme="dark"] [style*="color: rgb(92, 34, 34)"]{color:#F2A0A0!important}
+html[data-theme="dark"] [style*="color:#3A4AC2"],html[data-theme="dark"] [style*="color: rgb(58, 74, 194)"],html[data-theme="dark"] [style*="color:#4F5BD5"],html[data-theme="dark"] [style*="color: rgb(79, 91, 213)"]{color:#A9B1FF!important}
+html[data-theme="dark"] [style*="color:#92610A"],html[data-theme="dark"] [style*="color: rgb(146, 97, 10)"],html[data-theme="dark"] [style*="color:#8A5E0A"],html[data-theme="dark"] [style*="color:#5C4310"]{color:#F2C879!important}
+html[data-theme="dark"] [style*="background:#F2FAF6"],html[data-theme="dark"] [style*="background: rgb(242, 250, 246)"],html[data-theme="dark"] [style*="background:#DEF4EA"],html[data-theme="dark"] [style*="background: rgb(222, 244, 234)"]{background:#12382A!important}
+html[data-theme="dark"] [style*="background:#FCF1F1"],html[data-theme="dark"] [style*="background: rgb(252, 241, 241)"],html[data-theme="dark"] [style*="background:#FBEAEA"],html[data-theme="dark"] [style*="background: rgb(251, 234, 234)"]{background:#3A1B1B!important}
+html[data-theme="dark"] [style*="background:#F4F4FF"],html[data-theme="dark"] [style*="background:#EEEEFF"]{background:#25253A!important}
+html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [style*="background:#FFF9EC"],html[data-theme="dark"] [style*="background:#FBF1DE"]{background:#2E2712!important}
 </style>
 </head>
 <body>
@@ -1425,6 +1590,10 @@ select.fi{padding-right:36px}
         Export PDF
       </button>
       <div class="bar-menu-divider bar-menu-item-export"></div>
+      <button class="bar-menu-item" onclick="openCVImport();closeBarMenu()">
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-5 4 5"/><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/></svg>
+        Import my CV
+      </button>
       <button class="bar-menu-item" onclick="openAIBuilder();closeBarMenu()">
         <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
         Build my CV with AI
@@ -1446,6 +1615,10 @@ select.fi{padding-right:36px}
       <button class="bar-menu-item" onclick="openPrivacy();closeBarMenu()">
         <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Your data
+      </button>
+      <button class="bar-menu-item" onclick="toggleTheme();closeBarMenu()">
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <span id="theme-lbl">Dark theme</span>
       </button>
       <button class="bar-menu-item" onclick="openFeedback();closeBarMenu()">
         <svg viewBox="0 0 24 24" fill="none" width="15" height="15" stroke="var(--ac)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1476,14 +1649,25 @@ select.fi{padding-right:36px}
     </div>
 
     <!-- BUILD WITH AI -->
-    <div class="ai-build" id="ai-build">
-      <div class="ai-build-txt"><strong>Not sure where to start?</strong><span>Tell us about yourself and AI writes the whole CV.</span></div>
-      <button class="btn-pill-sm" type="button" onclick="openAIBuilder()">Build with AI</button>
+    <div class="start-card" id="start-card" style="display:none">
+      <div class="start-title">How do you want to start?</div>
+      <button class="start-opt primary" type="button" onclick="openAIBuilder()">
+        <span class="start-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+        <span class="start-txt"><strong>Build it for me with AI</strong><span>Describe yourself in a few lines. AI writes the CV.</span></span>
+      </button>
+      <button class="start-opt" type="button" onclick="openCVImport()">
+        <span class="start-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-5 4 5"/><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/></svg></span>
+        <span class="start-txt"><strong>Import my current CV</strong><span>PDF, Word or pasted text. We fill in the form for you.</span></span>
+      </button>
+      <button class="start-opt" type="button" onclick="startBlank()">
+        <span class="start-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></span>
+        <span class="start-txt"><strong>Start from a blank form</strong><span>Fill in the details yourself.</span></span>
+      </button>
     </div>
 
     <!-- CV COMPLETENESS PROGRESS BAR -->
     <div class="cv-progress-wrap" id="cv-progress-wrap">
-      <div class="cv-progress-label"><span>CV Completeness</span><span id="cv-progress-pct" style="color:var(--ac);font-weight:700">0%</span></div>
+      <div class="cv-progress-label"><span>CV Completeness</span><button class="acc-all" id="acc-all" type="button" onclick="accToggleAll()">Collapse all</button><span id="cv-progress-pct" style="color:var(--ac);font-weight:700">0%</span></div>
       <div class="cv-progress-track"><div class="cv-progress-bar" id="cv-progress-bar" style="width:0%"></div></div>
       <div class="cv-step-chips" id="cv-step-chips"></div>
     </div>
@@ -1492,8 +1676,8 @@ select.fi{padding-right:36px}
       <div class="lbl sec-lbl-row"><span>Personal Info</span><span class="sec-done" id="lbl-personal"></span></div>
       <div class="fg">
         <div class="row2 stack">
-          <input class="fi" id="f-name" placeholder="Full Name" oninput="rCV()">
-          <input class="fi" id="f-title" placeholder="Job Title" oninput="rCV()" list="role-suggestions" autocomplete="off">
+          <label class="fld"><span class="fld-l">Full name</span><input class="fi" id="f-name" placeholder="e.g. Ada Obi" oninput="rCV()" autocomplete="name"></label>
+          <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="f-title" placeholder="e.g. Product Designer" oninput="rCV()" list="role-suggestions" autocomplete="off"></label>
           <datalist id="role-suggestions">
             <option>Software Engineer</option><option>Senior Software Engineer</option><option>Full Stack Developer</option><option>Frontend Developer</option><option>Backend Developer</option><option>Mobile Developer</option><option>iOS Developer</option><option>Android Developer</option>
             <option>Product Manager</option><option>Senior Product Manager</option><option>Lead Product Manager</option><option>Associate Product Manager</option>
@@ -1512,12 +1696,10 @@ select.fi{padding-right:36px}
           </datalist>
         </div>
         <div class="row2 stack">
-          <input class="fi" id="f-email" placeholder="Email address" oninput="rCV()">
-          <input class="fi" id="f-phone" placeholder="Phone number" oninput="rCV()">
+          <label class="fld"><span class="fld-l">Email</span><input class="fi" id="f-email" placeholder="you@example.com" oninput="rCV()" autocomplete="email"></label>
+          <label class="fld"><span class="fld-l">Phone</span><input class="fi" id="f-phone" placeholder="+234 800 000 0000" oninput="rCV()" autocomplete="tel"></label>
         </div>
-        <div>
-          <input class="fi" id="f-loc" placeholder="City, Country" oninput="rCV()">
-        </div>
+        <label class="fld"><span class="fld-l">Location</span><input class="fi" id="f-loc" placeholder="City, Country" oninput="rCV()" autocomplete="address-level2"></label>
         <div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
             <div class="lbl" style="margin:0;font-size:11px">Social &amp; Portfolio Links</div>
@@ -1632,13 +1814,14 @@ select.fi{padding-right:36px}
     <div class="sec">
       <div class="lbl">Job Description Match</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">Paste a job post to see how well your CV matches it.</p>
-      <textarea class="fi" id="jd-text" placeholder="Paste a job description here…" rows="6" oninput="runJDMatch();gi('jd-empty-hint').style.display=this.value.trim()?'none':'block'" style="resize:vertical"></textarea>
-      <div id="jd-empty-hint" style="display:block;margin-top:8px">
-        <div style="font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap">
-          <span>Missing keywords</span>
-          <span>Match score</span>
-          <span>One-click add</span>
+      <textarea class="fi" id="jd-text" placeholder="Paste a job description here…" rows="6" oninput="runJDMatch();updateTargetChip();gi('jd-empty-hint').style.display=this.value.trim()?'none':'block'" style="resize:vertical"></textarea>
+      <div id="jd-empty-hint" style="display:block;margin-top:12px">
+        <div class="jd-empty-cards">
+          <div><strong>Match score</strong><span>How much of the post your CV already covers</span></div>
+          <div><strong>Missing keywords</strong><span>Words the employer uses that your CV doesn't</span></div>
+          <div><strong>One-click add</strong><span>Add the ones you genuinely have to your skills</span></div>
         </div>
+        <button class="btn-pill-outline" id="jd-sample-btn" type="button" onclick="fillSampleJD()" style="margin-top:12px;width:100%;justify-content:center">Try a sample job post</button>
       </div>
     </div>
     <div id="jd-results" style="display:none">
@@ -1810,26 +1993,31 @@ select.fi{padding-right:36px}
       <div class="lbl">Mock Interview</div>
       <p class="iv-help">Practise with an AI interviewer that has read your CV and the job description. It asks one question at a time, follows up when an answer is vague, and scores you at the end.</p>
       <div class="iv-checks" id="iv-checks"></div>
-      <label class="date-lbl" for="iv-type">Interviewer</label>
-      <select class="fi select-fi" id="iv-type" onchange="ivTypeNote()">
+      <div class="date-lbl iv-fl" id="iv-lbl-type">Interviewer</div>
+      <div class="iv-cards" id="iv-cards" role="radiogroup" aria-labelledby="iv-lbl-type"></div>
+      <!-- The real values live in these selects (the interview code reads them); the cards and switches above drive them. -->
+      <select id="iv-type" onchange="ivTypeNote();ivSetupSync()" hidden aria-hidden="true">
         <option value="recruiter">Recruiter screen</option>
         <option value="manager">Hiring manager</option>
         <option value="technical">Technical lead</option>
         <option value="panel">Tough panel</option>
       </select>
-      <p class="iv-note" id="iv-type-note"></p>
-      <label class="date-lbl" for="iv-mode" style="margin-top:10px;display:block">Format</label>
-      <select class="fi select-fi" id="iv-mode">
+      <p class="iv-note" id="iv-type-note" hidden></p>
+      <div class="date-lbl iv-fl" id="iv-lbl-mode">Format</div>
+      <div class="iv-seg" id="iv-seg-mode" role="radiogroup" aria-labelledby="iv-lbl-mode"></div>
+      <select id="iv-mode" hidden aria-hidden="true">
         <option value="text">Text chat</option>
         <option value="voice">Voice call</option>
       </select>
       <p class="iv-note" id="iv-voice-note"></p>
-      <label class="date-lbl" for="iv-count" style="margin-top:10px;display:block">Length</label>
-      <select class="fi select-fi" id="iv-count">
+      <div class="date-lbl iv-fl" id="iv-lbl-count">Length</div>
+      <div class="iv-seg" id="iv-seg-count" role="radiogroup" aria-labelledby="iv-lbl-count"></div>
+      <select id="iv-count" hidden aria-hidden="true">
         <option value="5">5 questions · about 10 min</option>
         <option value="8">8 questions · about 20 min</option>
       </select>
-      <button class="btn-pill" id="iv-start" type="button" onclick="ivStart()" style="width:100%;justify-content:center;margin-top:14px">Start interview</button>
+      <button class="btn-pill" id="iv-start" type="button" onclick="ivStart()" style="width:100%;justify-content:center;margin-top:16px">Start interview</button>
+      <p class="iv-note" id="iv-start-hint" style="text-align:center;margin-top:8px"></p>
       <div id="iv-history"></div>
     </div>
     <!-- 2. Live interview -->
@@ -1858,7 +2046,11 @@ select.fi{padding-right:36px}
     <div class="cv-wrap">
       <div class="cv-ctrl">
         <div class="cv-tl">Live Preview</div>
-        <div class="cv-tl-val"><span class="page-count" id="page-count"></span><span>Template: <strong id="tpl-nm-lbl" style="color:var(--ink)">Classic</strong></span></div>
+        <button class="target-chip" id="target-chip" type="button" onclick="swTab('jd')" title="The job you are applying for. Click to change it."></button>
+        <div class="cv-tl-val"><span class="page-count" id="page-count"></span>
+          <label class="tpl-quick"><span class="tpl-quick-lbl">Template</span><select id="tpl-quick" aria-label="Change template" onchange="quickTpl(this.value)"></select></label>
+          <strong id="tpl-nm-lbl" hidden>Classic</strong>
+        </div>
       </div>
       <div class="paper" id="paper">
         <div class="paper-empty" id="paper-empty">
@@ -2037,6 +2229,8 @@ select.fi{padding-right:36px}
   </div>
 </div>
 
+<!-- Jump between the form and the CV on phones and tablets -->
+<button class="fab-preview" id="fab-preview" type="button" onclick="fabToggle()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg><span>Preview CV</span></button>
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -2136,7 +2330,7 @@ function confirmStartOver(){
     body:'This will clear everything in your CV: name, experience, skills, and all sections. Your saved practice interviews are cleared too. This cannot be undone.',
     okLabel:'Yes, clear everything',
     danger:true,
-    onOk:()=>{clearDraft();try{localStorage.removeItem('cvcraftai-interviews-v1');}catch(e){}location.reload();}
+    onOk:()=>{clearDraft();try{localStorage.removeItem('cvcraftai-interviews-v1');localStorage.removeItem('cvcraftai-start-dismissed');}catch(e){}location.reload();}
   });
 }
 
@@ -2377,13 +2571,13 @@ function openAIBuilder(){
     <div class="modal-title">Build my CV with AI</div>
     <p class="ver-help">Tell us about yourself in your own words. Rough is fine. AI writes the CV, then you check it.</p>
     <div class="fg">
-      <input class="fi" id="ab-job" placeholder="Job you want, e.g. Customer Service Assistant" value="${esc(v('f-title'))}" maxlength="80" autocomplete="off">
-      <input class="fi" id="ab-name" placeholder="Your full name" value="${esc(v('f-name'))}" maxlength="80" autocomplete="name">
+      <label class="fld"><span class="fld-l">Job you want</span><input class="fi" id="ab-job" placeholder="e.g. Customer Service Assistant" value="${esc(v('f-title'))}" maxlength="80" autocomplete="off"></label>
+      <label class="fld"><span class="fld-l">Your name</span><input class="fi" id="ab-name" placeholder="Full name" value="${esc(v('f-name'))}" maxlength="80" autocomplete="name"></label>
       <div class="row2 stack">
-        <input class="fi" id="ab-email" type="email" placeholder="Email" value="${esc(v('f-email'))}" maxlength="80">
-        <input class="fi" id="ab-phone" placeholder="Phone" value="${esc(v('f-phone'))}" maxlength="30">
+        <label class="fld"><span class="fld-l">Email</span><input class="fi" id="ab-email" type="email" placeholder="you@example.com" value="${esc(v('f-email'))}" maxlength="80"></label>
+        <label class="fld"><span class="fld-l">Phone</span><input class="fi" id="ab-phone" placeholder="Phone number" value="${esc(v('f-phone'))}" maxlength="30"></label>
       </div>
-      <input class="fi" id="ab-loc" placeholder="City, Country" value="${esc(v('f-loc'))}" maxlength="60">
+      <label class="fld"><span class="fld-l">Location</span><input class="fi" id="ab-loc" placeholder="City, Country" value="${esc(v('f-loc'))}" maxlength="60"></label>
       <textarea class="fi" id="ab-notes" rows="7" maxlength="2500" placeholder="Where you have worked or studied, what you did, and what you are good at. For example: I worked 2 years as a waiter at a busy restaurant, took orders and handled cash. I finished secondary school in 2021. I know Excel and I am good with people."></textarea>
       <button class="btn-pill-outline ab-mic" id="ab-mic" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg><span id="ab-mic-lbl">Speak instead of typing</span></button>
       <label class="present-check"><input type="checkbox" id="ab-fresh"><span>I have little or no work experience</span></label>
@@ -2485,6 +2679,244 @@ function abReview(gaps){
   list.push('Save a backup file from the "..." menu so you never lose this draft');
   (list.length>1?list:['Make sure every job, date and school is correct',...list]).forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.appendChild(li);});
   gi('ab-done').onclick=()=>m.remove();
+}
+
+// ── TARGET JOB CHIP + QUICK TEMPLATE SWITCHER (preview header) ──
+// The job post is used by JD Match, the cover letter, the gap check and the interview, so the
+// chosen target is always visible and one click away from changing.
+function jdTitleFromText(t){
+  const labeled=t.match(/(?:job title|position|role)\s*[:\-–]\s*([^\n]{3,70})/i);
+  if(labeled)return labeled[1].trim();
+  const first=t.split('\n').map(s=>s.trim()).find(l=>l.length>=4&&l.length<=70&&!/^(about|we are|we're|company|overview|description|responsibilities|requirements|who we)/i.test(l));
+  return first||'Job post added';
+}
+function updateTargetChip(){
+  const c=gi('target-chip');if(!c)return;
+  const jd=(v('jd-text')||'').trim();
+  const pin='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>';
+  if(jd.length<50){c.className='target-chip none';c.innerHTML=pin+'<span>No target job yet. Add one</span>';c.title='Paste a job post to match your CV against it';return;}
+  const t=jdTitleFromText(jd);
+  c.className='target-chip';
+  c.innerHTML=pin+'<span></span>';
+  c.lastChild.textContent='Target: '+t;
+  c.title='Targeting: '+t+'. Click to change it.';
+}
+function buildTplQuick(){
+  const sel=gi('tpl-quick');if(!sel)return;
+  const cats={};
+  Object.entries(TPLS).forEach(([k,t])=>{(cats[t.cat]=cats[t.cat]||[]).push([k,t.name]);});
+  sel.innerHTML=Object.entries(cats).map(([cat,list])=>`<optgroup label="${esc(cat)}">${list.map(([k,n])=>`<option value="${esc(k)}">${esc(n)}</option>`).join('')}</optgroup>`).join('');
+  sel.value=CT;
+}
+function quickTpl(k){
+  if(!TPL[k])return;
+  CT=k;buildTplGrid();rCV();
+}
+const SAMPLE_JD=`Job title: Product Designer
+
+We are looking for a Product Designer to join our product team and shape how customers use our app every day.
+
+What you will do
+- Turn customer problems into clear flows, wireframes and polished interfaces
+- Run user research and usability tests, and use what you learn to improve designs
+- Build and maintain our design system in Figma
+- Work closely with engineers and product managers to ship on time
+- Present your work and explain your decisions to the wider team
+
+What we are looking for
+- 3+ years of product or UX design experience
+- A portfolio that shows your process, from research to shipped work
+- Strong skills in Figma, prototyping and design systems
+- Experience with user research, accessibility and data-informed design
+- Clear communication and a collaborative approach`;
+function fillSampleJD(){
+  const ta=gi('jd-text');
+  ta.value=SAMPLE_JD;
+  ta.dispatchEvent(new Event('input'));
+  toast('Sample loaded. Paste a real job post to get your own results','default',4000);
+}
+
+// ── THEME ──
+// Light is the default. Dark is opt-in and remembered. The CV preview stays white either way.
+function syncThemeLabel(){
+  const l=gi('theme-lbl');if(l)l.textContent=document.documentElement.getAttribute('data-theme')==='dark'?'Light theme':'Dark theme';
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  if(dark)document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme','dark');
+  try{localStorage.setItem('cvcraftai-theme',dark?'light':'dark');}catch(e){}
+  syncThemeLabel();
+}
+
+// ── PREVIEW BUTTON (phones and tablets) ──
+// The preview counts as "being looked at" once its top has scrolled into the upper half of the screen.
+function previewInView(){
+  const pr=document.querySelector('.pnl-r');if(!pr)return false;
+  const r=pr.getBoundingClientRect();
+  return r.top<innerHeight*0.5&&r.bottom>innerHeight*0.25;
+}
+function setupPreviewFab(){
+  const fab=gi('fab-preview');if(!fab)return;
+  let queued=false;
+  const render=()=>{queued=false;const on=previewInView();fab.querySelector('span').textContent=on?'Edit CV':'Preview CV';fab.classList.toggle('up',on);};
+  const queue=()=>{if(!queued){queued=true;requestAnimationFrame(render);}};
+  window.addEventListener('scroll',queue,{passive:true});window.addEventListener('resize',queue);
+  render();
+}
+function fabToggle(){
+  const pr=document.querySelector('.pnl-r');if(!pr)return;
+  if(previewInView())(document.scrollingElement||document.documentElement).scrollTo({top:0,behavior:'smooth'});
+  else pr.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── COLLAPSIBLE SECTIONS (Build tab) ──
+// Each section header toggles its body, so a long form can be folded down to the part being edited.
+function buildAccordions(){
+  document.querySelectorAll('#pnl-build > .sec').forEach(sec=>{
+    const head=sec.firstElementChild;
+    if(!head||!head.classList.contains('lbl')||sec.classList.contains('acc'))return;
+    sec.classList.add('acc');
+    head.setAttribute('role','button');head.tabIndex=0;head.setAttribute('aria-expanded','true');
+    const chev=document.createElement('span');
+    chev.className='acc-chev';chev.setAttribute('aria-hidden','true');
+    chev.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    head.appendChild(chev);
+    const toggle=()=>{
+      const c=sec.classList.toggle('collapsed');
+      head.setAttribute('aria-expanded',c?'false':'true');
+      accSyncAll();
+    };
+    // Enter and Space already trigger a click on role="button" elements (global handler below)
+    head.addEventListener('click',e=>{if(e.target.closest('.tip'))return;toggle();});
+  });
+  accSyncAll();
+}
+function accSyncAll(){
+  const b=gi('acc-all');if(!b)return;
+  const secs=[...document.querySelectorAll('#pnl-build > .sec.acc')];
+  b.textContent=secs.length&&secs.every(s=>s.classList.contains('collapsed'))?'Expand all':'Collapse all';
+}
+function accToggleAll(){
+  const secs=[...document.querySelectorAll('#pnl-build > .sec.acc')];
+  const collapse=!secs.every(s=>s.classList.contains('collapsed'));
+  secs.forEach(s=>{s.classList.toggle('collapsed',collapse);s.firstElementChild.setAttribute('aria-expanded',collapse?'false':'true');});
+  accSyncAll();
+}
+// Open the section that holds an element (used when a fix or hint points at a field).
+function secReveal(el){
+  const s=el&&el.closest&&el.closest('.sec.collapsed');
+  if(s){s.classList.remove('collapsed');s.firstElementChild.setAttribute('aria-expanded','true');accSyncAll();}
+}
+
+// ── FIRST-RUN START SCREEN ──
+// True while nothing meaningful has been entered. Placeholder text in the preview does not count.
+function cvIsEmpty(){
+  return !(v('f-name').trim()||v('f-title').trim()||v('f-sum').trim()||v('f-email').trim()||exps.length||edus.length||skills.length||projs.length||certs.length||langs.length);
+}
+const START_KEY='cvcraftai-start-dismissed';
+function startDismissed(){try{return localStorage.getItem(START_KEY)==='1';}catch(e){return false;}}
+function updateStartCard(){
+  const c=gi('start-card');if(!c)return;
+  c.style.display=(cvIsEmpty()&&!startDismissed())?'block':'none';
+}
+function startBlank(){
+  try{localStorage.setItem(START_KEY,'1');}catch(e){}
+  updateStartCard();
+  secReveal(gi('f-name'));
+  gi('f-name').focus();
+}
+
+// ── IMPORT AN EXISTING CV ──
+// Reads a PDF, a Word (.docx) file, a text file, or pasted text, then reuses the AI extractor
+// that fills the whole form (importUploadedCV).
+async function extractDocxText(file){
+  // A .docx is a zip file. Find word/document.xml in its directory and inflate it with the
+  // browser's built-in DecompressionStream, so no extra library is needed.
+  const buf=await file.arrayBuffer();
+  const dv=new DataView(buf),u8=new Uint8Array(buf);
+  let eocd=-1;
+  for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-65557);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
+  if(eocd<0)throw new Error('That does not look like a Word (.docx) file.');
+  const count=dv.getUint16(eocd+10,true);let p=dv.getUint32(eocd+16,true),found=null;
+  for(let n=0;n<count;n++){
+    if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),lho=dv.getUint32(p+42,true);
+    if(new TextDecoder().decode(u8.subarray(p+46,p+46+nl))==='word/document.xml'){found={method,csize,lho};break;}
+    p+=46+nl+xl+cl;
+  }
+  if(!found)throw new Error('Could not find the text in that Word file.');
+  const start=found.lho+30+dv.getUint16(found.lho+26,true)+dv.getUint16(found.lho+28,true);
+  const data=u8.subarray(start,start+found.csize);
+  let bytes;
+  if(found.method===0)bytes=data;
+  else if(found.method===8){
+    if(typeof DecompressionStream==='undefined')throw new Error('This browser cannot open Word files. Save it as a PDF or paste the text.');
+    bytes=new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  }else throw new Error('That Word file uses a format we cannot read. Save it as a PDF or paste the text.');
+  return new TextDecoder('utf-8').decode(bytes)
+    .replace(/<w:tab[^>]*\/>/g,'\t').replace(/<w:br[^>]*\/>/g,'\n').replace(/<\/w:p>/g,'\n').replace(/<[^>]+>/g,'')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+    .replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+// A safety copy of the current form, so an import or AI draft never destroys someone's work.
+function saveSafetyVersion(name){
+  const list=getVersions();
+  if(list.length>=MAX_VERSIONS)return false;
+  list.unshift({id:'v'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,savedAt:Date.now(),data:JSON.parse(JSON.stringify(snapshotCV()))});
+  return putVersions(list);
+}
+function openCVImport(){
+  const has=!cvIsEmpty();
+  let fileText='';
+  const m=mkModal(`
+    <div class="modal-title">Import your CV</div>
+    <p class="ver-help">Upload a PDF, Word or text file, or paste the text. We read it and fill in the form. You can fix anything afterwards.${has?' This replaces what is in your form now. We save a copy in CV versions first.':''}</p>
+    <button class="imp-drop" id="imp-drop" type="button"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9M8 13l4-5 4 5"/><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/></svg><strong id="imp-drop-t">Choose a file</strong><span id="imp-drop-s">PDF, Word (.docx) or text. You can also drop it here.</span></button>
+    <input type="file" id="imp-file" accept=".pdf,.docx,.txt" style="display:none">
+    <label class="date-lbl" for="imp-text" style="margin-top:12px">Or paste the text</label>
+    <textarea class="fi" id="imp-text" rows="4" placeholder="Paste your CV text here"></textarea>
+    <p class="ver-help" id="imp-status" style="margin:8px 0 0" aria-live="polite"></p>
+    <div class="modal-btns"><button class="btn-pill-outline" id="imp-cancel" type="button">Cancel</button><button class="btn-pill" id="imp-go" type="button" style="flex:1;justify-content:center" disabled>Import</button></div>`);
+  const status=t=>{const s=gi('imp-status');s.textContent=t;s.style.color='';};
+  const fail=t=>{const s=gi('imp-status');s.textContent=t;s.style.color='var(--err)';};
+  const words=t=>t.trim().split(/\s+/).filter(Boolean).length;
+  const refresh=()=>{gi('imp-go').disabled=words(fileText||gi('imp-text').value)<30;};
+  const readFile=async f=>{
+    if(!f)return;
+    const name=f.name.toLowerCase();
+    gi('imp-drop-t').textContent=f.name;gi('imp-drop-s').textContent='Reading…';
+    try{
+      let t='';
+      if(name.endsWith('.pdf'))t=await extractPDFText(f);
+      else if(name.endsWith('.docx'))t=await extractDocxText(f);
+      else if(name.endsWith('.doc'))throw new Error('Old .doc files cannot be read. Save it as .docx or PDF, or paste the text.');
+      else t=await f.text();
+      if(words(t)<30)throw new Error('We could not find enough text. A scanned image cannot be read. Try a text-based PDF, or paste the text.');
+      fileText=t;
+      gi('imp-drop').classList.add('ok');gi('imp-drop-s').textContent=`${words(t)} words found`;
+      status(t.length>6000?'This is a long CV, so we read the first part. Check the end after importing.':'');
+    }catch(e){
+      fileText='';gi('imp-drop').classList.remove('ok');gi('imp-drop-t').textContent='Choose a file';gi('imp-drop-s').textContent='PDF, Word (.docx) or text. You can also drop it here.';
+      fail((e&&e.message)||'Could not read that file.');
+    }
+    refresh();
+  };
+  gi('imp-drop').onclick=()=>gi('imp-file').click();
+  gi('imp-file').onchange=e=>readFile(e.target.files[0]);
+  ['dragover','dragenter'].forEach(ev=>gi('imp-drop').addEventListener(ev,e=>{e.preventDefault();gi('imp-drop').classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>gi('imp-drop').addEventListener(ev,e=>{e.preventDefault();gi('imp-drop').classList.remove('drag');}));
+  gi('imp-drop').addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
+  gi('imp-text').addEventListener('input',()=>{fileText='';gi('imp-drop').classList.remove('ok');refresh();});
+  gi('imp-cancel').onclick=()=>m.remove();
+  gi('imp-go').onclick=async()=>{
+    const text=(fileText||gi('imp-text').value).trim();
+    if(words(text)<30)return;
+    if(has&&!saveSafetyVersion('Before import')){toast(`Your ${MAX_VERSIONS} saved versions are full. Delete one first so we can keep a copy`,'err',4500);return;}
+    simUploadedCVText=text;
+    const btn=gi('imp-go');
+    await importUploadedCV(btn);
+    if(/Imported/.test(btn.textContent)){track('cv_imported');setTimeout(()=>m.remove(),600);}
+  };
 }
 
 // ── SAVED VERSIONS ──
@@ -2720,6 +3152,10 @@ const SOCIAL_COLORS={
 // Single entry point for all AI calls — routes through the serverless proxy at /api/ai
 // so the Anthropic API key never reaches the browser and calls don't get blocked by CORS.
 // How every piece of AI advice should read: short, plain and human.
+// Placeholder shown while an AI answer loads: three shimmering lines read as "text is coming"
+const ICO_CHECK='<svg class="ico-ck" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+const ICO_X='<svg class="ico-ck" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+const AI_SKEL='<div class="ai-skel" role="status" aria-label="Loading"><i></i><i></i><i></i></div>';
 const AI_VOICE='Write like a friendly, direct person giving quick advice, not like a report. Everyday words. One short sentence per point, 15 words at most. No jargon, no buzzwords, no hedging, no flattery, no em dashes.';
 
 // ── AI CALLS ──
@@ -2854,6 +3290,30 @@ function swTab(t){
     try{btn.scrollIntoView({inline:'nearest',block:'nearest'});}catch(_){}
   }
   if(t==='interview')ivRefreshChecks();
+  syncTabsA11y();
+}
+// Tabs announce themselves properly to screen readers and work with the arrow keys.
+function setupTabsA11y(){
+  const list=document.querySelector('.tabs');if(!list)return;
+  list.setAttribute('role','tablist');list.setAttribute('aria-label','CV steps');
+  document.querySelectorAll('.tab').forEach((b,i)=>{
+    const id=TAB_ORDER[i];b.setAttribute('role','tab');b.id='tabbtn-'+id;b.setAttribute('aria-controls','pnl-'+id);
+  });
+  TAB_ORDER.forEach(id=>{const p=gi('pnl-'+id);if(p){p.setAttribute('role','tabpanel');p.setAttribute('aria-labelledby','tabbtn-'+id);}});
+  list.addEventListener('keydown',e=>{
+    const tabs=[...document.querySelectorAll('.tab')],i=tabs.indexOf(document.activeElement);
+    if(i<0)return;
+    let n=-1;
+    if(e.key==='ArrowRight')n=(i+1)%tabs.length;
+    else if(e.key==='ArrowLeft')n=(i-1+tabs.length)%tabs.length;
+    else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;
+    if(n<0)return;
+    e.preventDefault();tabs[n].focus();swTab(TAB_ORDER[n]);
+  });
+  syncTabsA11y();
+}
+function syncTabsA11y(){
+  document.querySelectorAll('.tab').forEach(b=>{const on=b.classList.contains('on');b.setAttribute('aria-selected',on?'true':'false');b.tabIndex=on?0:-1;});
 }
 
 // ── TEMPLATE GRID ──
@@ -2958,12 +3418,33 @@ function renderSk(){
 }
 
 // ── MODALS ──
+// Every dialog: announced as a dialog, focus moves in, Tab stays inside, Esc closes it,
+// and focus goes back to whatever opened it.
 function mkModal(html){
   const el=document.createElement('div');
   el.className='modal-bg';
   el.onclick=e=>{if(e.target===el)el.remove()};
   el.innerHTML=`<div class="modal">${html}</div>`;
+  const dlg=el.firstElementChild;
+  dlg.setAttribute('role','dialog');dlg.setAttribute('aria-modal','true');dlg.tabIndex=-1;
+  const title=dlg.querySelector('.modal-title');
+  if(title){title.id='mt'+Math.random().toString(36).slice(2,8);dlg.setAttribute('aria-labelledby',title.id);}
+  const opener=document.activeElement;
   document.body.appendChild(el);
+  const focusables=()=>[...dlg.querySelectorAll('button,input,select,textarea,a[href],[tabindex]:not([tabindex="-1"])')].filter(n=>!n.disabled&&n.offsetParent!==null);
+  setTimeout(()=>{if(!el.contains(document.activeElement)){const f=focusables()[0];(f||dlg).focus();}},40);
+  el.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){e.stopPropagation();el.remove();return;}
+    if(e.key!=='Tab')return;
+    const f=focusables();if(!f.length){e.preventDefault();return;}
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&(document.activeElement===first||document.activeElement===dlg)){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  });
+  const mo=new MutationObserver(()=>{
+    if(!document.body.contains(el)){mo.disconnect();try{if(opener&&opener.isConnected&&opener.focus)opener.focus();}catch(_){}}
+  });
+  mo.observe(document.body,{childList:true});
   return el;
 }
 
@@ -2973,8 +3454,8 @@ function addExp(editIdx){
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Experience</div>
     <div class="fg">
-      <input class="fi" id="ex-t" placeholder="Job Title" value="${esc(ex.t)}" list="role-suggestions" autocomplete="off">
-      <input class="fi" id="ex-co" placeholder="Company" value="${esc(ex.co)}">
+      <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" list="role-suggestions" autocomplete="off"></label>
+      <label class="fld"><span class="fld-l">Company</span><input class="fi" id="ex-co" placeholder="Where you worked" value="${esc(ex.co)}"></label>
       <div class="row2">
         <div class="date-field"><label class="date-lbl">Start date</label><input class="fi" id="ex-s" type="month" value="${esc(ex.s)}"></div>
         <div class="date-field"><label class="date-lbl">End date</label><input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':ex.e)}" ${ex.present?'disabled':''}></div>
@@ -3057,7 +3538,7 @@ function useAIBullet(btn){
   const text=line.dataset.text;
   const ta=gi('ex-d');
   ta.value=ta.value?(ta.value.replace(/\n+$/,'')+'\n'+text):text;
-  btn.textContent='Added ✓';
+  btn.textContent='Added';
   btn.disabled=true;
 }
 
@@ -3065,8 +3546,8 @@ function useAllAIBullets(btn){
   const lines=[...document.querySelectorAll('.ai-write-line')].map(l=>l.dataset.text);
   const ta=gi('ex-d');
   ta.value=lines.join('\n');
-  document.querySelectorAll('.ai-write-line button').forEach(b=>{b.textContent='Added ✓';b.disabled=true;});
-  btn.textContent='All added ✓';
+  document.querySelectorAll('.ai-write-line button').forEach(b=>{b.textContent='Added';b.disabled=true;});
+  btn.textContent='All added';
   btn.disabled=true;
 }
 
@@ -3078,7 +3559,7 @@ async function aiWriteSummary(){
   btn.disabled=true;
   btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Writing…';
   out.style.display='block';
-  out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  out.innerHTML=AI_SKEL;
   const expLine=exps.length?exps.map(e=>`${e.t} at ${e.co}${e.d?' — '+e.d.split('\n')[0]:''}`).join('; '):'(none listed yet)';
   const skillsLine=skills.length?skills.join(', '):'(none listed yet)';
   const prompt=`Write 2 alternative professional summaries (2-3 sentences each) for a CV. Output ONLY the two summaries, separated by a single line containing exactly --- and nothing else on that line. No numbering, no labels like "Option 1", no preamble, no markdown.
@@ -3120,7 +3601,7 @@ function useAISummary(btn){
   const line=btn.closest('.ai-write-line');
   const text=line.dataset.text;
   gi('f-sum').value=text;
-  btn.textContent='Added ✓';
+  btn.textContent='Added';
   btn.disabled=true;
   rCV();upATS();runJDMatch();
 }
@@ -3151,11 +3632,11 @@ function addEdu(editIdx){
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Education</div>
     <div class="fg">
-      <input class="fi" id="edu-d" placeholder="Degree & Field of Study" value="${esc(ed.d)}">
-      <input class="fi" id="edu-s" placeholder="University / Institution" value="${esc(ed.s)}">
+      <label class="fld"><span class="fld-l">Degree and field</span><input class="fi" id="edu-d" placeholder="e.g. BSc Computer Science" value="${esc(ed.d)}"></label>
+      <label class="fld"><span class="fld-l">School</span><input class="fi" id="edu-s" placeholder="University or institution" value="${esc(ed.s)}"></label>
       <div class="row2">
-        <input class="fi" id="edu-y" placeholder="Grad. year" value="${esc(ed.y)}">
-        <input class="fi" id="edu-g" placeholder="GPA" title="GPA (optional)" value="${esc(ed.g)}">
+        <label class="fld"><span class="fld-l">Graduation year</span><input class="fi" id="edu-y" placeholder="e.g. 2020" value="${esc(ed.y)}"></label>
+        <label class="fld"><span class="fld-l">GPA (optional)</span><input class="fi" id="edu-g" placeholder="e.g. 4.2" value="${esc(ed.g)}"></label>
       </div>
     </div>
     <div class="modal-btns">
@@ -3521,7 +4002,7 @@ function addMissingKW(kw,el){
   if(!skills.includes(kw)){
     skills.push(kw);renderSk();rCV();upATS();
     el.style.background='#DEF4EA';el.style.color='#0E6B49';el.style.borderColor='#B8E8CE';
-    el.textContent='✓ '+kw;el.onclick=null;
+    el.textContent=kw;el.onclick=null;
     toast(`"${kw}" added to skills`,'ok',1800);
     runJDMatch();
   }
@@ -3532,7 +4013,7 @@ function applyRewriteSummary(text,btn){
   if(sf){
     sf.value=text;
     rCV();upATS();saveDraft();
-    btn.textContent='Applied ✓';
+    btn.textContent='Applied';
     btn.style.background='#DEF4EA';btn.style.color='#0E6B49';
     btn.onclick=null;
     toast('Summary updated','ok',1800);
@@ -3545,7 +4026,7 @@ async function aiFullAnalysis(){
   const btn=gi('btn-ai'),out=gi('ai-out');
   btn.disabled=true;
   btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Analysing…';
-  out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  out.innerHTML=AI_SKEL;
 
   const jd=v('jd-text');
   const cvBlock=`Name: ${v('f-name')||'(none)'}
@@ -3619,7 +4100,7 @@ Extra rules:
         </div>`;
       const applyBtn=box.querySelector('[data-act="apply"]'),copyBtn=box.querySelector('[data-act="copy"]');
       applyBtn.onclick=()=>applyRewriteSummary(flatRewrite,applyBtn);
-      copyBtn.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(flatRewrite).then(()=>{copyBtn.textContent='Copied ✓';setTimeout(()=>copyBtn.textContent='Copy text',1800);});};
+      copyBtn.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(flatRewrite).then(()=>{copyBtn.textContent='Copied';setTimeout(()=>copyBtn.textContent='Copy text',1800);});};
       out.appendChild(box);
     }
 
@@ -3650,7 +4131,7 @@ function copyRewrite(btn){
   navigator.clipboard.writeText(text).then(()=>{
     toast('Copied to clipboard','ok',1600);
     const orig=btn.textContent;
-    btn.textContent='Copied ✓';
+    btn.textContent='Copied';
     setTimeout(()=>btn.textContent=orig,1500);
   }).catch(()=>toast('Could not copy. Select the text and copy it','err'));
 }
@@ -3660,7 +4141,7 @@ async function jdAIAnalysis(){
   btn.disabled=true;
   btn.innerHTML='<span class="spin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/><path d="M12 3a9 9 0 0 0-9 9" stroke-linecap="round" opacity=".3"/></svg></span> Analysing…';
   out.style.display='block';
-  out.innerHTML='<div style="display:flex;gap:3px;padding:2px 0"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  out.innerHTML=AI_SKEL;
   const jd=v('jd-text').slice(0,1500);
   const cv=`Name: ${v('f-name')}, Title: ${v('f-title')}, Summary: ${v('f-sum')}, Experience: ${exps.map(e=>e.t+' at '+e.co).join(', ')}, Skills: ${skills.join(', ')}`;
   try{
@@ -3810,6 +4291,8 @@ function ivRefreshChecks(){
     row(r.jdOk,'Job description added','Paste the job description first','jd','Open JD Match');
   gi('iv-start').disabled=!r.ok;
   gi('iv-start').style.opacity=r.ok?'':'.5';
+  const hint=gi('iv-start-hint');
+  if(hint)hint.textContent=r.ok?'':(r.cvOk?'Paste a job post first. Use "Open JD Match" above.':'Add your name and one role first. Use "Open Build" above.');
 }
 
 // The interviewer's brief. Context budget keeps system + CV + JD under the proxy's 9000-char cap.
@@ -3906,6 +4389,32 @@ const IV_TYPE_NOTES={
   panel:'Probing and sceptical. Expect pushback.'
 };
 function ivTypeNote(){gi('iv-type-note').textContent=IV_TYPE_NOTES[v('iv-type')]||'';}
+
+// The setup screen: interviewer cards and two switches. They drive the (hidden) selects that the
+// interview code reads, so nothing else needed to change.
+function ivBuildSetup(){
+  gi('iv-cards').innerHTML=Object.entries(IV_TYPES).map(([k,t])=>`<button type="button" role="radio" class="iv-card-pick" data-v="${k}" aria-checked="false" onclick="ivPick('iv-type','${k}')">
+    <span class="iv-av" style="--h:${t.hue}" aria-hidden="true">${esc(t.name.split(' ').map(w=>w[0]).join(''))}</span>
+    <span class="iv-card-t"><strong>${esc(t.name)}</strong><span>${esc(t.title)}</span><em>${esc(IV_TYPE_NOTES[k]||'')}</em></span></button>`).join('');
+  gi('iv-seg-mode').innerHTML=`<button type="button" role="radio" data-v="text" onclick="ivPick('iv-mode','text')">Text chat</button><button type="button" role="radio" data-v="voice" id="iv-seg-voice" onclick="ivPick('iv-mode','voice')">Voice call</button>`;
+  gi('iv-seg-count').innerHTML=`<button type="button" role="radio" data-v="5" onclick="ivPick('iv-count','5')">5 questions<small>about 10 min</small></button><button type="button" role="radio" data-v="8" onclick="ivPick('iv-count','8')">8 questions<small>about 20 min</small></button>`;
+  ivSetupSync();
+}
+function ivPick(selId,val){
+  const el=gi(selId),opt=[...el.options].find(o=>o.value===val);
+  if(!opt||opt.disabled)return;
+  el.value=val;
+  if(selId==='iv-type')ivTypeNote();
+  ivSetupSync();
+}
+function ivSetupSync(){
+  const mark=(sel,val)=>document.querySelectorAll(sel).forEach(b=>{const on=b.dataset.v===val;b.classList.toggle('on',on);b.setAttribute('aria-checked',on?'true':'false');});
+  mark('#iv-cards .iv-card-pick',v('iv-type'));
+  mark('#iv-seg-mode button',v('iv-mode'));
+  mark('#iv-seg-count button',v('iv-count'));
+  const vb=gi('iv-seg-voice'),vo=gi('iv-mode').querySelector('option[value="voice"]');
+  if(vb&&vo)vb.disabled=!!vo.disabled;
+}
 
 function voConfigureSetup(){
   const ok=voiceSupported();
@@ -4842,6 +5351,7 @@ gi('iv-answer').addEventListener('input',()=>{
 voConfigureSetup();
 ivTypeNote();
 ivhRender();
+ivBuildSetup();
 // Browsers load their voice list late; refresh the lobby's list when it arrives.
 if('speechSynthesis' in window&&speechSynthesis.addEventListener)speechSynthesis.addEventListener('voiceschanged',()=>{if(MEET.open&&MEET.stage==='lobby')lobbyFillVoices();});
 document.addEventListener('keydown',e=>{
@@ -4854,7 +5364,7 @@ gi('iv-answer').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key=
 function addKW(s,btn){
   if(!skills.includes(s)){
     skills.push(s);renderSk();rCV();upATS();runJDMatch();
-    btn.className='kw-pill added';btn.textContent='✓ '+s;btn.onclick=null;
+    btn.className='kw-pill added';btn.textContent=s;btn.onclick=null;
     toast(`"${s}" added to skills`,'ok',1800);
   }
 }
@@ -4884,7 +5394,7 @@ function renderWeakWords(){
   if(!box)return;
   const hits=scanWeakWords();
   if(!hits.length){
-    box.innerHTML=`<div class="ats-tip-box" style="background:#F2FAF6"><div style="font-size:14px;flex-shrink:0">✓</div><span style="color:#0E6B49">No buzzwords found. Your wording is clear.</span></div>`;
+    box.innerHTML=`<div class="ats-tip-box" style="background:#F2FAF6"><div style="flex-shrink:0;display:flex;padding-top:4px;color:#0E6B49">${ICO_CHECK}</div><span style="color:#0E6B49">No buzzwords found. Your wording is clear.</span></div>`;
     return;
   }
   box.innerHTML=hits.map(h=>`
@@ -4983,9 +5493,11 @@ function upATS(){
   renderWeakWords();
 
   sc=Math.min(sc,100);
-  gi('ats-num').textContent=sc;
+  // A blank CV shows neutral dashes in the header instead of a scary red 0
+  const blank=cvIsEmpty();
+  gi('ats-num').textContent=blank?'–':sc;
   const atsNumEl=gi('ats-num');
-  if(atsNumEl)atsNumEl.style.color=sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B';
+  if(atsNumEl)atsNumEl.style.color=blank?'var(--muted)':sc>=70?'#1AA371':sc>=40?'#C8860D':'#E14B4B';
 
   // ── RECRUITER SCORE (rule-based, instant) ──
   // Measures human appeal: focused title, concrete bullets, complete dates,
@@ -5023,19 +5535,26 @@ function upATS(){
   else if(exps.length===1){rsc+=5;}
   rsc=Math.min(rsc,100);
 
-  gi('rec-num').textContent=rsc;
+  gi('rec-num').textContent=blank?'–':rsc;
   const recNumEl=gi('rec-num');
-  if(recNumEl)recNumEl.style.color=rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B';
+  if(recNumEl)recNumEl.style.color=blank?'var(--muted)':rsc>=70?'#4F5BD5':rsc>=40?'#C8860D':'#E14B4B';
 
   // ── INTERVIEW PROBABILITY ──
   let prob='—',probColor='#9A9880',probBg='#E7E6E2';
-  if(sc>=75&&rsc>=70){prob='High';probColor='#0E6B49';probBg='#1AA371';}
+  if(blank){/* nothing to judge yet: stay neutral */}
+  else if(sc>=75&&rsc>=70){prob='High';probColor='#0E6B49';probBg='#1AA371';}
   else if(sc>=55&&rsc>=55){prob='Medium';probColor='#92610A';probBg='#C8860D';}
   else if(sc>0||rsc>0){prob='Low';probColor='#9A2E2E';probBg='#E14B4B';}
   const probDot=gi('interview-prob-dot');
   const probLbl=gi('interview-prob-lbl');
   if(probDot)probDot.style.background=probBg;
   if(probLbl){probLbl.textContent=prob;probLbl.style.color=probColor;}
+  // The colour dot and word are also spoken and shown as a tooltip, so status never depends on colour alone
+  const sbadge=document.querySelector('.score-badge');
+  if(sbadge){
+    const said=blank?'No score yet. Add your details to see it':`Interview chance ${prob==='—'?'not rated yet':prob}. ATS score ${sc}, recruiter score ${rsc}`;
+    sbadge.setAttribute('aria-label',said+'. Open score details');sbadge.title=said;
+  }
 
   // ── ATS PANEL: show both scores + gap analysis ──
   const bd=gi('ats-bd');
@@ -5105,7 +5624,7 @@ function upATS(){
   if(tips){
     tips.innerHTML=ATS_TIPS.map(t=>`
       <div class="ats-tip-box" style="background:${t.ok?'#F2FAF6':'#FCF1F1'}">
-        <div style="font-size:14px;flex-shrink:0">${t.ok?'✓':'✕'}</div>
+        <div style="flex-shrink:0;display:flex;padding-top:4px;color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.ok?ICO_CHECK:ICO_X}</div>
         <span style="color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.txt}</span>
       </div>`).join('');
   }
@@ -5119,6 +5638,7 @@ async function fixCheck(type,btn){
   const flash=(id,color)=>{
     const el=gi(id);if(!el)return;
     swTab('build',document.querySelector('.tab'));
+    secReveal(el);
     setTimeout(()=>{
       el.scrollIntoView({behavior:'smooth',block:'center'});
       el.focus?.();
@@ -5169,7 +5689,7 @@ async function fixCheck(type,btn){
       setTimeout(()=>{const s=document.querySelector('.sec-additional');if(s)s.scrollIntoView({behavior:'smooth',block:'center'});},450);
       toast('Add a short note about the gap','default',4000);
     }
-    btn.textContent='Done ✓';
+    btn.textContent='Done';
     setTimeout(()=>{btn.disabled=false;btn.textContent='Fix with AI';},3000);
   }catch(err){
     console.error('[CVCraft] fixCheck error:',err);
@@ -5285,7 +5805,7 @@ function showSimPasteFallback(){
   fb.id='sim-paste-fallback';
   fb.style.cssText='margin-top:10px';
   fb.innerHTML=`<label style="font-size:12.5px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">Paste CV text instead</label>
-    <textarea id="sim-paste-text" class="fi" rows="5" placeholder="Paste your CV text here" style="resize:vertical;font-size:13px;line-height:1.6" oninput="if(this.value.trim().length>50){simUploadedCVText=this.value;const s=gi('sim-upload-status');if(s){s.style.background='#DEF4EA';s.style.color='#0E6B49';s.innerHTML='✓ Text ready — '+this.value.trim().split(/\\s+/).length+' words';}}" ></textarea>`;
+    <textarea id="sim-paste-text" class="fi" rows="5" placeholder="Paste your CV text here" style="resize:vertical;font-size:13px;line-height:1.6" oninput="if(this.value.trim().length>50){simUploadedCVText=this.value;const s=gi('sim-upload-status');if(s){s.style.background='#DEF4EA';s.style.color='#0E6B49';s.innerHTML='Text ready — '+this.value.trim().split(/\\s+/).length+' words';}}" ></textarea>`;
   zone.appendChild(fb);
 }
 
@@ -5449,6 +5969,7 @@ function simApplyImprovement(suggestion,btn){
     color=color||'#7C3AED';
     const el=gi(id);if(!el)return;
     swTab('build',document.querySelector('.tab'));
+    secReveal(el);
     setTimeout(()=>{
       el.scrollIntoView({behavior:'smooth',block:'center'});
       if(el.focus)el.focus();
@@ -5599,7 +6120,7 @@ ${simUploadedCVText.slice(0,6000)}`;
     rCV();upATS();saveDraft();
     swTab('build',document.querySelector('.tab'));
 
-    btn.innerHTML='Imported ✓';
+    btn.innerHTML='Imported';
     btn.style.background='#0A0A12';
     btn.style.color='#fff';
     btn.onclick=null;
@@ -5689,7 +6210,7 @@ Only include experience entries where the bullets actually need improvement. Ind
 
     rCV();upATS();saveDraft();
     swTab('build',document.querySelector('.tab'));
-    btn.innerHTML=`✓ ${changed} improvement${changed>1?'s':''} applied`;
+    btn.innerHTML=`${changed} improvement${changed>1?'s':''} applied`;
     btn.style.background='#0A0A12';
     btn.onclick=null;
     toast(`${changed} improvement${changed>1?'s':''} applied — check the Build tab`,'ok',4000);
@@ -5992,7 +6513,7 @@ function getData(){
     li:liRaw,
     liLink:buildSocialLinksHTML(AC),           // for light templates — uses accent colour
     liLinkDark:buildSocialLinksHTML('rgba(255,255,255,0.85)'), // for dark-bg templates
-    sum:v('f-sum')||'Experienced professional delivering measurable results in fast-paced environments. Skilled at building cross-functional teams and driving product outcomes from concept to launch with a focus on quality and user impact.',
+    sum:v('f-sum')||'Your professional summary appears here: two or three sentences about who you are and what you do best.',
     certs,langs,projs,socials,
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
@@ -6591,18 +7112,18 @@ function updateProgress(){
   if(bar){bar.style.width=pct+'%';bar.style.background=pct>=75?'#1AA371':pct>=40?'#C8860D':'var(--ac)';}
   const pctEl=gi('cv-progress-pct');if(pctEl)pctEl.textContent=pct+'%';
   const chips=gi('cv-step-chips');
-  if(chips)chips.innerHTML=steps.map(s=>`<span class="cv-step-chip ${s.done?'done':'todo'}">${s.done?'✓ ':''}<span style="font-size:10px">${s.l}</span></span>`).join('');
+  if(chips)chips.innerHTML=steps.map(s=>`<span class="cv-step-chip ${s.done?'done':'todo'}">${s.done?ICO_CHECK:''}<span>${s.l}</span></span>`).join('');
 
   // ── Section completion dots ──
   const personal=v('f-name').trim()&&v('f-email').trim();
   const pdot=gi('lbl-personal');
-  if(pdot){pdot.textContent=personal?'✓':'';pdot.classList.toggle('visible',!!personal);}
+  if(pdot){pdot.innerHTML=personal?ICO_CHECK:'';pdot.classList.toggle('visible',!!personal);}
   const edot=gi('lbl-exp');
-  if(edot){edot.textContent=exps.length?`✓ ${exps.length} role${exps.length>1?'s':''}`:' ';edot.classList.toggle('visible',exps.length>0);}
+  if(edot){edot.innerHTML=exps.length?`${ICO_CHECK}<span>${exps.length} role${exps.length>1?'s':''}</span>`:' ';edot.classList.toggle('visible',exps.length>0);}
   const eddot=gi('lbl-edu');
-  if(eddot){eddot.textContent=edus.length?'✓':'';eddot.classList.toggle('visible',edus.length>0);}
+  if(eddot){eddot.innerHTML=edus.length?ICO_CHECK:'';eddot.classList.toggle('visible',edus.length>0);}
   const skdot=gi('lbl-skills');
-  if(skdot){skdot.textContent=skills.length?`✓ ${skills.length}`:' ';skdot.classList.toggle('visible',skills.length>=3);}
+  if(skdot){skdot.innerHTML=skills.length?`${ICO_CHECK}<span>${skills.length}</span>`:' ';skdot.classList.toggle('visible',skills.length>=3);}
 
   // ── Contextual nudge strip ──
   const nudge=gi('cv-nudge');
@@ -6644,6 +7165,8 @@ function updateProgress(){
 }
 
 function rCV(){
+  document.body.classList.toggle('cv-empty',cvIsEmpty());
+  try{updateStartCard();}catch(_){}
   const d=getData();
   const safeD=escData(d);
   try{
@@ -6658,6 +7181,8 @@ function rCV(){
   const tplInfo=TPLS[CT]||TPLS.classic;
   gi('tpl-nm-lbl').textContent=tplInfo.name;
   gi('tpl-desc').textContent=tplInfo.desc;
+  const tq=gi('tpl-quick');if(tq&&tq.value!==CT)tq.value=CT;
+  try{updateTargetChip();}catch(_){}
   upATS();runJDMatch();
   try{updateProgress();}catch(_){}
   try{updateSimFormPreview();}catch(_){}
@@ -6785,7 +7310,14 @@ function isCanvasBlank(canvas){
   }
 }
 
+// Exports always render in the light theme, whatever theme the app is showing, and the theme comes back after.
 async function doExport(){
+  const root=document.documentElement,wasDark=root.getAttribute('data-theme')==='dark';
+  if(wasDark)root.removeAttribute('data-theme');
+  try{await doExportInner();}
+  finally{if(wasDark)root.setAttribute('data-theme','dark');}
+}
+async function doExportInner(){
   closeExport();
   track('cv_exported',exportSel);
   // Build filename from user's name — e.g. "adefila-samuel-cv.pdf"
@@ -7128,13 +7660,14 @@ window.addEventListener('unhandledrejection',e=>logError('promise',e.reason?.mes
 
 function init(){
   try{loadDraft();}catch(e){console.error('[CVCraft] loadDraft failed:',e);}
-  try{buildTplCatRow();buildTplGrid();buildColorGrid();}catch(e){console.error('[CVCraft] buildTpl failed:',e);}
+  try{buildTplCatRow();buildTplGrid();buildColorGrid();buildTplQuick();}catch(e){console.error('[CVCraft] buildTpl failed:',e);}
+  try{buildAccordions();setupTabsA11y();setupPreviewFab();syncThemeLabel();}catch(e){console.error('[CVCraft] accordions/tabs failed:',e);}
   try{renderSk();renderSocialLinks();}catch(e){console.error('[CVCraft] renderSk failed:',e);}
   try{renderExpList();renderEduList();renderProjList();renderCertList();renderLangList();}catch(e){console.error('[CVCraft] renderLists failed:',e);}
   try{
     gi('ats-tips').innerHTML=ATS_TIPS.map(t=>`
     <div class="ats-tip-box" style="background:${t.ok?'#F2FAF6':'#FCF1F1'}">
-      <div style="font-size:14px;flex-shrink:0">${t.ok?'✓':'✕'}</div>
+      <div style="flex-shrink:0;display:flex;padding-top:4px;color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.ok?ICO_CHECK:ICO_X}</div>
       <span style="font-size:14.5px;color:${t.ok?'#0E6B49':'#9A2E2E'}">${t.txt}</span>
     </div>`).join('');
   }catch(e){}

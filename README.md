@@ -30,6 +30,13 @@ Without the key, AI features show a clear error. Everything else — templates, 
 - 33 templates in six categories: Minimal (7), Modern (6), Executive (4), Creative (4), Technical (6), Bold (6)
 - 8 accent colours that apply to every template
 - Experience, education, projects, certifications, languages, social links, work authorisation
+- **Start screen** for an empty CV with three paths: build it with AI, import a current CV (PDF, Word `.docx`, text file or pasted text; the Word file is read in the browser with no extra library), or start from a blank form. A blank CV shows neutral dashes instead of a red score.
+- **Target job chip** in the preview header shows which job post the CV is aimed at (it feeds JD Match, the cover letter and the interview) and jumps to the JD tab. The JD tab explains what it gives you and offers a sample job post.
+- **Quick template switcher** in the preview header; the Templates tab still has the full gallery.
+- **Collapsible Build sections** (with "Collapse all"), a next-step strip that stays in view, and persistent field labels.
+- **Phones and tablets:** a floating "Preview CV / Edit CV" button jumps between the form and the CV.
+- **Dark theme (beta)**, opt-in from the "..." menu and remembered. The CV preview and every export stay white and always render in the light theme.
+- **Accessibility:** tabs use proper roles and arrow keys, dialogs trap focus, close with Esc and return focus, status is never colour-only, and small text is kept at 12px or more.
 - Autosave to the browser, plus backup/restore as a JSON file
 - **CV versions** — save named copies (e.g. "Google — Product Manager") and switch between them in one click
 - Live page-length indicator (1 page / ≈1.4 pages / long)

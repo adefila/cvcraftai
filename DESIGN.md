@@ -39,6 +39,18 @@ One easing (`--ease: cubic-bezier(.22,1,.36,1)`), three durations: 120ms (state 
 - Entrance animations run only before and during playback (`backwards`), so they never freeze hover transforms.
 - `prefers-reduced-motion: reduce` turns every animation and transition effectively off.
 
+## First run and flow
+- An empty CV shows a start card (build with AI, import, blank form). The header badge stays neutral until there is content, and the preview is labelled "example".
+- One target job (the pasted job post) is shown as a chip in the preview header, because four features use it.
+- Interview setup uses interviewer cards and two segmented switches that drive hidden selects, so the interview code did not change.
+
+## Theme and accessibility
+- Dark theme is opt-in (`data-theme="dark"` on `<html>`, key `cvcraftai-theme`). It redefines the tokens, then overrides the few surfaces with hard-coded light colours and the colours scripts write inline. `.paper` and `#print-target` reset the tokens to light, and `doExport` removes the theme while exporting.
+- Check dark mode with a contrast scan (text under 3.2:1 on its real background) on every tab and dialog.
+- Dialogs go through `mkModal`: role="dialog", focus moves in and is trapped, Esc closes, focus returns to the opener.
+- Tabs: `role="tablist"`, arrow keys, roving tabindex. `role="button"` elements already activate on Enter and Space (global handler), so do not add another key handler.
+- Loading AI answers show a skeleton (`AI_SKEL`). Check marks use `ICO_CHECK` / `ICO_X` instead of text glyphs.
+
 ## Rules for future changes
 - Colour, radius, shadow and timing come from tokens. Do not add one-off values.
 - New buttons and fields reuse the existing classes (`btn-pill`, `btn-pill-outline`, `btn-pill-sm`, `fi`).
