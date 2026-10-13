@@ -842,7 +842,10 @@ body.meet-open{overflow:hidden}
     display:none!important;
   }
   html,body{width:210mm;height:auto;overflow:visible;background:#fff;margin:0;padding:0}
-  #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff;width:210mm}
+  /* @page margin stays 0 (that hides the browser's URL/date headers), so the page
+     spacing lives here: clone repeats the top/bottom padding on every printed page */
+  #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff;width:210mm;
+    padding:14mm 40px!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}
   /* Keep each entry intact — never split one job/degree across two pages */
   .entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,
   .zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,
@@ -7602,21 +7605,23 @@ async function doExportInner(){
         '.chr-ex','.serif-ex','.split-ex','.pro-ex',
       ].join(',');
 
-      const TOP_PAD=36*SCALE;
+      const TOP_PAD=48*SCALE;
       const paperRect=paperEl.getBoundingClientRect();
       const blocks=[...paperEl.querySelectorAll(protectedSel)].map(el=>{
         const r=el.getBoundingClientRect();
         return{top:Math.max(0,(r.top-paperRect.top)*SCALE), bottom:Math.max(0,(r.bottom-paperRect.top)*SCALE)};
       }).filter(b=>b.bottom>b.top+2);
 
+      // Blank band kept at the foot of every page so text never runs to the edge
+      const BOTTOM_PAD=40*SCALE;
       const pageHeightPx=PAGE_H*SCALE;
-      const contPageH=pageHeightPx-TOP_PAD;
+      const contPageH=pageHeightPx-TOP_PAD-BOTTOM_PAD;
       const MARGIN=28*SCALE;
       const totalH=canvas.height;
       const cuts=[0];
       let pos=0,pageIdx=0;
       while(pos<totalH-1){
-        const availH=pageIdx===0?pageHeightPx:contPageH;
+        const availH=pageIdx===0?pageHeightPx-BOTTOM_PAD:contPageH;
         let target=Math.min(pos+availH,totalH);
         if(target<totalH){
           const hit=blocks.find(b=>b.top<target&&b.bottom>target);
