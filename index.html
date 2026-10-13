@@ -176,7 +176,8 @@ button svg,a svg{transition:opacity .15s,transform .15s}
    later plain rule even while its condition matches. ── */
 @media (max-width:1023px){
   html,body{height:auto;overflow:auto}
-  .bar{position:static;height:auto}
+  /* relative + z-index keeps the ⋯ menu above the sticky nudge strip (backdrop-filter makes the bar its own layer) */
+  .bar{position:relative;z-index:200;height:auto}
   .ws-outer{height:auto;min-height:100vh;display:block;padding-top:0}
   .ws{display:block;height:auto;max-width:100%}
   .pnl{display:none;height:auto;max-height:none;border-right:none;border-bottom:1px solid #E4E2DC;width:100%}
@@ -244,6 +245,7 @@ a:focus-visible,[tabindex]:focus-visible{
 .ai-lbl{font-size:12.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ac);margin-bottom:11px;display:flex;align-items:center;gap:6px}
 .ai-row{display:flex;flex-direction:column;gap:9px}
 .ai-out{font-size:14.5px;color:#33345E;background:#fff;border:1px solid #E6E5F7;border-radius:12px;padding:14px 16px;margin-top:11px;line-height:1.65;min-height:40px}
+.ai-out:empty,.sim-out:empty,.ai-write-out:empty{display:none!important}  /* never show a blank result box */
 .ai-disclaimer{font-size:12px;color:#8A8AA8;margin-top:10px;line-height:1.5;display:flex;align-items:flex-start;gap:6px}
 .kw-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .kw-pill{background:#EFEFFB;color:#3D3FA0;border:none;border-radius:999px;font-size:13px;font-weight:600;padding:6px 13px;cursor:pointer;font-family:var(--ff-b);transition:all .15s}
