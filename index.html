@@ -1884,7 +1884,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
           <textarea class="fi" id="cl-text" rows="14" aria-label="Cover letter draft" style="margin-top:12px;resize:vertical;font-size:13.5px;line-height:1.65"></textarea>
           <div class="cl-actions">
             <button class="btn-pill-outline" type="button" onclick="copyCoverLetter()">Copy</button>
-            <button class="btn-pill" type="button" onclick="downloadCoverLetter()" style="flex:1;justify-content:center">Download .txt</button>
+            <button class="btn-pill" type="button" onclick="downloadCoverLetter()" style="flex:1;justify-content:center">Download PDF</button>
           </div>
         </div>
       </div>
@@ -4427,15 +4427,73 @@ function copyCoverLetter(){
     navigator.clipboard.writeText(ta.value).then(done).catch(()=>{ta.select();document.execCommand('copy');done();});
   }else{ta.select();document.execCommand('copy');done();}
 }
+// Real-text PDF (selectable, ATS-readable): letterhead with name, title and contacts,
+// an accent rule in the CV colour, the date and recipient, then the letter body.
 function downloadCoverLetter(){
-  const text=gi('cl-text').value;
-  if(!text.trim())return;
+  const text=gi('cl-text').value.trim();
+  if(!text)return;
+  if(!window.jspdf){toast('PDF tools did not load. Refresh and try again','err',4000);return;}
+  const{jsPDF}=window.jspdf;
+  const pdf=new jsPDF({unit:'pt',format:'a4',orientation:'portrait'});
+  // The built-in Helvetica only covers Latin-1, so map common typography to safe characters
+  const clean=t=>t.replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/…/g,'...')
+    .replace(/[–—]/g,'-').replace(/ /g,' ').replace(/[^\x09\x0A\x0D\x20-\x7E -ÿ]/g,'');
+  const hex=/^#[0-9a-f]{6}$/i.test(AC)?AC:'#4F5BD5';
+  const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+  const W=pdf.internal.pageSize.getWidth(),H=pdf.internal.pageSize.getHeight();
+  const M=64,TW=W-M*2,BOTTOM=H-60;
+  const INK=[21,21,26],MUTED=[107,107,114];
+  let y=72;
+
+  const name=clean(v('f-name').trim());
+  const title=clean(v('f-title').trim());
+  const contacts=[v('f-email'),v('f-phone'),v('f-loc')].map(x=>clean(x.trim())).filter(Boolean);
+
+  // Letterhead
+  pdf.setTextColor(...INK);pdf.setFont('helvetica','bold');pdf.setFontSize(24);
+  if(name){pdf.text(name,M,y);y+=20;}
+  if(title){
+    pdf.setFont('helvetica','bold');pdf.setFontSize(9.5);pdf.setTextColor(...rgb);
+    pdf.text(title.toUpperCase(),M,y,{charSpace:1.2});y+=16;
+  }
+  if(contacts.length){
+    pdf.setFont('helvetica','normal');pdf.setFontSize(9.5);pdf.setTextColor(...MUTED);
+    pdf.splitTextToSize(contacts.join('   |   '),TW).forEach(l=>{pdf.text(l,M,y);y+=13;});
+  }
+  y+=8;pdf.setDrawColor(...rgb);pdf.setLineWidth(1.6);pdf.line(M,y,W-M,y);y+=34;
+
+  // Date and recipient
+  pdf.setFont('helvetica','normal');pdf.setFontSize(10.5);pdf.setTextColor(...MUTED);
+  pdf.text(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),M,y);y+=26;
+  const manager=clean(v('cl-manager').trim()),company=clean(v('cl-company').trim());
+  if(manager||company){
+    pdf.setTextColor(...INK);
+    if(manager){pdf.setFont('helvetica','bold');pdf.text(manager,M,y);y+=15;}
+    if(company){pdf.setFont('helvetica','normal');pdf.text(company,M,y);y+=15;}
+    y+=14;
+  }
+
+  // Body: paragraphs split on blank lines; the closing name is set in bold
+  const LH=16.5;
+  pdf.setFontSize(11);pdf.setTextColor(...INK);
+  const paras=clean(text).split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+  paras.forEach((para,pi)=>{
+    para.split('\n').forEach(raw=>{
+      const line=raw.trim();
+      const isSig=pi===paras.length-1&&name&&line===name;
+      pdf.setFont('helvetica',isSig?'bold':'normal');
+      pdf.splitTextToSize(line,TW).forEach(l=>{
+        if(y>BOTTOM){pdf.addPage();y=72;}
+        pdf.text(l,M,y);y+=LH;
+      });
+    });
+    y+=LH*0.6;
+  });
+
   const safe=(v('f-name').trim()||'cover-letter').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const url=URL.createObjectURL(new Blob([text+'\n'],{type:'text/plain;charset=utf-8'}));
-  const a=document.createElement('a');
-  a.href=url;a.download=`${safe}-cover-letter.txt`;
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  pdf.setProperties({title:`${name||'Cover letter'} - Cover letter`});
+  pdf.save(`${safe}-cover-letter.pdf`);
+  track('cover_letter_pdf');
   toast('Cover letter downloaded','ok');
 }
 
