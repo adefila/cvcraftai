@@ -2495,10 +2495,10 @@ function track(name,label){
   }catch(e){}
 }
 function loadAnalytics(){
-  if(document.getElementById('va-script'))return;
-  const s=document.createElement('script');
-  s.id='va-script';s.defer=true;s.src='/_vercel/insights/script.js';
-  document.head.appendChild(s);
+  // Analytics is provider-side now: enable Web Analytics in the Cloudflare
+  // Pages dashboard (no code needed). The old Vercel script (/_vercel/...)
+  // 404s on Pages, so nothing is injected here. track() still queues into
+  // window.vaq harmlessly if no provider script is present.
 }
 function setConsent(c){
   try{localStorage.setItem(CONSENT_KEY,c);}catch(e){}
