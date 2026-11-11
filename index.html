@@ -1752,6 +1752,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
       <div class="sk-tags" id="sk-tags"></div>
       <div class="sk-row">
         <input class="fi" id="sk-inp" placeholder="Add skill & press Enter" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}" list="skill-suggestions" autocomplete="off">
+        <input class="fi" id="sk-cat" placeholder="Category (optional)" style="width:150px" list="skill-cat-suggestions" autocomplete="off">
         <datalist id="skill-suggestions">
           <option>JavaScript</option><option>TypeScript</option><option>Python</option><option>React</option><option>Next.js</option><option>Node.js</option><option>Vue.js</option><option>Angular</option><option>HTML</option><option>CSS</option><option>Tailwind CSS</option>
           <option>Figma</option><option>Framer</option><option>Webflow</option><option>Adobe XD</option><option>Sketch</option><option>Illustrator</option><option>Photoshop</option><option>After Effects</option><option>Principle</option>
@@ -2285,7 +2286,7 @@ function applySnapshot(data){
     el.value=val;
   });
   const refsEl=gi('f-refs');if(refsEl&&data.refs!==undefined)refsEl.checked=data.refs;
-  if(Array.isArray(data.skills))skills=data.skills;
+  if(Array.isArray(data.skills))skills=data.skills.map(s=>typeof s==='string'?{n:s,c:'General'}:s);
   if(Array.isArray(data.exps))exps=data.exps;
   if(Array.isArray(data.edus))edus=data.edus;
   if(Array.isArray(data.certs))certs=data.certs;
@@ -2663,7 +2664,7 @@ function abApply(o,f){
   if(f.phone)set('f-phone',f.phone);
   if(f.loc)set('f-loc',f.loc);
   set('f-sum',S(o.summary,600));
-  skills=[...new Set(arr(o.skills).map(x=>S(x,40)).filter(Boolean))].slice(0,14);
+  skills=[...new Set(arr(o.skills).map(x=>typeof x==='string'?{n:S(x,40),c:'General'}:{n:S(x.name||x,40),c:x.category||'General'}).filter(x=>x.n))].slice(0,14);
   exps=arr(o.exps).map(x=>{
     const present=!!(x&&x.present);
     return{t:S(x&&x.t,80),co:S(x&&x.co,80),s:S(x&&x.s,20),e:present?'Present':S(x&&x.e,20),present,d:arr(x&&x.bullets).map(b=>S(b,220)).filter(Boolean).slice(0,4).join('\n')};
@@ -2784,7 +2785,7 @@ async function openTailor(){
   const body=gi('tl-body'),applyBtn=gi('tl-apply');
   const cvText=getCVText(),before=jdMatchFor(jd,cvText),missing=before.missing;
   const roleBlock=tailorRoles().slice(0,5).map(x=>`Role ${x.r}: ${x.t}${x.co?' at '+x.co:''}\n`+x.lines.slice(0,6).map((l,i)=>`  [r${x.r} l${i}] ${l}`).join('\n')).join('\n');
-  const msg=`MISSING KEYWORDS: ${missing.join(', ')||'(none)'}\n\nCURRENT TITLE: ${v('f-title').trim()||'(none)'}\nCURRENT SUMMARY: ${v('f-sum').trim()||'(none)'}\n\nEXPERIENCE (bullets are numbered):\n${roleBlock}\n\nSKILLS: ${skills.join(', ')||'(none)'}\n\nJOB POST:\n${jd.slice(0,2400)}`;
+  const msg=`MISSING KEYWORDS: ${missing.join(', ')||'(none)'}\n\nCURRENT TITLE: ${v('f-title').trim()||'(none)'}\nCURRENT SUMMARY: ${v('f-sum').trim()||'(none)'}\n\nEXPERIENCE (bullets are numbered):\n${roleBlock}\n\nSKILLS: ${skNames().join(', ')||'(none)'}\n\nJOB POST:\n${jd.slice(0,2400)}`;
   let P;
   const fail=t=>{
     body.textContent='';
@@ -2843,7 +2844,7 @@ async function openTailor(){
     const st={};
     const s=sel.find(x=>x.kind==='sum');if(s)st.sum=s.data;
     const t=sel.find(x=>x.kind==='title');if(t)st.title=t.data;
-    const add=sel.filter(x=>x.kind==='skill').map(x=>x.data);if(add.length)st.skills=[...skills,...add];
+    const add=sel.filter(x=>x.kind==='skill').map(x=>typeof x.data==='string'?{n:x.data,c:'General'}:x.data);if(add.length)st.skills=[...skills,...add];
     const bs=sel.filter(x=>x.kind==='bullet').map(x=>x.data);
     if(bs.length)st.exps=exps.map((e,r)=>{
       const mine=bs.filter(b=>b.r===r);if(!mine.length)return e;
@@ -3577,10 +3578,16 @@ function setAC(color,el){
 }
 
 // ── SKILLS ──
+const SKILL_CATS=['Technical','Tools','Soft Skills','Languages','Domain','Other'];
+function skName(s){return typeof s==='string'?s:(s&&s.n)||'';}
+function skCat(s){return typeof s==='string'?'General':(s&&s.c)||'General';}
+function skNames(){return skills.map(skName);}
 function addSk(){
   const inp=gi('sk-inp'),s=inp.value.trim();
-  if(s&&!skills.includes(s)){
-    skills.push(s);inp.value='';renderSk();rCV();upATS();
+  const catInp=gi('sk-cat');const cat=(catInp&&catInp.value.trim())||'General';
+  const nameOnly=skills.map(skName);
+  if(s&&!nameOnly.includes(s)){
+    skills.push({n:s,c:cat});inp.value='';if(catInp)catInp.value='';renderSk();rCV();upATS();
     toast('Skill added','ok',1600);
   }
   inp.focus();
@@ -3588,7 +3595,7 @@ function addSk(){
 function rmSk(i){skills.splice(i,1);renderSk();rCV();upATS();}
 function renderSk(){
   gi('sk-tags').innerHTML=skills.map((s,i)=>
-    `<div class="sk-tag">${esc(s)}<button onclick="rmSk(${i})" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
+    `<div class="sk-tag">${esc(skName(s))}<span style="font-size:10px;font-weight:700;color:var(--muted);margin-left:4px">${esc(skCat(s))}</span><button onclick="rmSk(${i})" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
 }
 
 // ── MODALS ──
@@ -3624,15 +3631,16 @@ function mkModal(html){
 
 function addExp(editIdx){
   const isEdit=typeof editIdx==='number';
-  const ex=isEdit?exps[editIdx]:{t:'',co:'',s:'',e:'',present:false,d:''};
+  const ex=isEdit?exps[editIdx]:{t:'',co:'',s:'',e:'',present:false,d:'',type:''};
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Experience</div>
     <div class="fg">
       <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" list="role-suggestions" autocomplete="off"></label>
       <label class="fld"><span class="fld-l">Company</span><input class="fi" id="ex-co" placeholder="Where you worked" value="${esc(ex.co)}"></label>
+      <label class="fld"><span class="fld-l">Employment type</span><select class="fi" id="ex-type"><option value="" ${!ex.type?'selected':''}>Not specified</option><option value="Full-time" ${ex.type==='Full-time'?'selected':''}>Full-time</option><option value="Contract" ${ex.type==='Contract'?'selected':''}>Contract</option><option value="Remote" ${ex.type==='Remote'?'selected':''}>Remote</option><option value="Part-time" ${ex.type==='Part-time'?'selected':''}>Part-time</option><option value="Internship" ${ex.type==='Internship'?'selected':''}>Internship</option></select></label>
       <div class="row2">
-        <div class="date-field"><label class="date-lbl">Start date</label><input class="fi" id="ex-s" type="month" value="${esc(ex.s)}"></div>
-        <div class="date-field"><label class="date-lbl">End date</label><input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':ex.e)}" ${ex.present?'disabled':''}></div>
+        <div class="date-field"><label class="date-lbl">Start date</label><input class="fi" id="ex-s" type="month" value="${esc(toMonthInput(ex.s))}"></div>
+        <div class="date-field"><label class="date-lbl">End date</label><input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':toMonthInput(ex.e))}" ${ex.present?'disabled':''}></div>
       </div>
       <label class="present-check"><input type="checkbox" id="ex-present" ${ex.present?'checked':''} onchange="document.getElementById('ex-e').disabled=this.checked;if(this.checked)document.getElementById('ex-e').value=''"><span>I currently work here</span></label>
       <textarea class="fi" id="ex-d" rows="4" placeholder="Rough notes are fine. What did you do, and what happened?">${esc(ex.d)}</textarea>
@@ -3735,7 +3743,7 @@ async function aiWriteSummary(){
   out.style.display='block';
   out.innerHTML=AI_SKEL;
   const expLine=exps.length?exps.map(e=>`${e.t} at ${e.co}${e.d?' — '+e.d.split('\n')[0]:''}`).join('; '):'(none listed yet)';
-  const skillsLine=skills.length?skills.join(', '):'(none listed yet)';
+  const skillsLine=skills.length?skNames().join(', '):'(none listed yet)';
   const prompt=`Write 2 alternative professional summaries (2-3 sentences each) for a CV. Output ONLY the two summaries, separated by a single line containing exactly --- and nothing else on that line. No numbering, no labels like "Option 1", no preamble, no markdown.
 
 Name: ${nm||'(not given)'}
@@ -3781,9 +3789,9 @@ function useAISummary(btn){
 }
 
 function saveExp(modalEl,editIdx){
-  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d');
+  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d'),type=v('ex-type');
   if(!t){toast('Add a job title','err');return;}
-  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d};
+  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d,type};
   if(typeof editIdx==='number'){exps[editIdx]=rec;}else{exps.push(rec);}
   modalEl.remove();
   renderExpList();rCV();upATS();runJDMatch();
@@ -3796,6 +3804,19 @@ function formatMonth(val){
   if(!y||!m)return val;
   const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return`${names[parseInt(m)-1]} ${y}`;
+}
+// Convert a stored "Mon YYYY" (or already YYYY-MM) date back into the value a
+// <input type="month"> expects ("YYYY-MM"), so editing an entry keeps its dates.
+function toMonthInput(val){
+  if(!val||val==='Present')return'';
+  if(/^\d{4}-\d{2}$/.test(val))return val;
+  const parts=val.trim().split(/\s+/);
+  if(parts.length===2){
+    const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mi=names.indexOf(parts[0].slice(0,3));
+    if(mi>=0&&/^\d{4}$/.test(parts[1]))return`${parts[1]}-${String(mi+1).padStart(2,'0')}`;
+  }
+  return'';
 }
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
@@ -3882,7 +3903,7 @@ function renderExpList(){
   gi('exp-list').innerHTML=exps.map((e,i)=>`
     <div class="ei ei-editable" draggable="true">
       ${DRAG_HANDLE}
-      <div class="ei-t">${esc(e.t)}${e.co?' @ '+esc(e.co):''}</div>
+      <div class="ei-t">${esc(e.t)}${e.co?' @ '+esc(e.co):''}${e.type?' · '+esc(e.type):''}</div>
       <div class="ei-s">${[esc(e.s),e.present?'Present':esc(e.e)].filter(Boolean).join(' – ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
@@ -4220,7 +4241,7 @@ Title: ${v('f-title')||'(none)'}
 Summary: ${v('f-sum')||'(none)'}
 Experience: ${exps.map(e=>`${e.t} at ${e.co} (${e.s}–${e.present?'Present':e.e}): ${e.d}`).join(' | ')||'(none)'}
 Education: ${edus.map(e=>`${e.d}, ${e.s}`).join(' | ')||'(none)'}
-Skills: ${skills.join(', ')||'(none)'}`;
+Skills: ${skNames().join(', ')||'(none)'}`;
 
   const prompt=`You are a straight-talking recruiter with 15 years of experience. Look at this CV as a whole.
 
@@ -4329,7 +4350,7 @@ async function jdAIAnalysis(){
   out.style.display='block';
   out.innerHTML=AI_SKEL;
   const jd=v('jd-text').slice(0,1500);
-  const cv=`Name: ${v('f-name')}, Title: ${v('f-title')}, Summary: ${v('f-sum')}, Experience: ${exps.map(e=>e.t+' at '+e.co).join(', ')}, Skills: ${skills.join(', ')}`;
+  const cv=`Name: ${v('f-name')}, Title: ${v('f-title')}, Summary: ${v('f-sum')}, Experience: ${exps.map(e=>e.t+' at '+e.co).join(', ')}, Skills: ${skNames().join(', ')}`;
   try{
     const tx=await callAI(`You are a friendly, honest career coach. Compare this CV with the job post and give 3 things to fix to close the gap.
 
@@ -6207,7 +6228,7 @@ EXTRACTION RULES:
 - location: City/Country exactly as written (e.g. "Lagos, Nigeria")
 - summary: The profile/summary/about section, copied word for word
 - skills: Every skill listed, exactly as written — include all tools, technologies, and competencies
-- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", bullets: all bullet points for that role joined with \\n, copied exactly
+- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", type: employment type if stated (Full-time, Contract, Remote, Part-time, Internship) else null, bullets: all bullet points for that role joined with \\n, copied exactly
 - education: Degree title exactly as written, school name exactly as written, graduation year
 - certifications: Certificate name exactly, issuer exactly, year if given
 - languages: Language name, proficiency level exactly as written
@@ -6230,6 +6251,7 @@ Return ONLY this JSON, nothing else — no markdown fences, no explanation:
       "start": null,
       "end": null,
       "current": false,
+      "type": null,
       "bullets": null
     }
   ],
@@ -6266,7 +6288,7 @@ ${simUploadedCVText.slice(0,6000)}`;
     setField('f-sum', data.summary);
 
     if(Array.isArray(data.skills)&&data.skills.length){
-      skills=[...new Set(data.skills.filter(s=>s&&s!=='null').map(s=>s.trim()))];
+      skills=[...new Set(data.skills.filter(s=>s&&s!=='null').map(s=>typeof s==='string'?{n:s.trim(),c:'General'}:{n:(s.name||s.n||'').trim(),c:s.category||s.c||'General'}))];
       renderSk();
     }
     if(Array.isArray(data.experience)&&data.experience.length){
@@ -6275,10 +6297,11 @@ ${simUploadedCVText.slice(0,6000)}`;
         .map(e=>({
           t:e.title||'',
           co:e.company||'',
-          s:e.start||'',
-          e:e.current?'':e.end||'',
+          s:formatMonth(e.start||''),
+          e:e.current?'':formatMonth(e.end||''),
           present:!!e.current,
-          d:e.bullets||''
+          d:e.bullets||'',
+          type:e.type||''
         }));
       renderExpList();
     }
@@ -6438,7 +6461,7 @@ async function runRecruiterSim(){
   }else{
     const gaps=detectCareerGaps();
     const gapNote=gaps.length?`\nNOTE — Career gaps: ${gaps.map(g=>`${g.from}–${g.to} (${g.months}mo)`).join(', ')}`:'';
-    cvText=`NAME: ${d.nm}\nTITLE: ${d.ti}\nCONTACT: ${d.em} | ${d.ph} | ${d.lo}\nSOCIAL: ${socials.filter(s=>s.url).map(s=>`${SOCIAL_TYPES[s.type]?.label}: ${s.url}`).join(', ')||'None'}\nSUMMARY: ${d.sum||'None'}\nEXPERIENCE:\n${exps.map(e=>`- ${e.t} at ${e.co||'[no employer]'} (${e.s||'?'} – ${e.present?'Present':e.e||'?'})\n  ${e.d?e.d.split('\n').filter(Boolean).map(b=>'  • '+b).join('\n'):'  No bullets'}`).join('\n')}\nEDUCATION: ${edus.map(e=>`${e.d} at ${e.s} (${e.y||'?'})`).join('; ')||'None'}\nSKILLS: ${skills.join(', ')||'None'}\nCERTS: ${certs.map(c=>c.name).join(', ')||'None'}\nLANGUAGES: ${langs.map(l=>`${l.name} (${l.level})`).join(', ')||'None'}\nPROJECTS: ${projs.map(p=>p.nm).join(', ')||'None'}\nWORK AUTH: ${d.workauth||'Not stated'}${gapNote}`.trim();
+    cvText=`NAME: ${d.nm}\nTITLE: ${d.ti}\nCONTACT: ${d.em} | ${d.ph} | ${d.lo}\nSOCIAL: ${socials.filter(s=>s.url).map(s=>`${SOCIAL_TYPES[s.type]?.label}: ${s.url}`).join(', ')||'None'}\nSUMMARY: ${d.sum||'None'}\nEXPERIENCE:\n${exps.map(e=>`- ${e.t} at ${e.co||'[no employer]'} (${e.s||'?'} – ${e.present?'Present':e.e||'?'})\n  ${e.d?e.d.split('\n').filter(Boolean).map(b=>'  • '+b).join('\n'):'  No bullets'}`).join('\n')}\nEDUCATION: ${edus.map(e=>`${e.d} at ${e.s} (${e.y||'?'})`).join('; ')||'None'}\nSKILLS: ${skNames().join(', ')||'None'}\nCERTS: ${certs.map(c=>c.name).join(', ')||'None'}\nLANGUAGES: ${langs.map(l=>`${l.name} (${l.level})`).join(', ')||'None'}\nPROJECTS: ${projs.map(p=>p.nm).join(', ')||'None'}\nWORK AUTH: ${d.workauth||'Not stated'}${gapNote}`.trim();
   }
 
   const isFormMode=simSourceMode==='form';
@@ -6703,7 +6726,7 @@ function getData(){
     certs,langs,projs,socials,
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
-    skills,exps,edus
+    skills:skNames(),exps,edus
   };
 }
 
@@ -6780,7 +6803,7 @@ const TPL={
     <p class="classic-sum">${d.sum}</p>
     ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skills.join(' • ')}</div>`:''}
+    ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skNames().join(' • ')}</div>`:''}
     ${projsHTML(d,'classic-sl','classic-ex',AC)}${additionalInfoHTML(d,'classic-sl','classic-sum')}
   </div>`,
 
@@ -7455,7 +7478,7 @@ function buildPlainText(){
     section('EDUCATION');
     edus.forEach(e=>L.push([e.d,e.s,e.y].filter(Boolean).join(' — ')+(e.g?` (GPA ${e.g})`:'')));
   }
-  if(skills.length){section('SKILLS');L.push(skills.join(', '));}
+  if(skills.length){section('SKILLS');L.push(skNames().join(', '));}
   if(projs.length){
     section('PROJECTS');
     projs.forEach((p,i)=>{
