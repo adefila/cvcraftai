@@ -122,10 +122,17 @@ button svg,a svg{transition:opacity .15s,transform .15s}
    flex and grid skill layouts some templates use. */
 .cv-sk-grp{display:block;grid-column:1/-1;flex:0 0 100%;width:100%;box-sizing:border-box;margin:9px 0 4px;font-size:.72em;font-weight:700;letter-spacing:.09em;text-transform:uppercase;line-height:1.2;opacity:.72}
 .cv-sk-grp:first-child{margin-top:0}
-/* Employment type and work arrangement tags after the company on the CV */
-.cv-emp,.cv-arr{display:inline-block;margin-left:.15em;padding:.06em .6em;border-radius:99px;font-size:.78em;font-weight:600;font-style:normal;line-height:1.5;letter-spacing:.02em;text-transform:none;white-space:nowrap;vertical-align:.1em}
-.cv-emp{box-shadow:inset 0 0 0 1px currentColor}
-.cv-arr{background:rgba(120,120,130,.18)}
+/* Role meta line under the company on the CV: location, then the two tags.
+   Only plain solid colours and borders here (no alpha, shadows or currentColor): the PDF export
+   draws the page with html2canvas, which mangles anything fancier. */
+.cv-meta{display:block;margin:5px 0 8px;font-size:.86em;font-weight:500;line-height:1.95;letter-spacing:0;text-transform:none;font-style:normal;color:#5E5E67}
+.cv-meta .cv-loc{display:inline-block;margin-right:8px;vertical-align:middle}
+.cv-tag{display:inline-block;margin:0 6px 0 0;padding:1px 10px;border-radius:99px;font-size:.88em;font-weight:600;line-height:1.55;letter-spacing:.02em;white-space:nowrap;vertical-align:middle;text-transform:none;font-style:normal;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.cv-emp{background:#FFFFFF;border:1px solid #BFC3CC;color:#33343B}
+.cv-arr{background:#EAECF1;border:1px solid #EAECF1;color:#33343B}
+.carbon .cv-meta,.neon .cv-meta,.slate .cv-meta{color:#B4B7C4}
+.carbon .cv-emp,.neon .cv-emp,.slate .cv-emp{background:#14151C;border-color:#5C606F;color:#E3E5EC}
+.carbon .cv-arr,.neon .cv-arr,.slate .cv-arr{background:#2A2C37;border-color:#2A2C37;color:#E3E5EC}
 /* templates whose skills sit on a dark or coloured background */
 .nova-sb .cv-sk-grp,.carbon-bd .cv-sk-grp,.neon .cv-sk-grp,.merid-side .cv-sk-grp{color:#fff}
 /* ── Suggestion dropdown (one shared panel for every autosuggest input) ── */
@@ -946,6 +953,8 @@ body.meet-open{overflow:hidden}
   }
   /* Ensure mobile responsiveness breakpoints don't re-activate during print */
   .paper{overflow:visible!important;min-height:unset!important}
+  /* Without this the browser prints without backgrounds: dark sidebars and filled tags would vanish */
+  #print-target,#print-target *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 #print-target{display:none}
 
@@ -2341,6 +2350,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
 <div class="toast" id="toast"></div>
 
 <!-- PRINT TARGET -->
+<datalist id="country-suggestions"><option>Afghanistan</option><option>Argentina</option><option>Australia</option><option>Austria</option><option>Bangladesh</option><option>Belgium</option><option>Brazil</option><option>Cameroon</option><option>Canada</option><option>Chile</option><option>China</option><option>Colombia</option><option>Côte d’Ivoire</option><option>Czechia</option><option>Denmark</option><option>Egypt</option><option>Ethiopia</option><option>Finland</option><option>France</option><option>Germany</option><option>Ghana</option><option>Greece</option><option>Hong Kong</option><option>Hungary</option><option>India</option><option>Indonesia</option><option>Ireland</option><option>Israel</option><option>Italy</option><option>Japan</option><option>Kenya</option><option>Malaysia</option><option>Mexico</option><option>Morocco</option><option>Netherlands</option><option>New Zealand</option><option>Nigeria</option><option>Norway</option><option>Pakistan</option><option>Peru</option><option>Philippines</option><option>Poland</option><option>Portugal</option><option>Qatar</option><option>Romania</option><option>Rwanda</option><option>Saudi Arabia</option><option>Senegal</option><option>Singapore</option><option>South Africa</option><option>South Korea</option><option>Spain</option><option>Sweden</option><option>Switzerland</option><option>Tanzania</option><option>Thailand</option><option>Turkey</option><option>Uganda</option><option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option><option>United States</option><option>Vietnam</option><option>Zambia</option><option>Zimbabwe</option></datalist>
 <div id="print-target"></div>
 <!-- HIDDEN ON-SCREEN (not off-canvas) RENDER ZONE FOR PDF CAPTURE -->
 
@@ -3888,6 +3898,7 @@ const SG={el:null,list:null,inp:null,rows:[],act:-1,until:0,timer:0};
 function sgSource(kind){
   const dl=id=>[...document.querySelectorAll('#'+id+' option')].map(o=>({v:o.value||o.textContent}));
   if(kind==='roles')return{opts:dl('role-suggestions'),create:''};
+  if(kind==='countries')return{opts:dl('country-suggestions'),create:''};
   if(kind==='stack')return{opts:dl('skill-suggestions'),create:'Add'};
   if(kind==='skills'){
     const have=new Set(skNames().map(s=>s.toLowerCase()));
@@ -4209,20 +4220,40 @@ function fixExp(e){
   o.type=t;o.arr=a;
   return o;
 }
-// The two tags after the company on the CV: employment type as an outlined pill, arrangement as a filled one.
-function empTags(e){
-  // real spaces between the tags, so copied text and ATS parsing read "Acme Corp Freelance Hybrid"
-  return (e.type?` <span class="cv-emp">${esc(e.type)}</span>`:'')+(e.arr?` <span class="cv-arr">${esc(e.arr)}</span>`:'');
+// "Lagos, Nigeria" from the City and Country fields of a role.
+function expLoc(e){return [e.city,e.country].map(x=>String(x||'').trim()).filter(Boolean).join(', ');}
+// The meta line under a role's company: location, then employment type (outlined tag) and work
+// arrangement (filled tag). It is one block with real spaces between the parts, so it wraps cleanly
+// and copied text reads "Lagos, Nigeria Full-time Hybrid". Empty when a role has none of the three.
+function expMeta(e){
+  const loc=expLoc(e);
+  if(!loc&&!e.type&&!e.arr)return '';
+  return '<div class="cv-meta">'
+    +(loc?`<span class="cv-loc">${esc(loc)}</span> `:'')
+    +(e.type?`<span class="cv-tag cv-emp">${esc(e.type)}</span> `:'')
+    +(e.arr?`<span class="cv-tag cv-arr">${esc(e.arr)}</span>`:'')
+    +'</div>';
+}
+// "Lagos, Nigeria" -> city and country (the last comma splits them, so "Austin, Texas, United States" keeps its state with the city)
+function splitLoc(x){
+  const t=String(x||'').trim();
+  if(!t||t==='null')return{city:'',country:''};
+  const i=t.lastIndexOf(',');
+  return i<0?{city:t,country:''}:{city:t.slice(0,i).trim(),country:t.slice(i+1).trim()};
 }
 function addExp(editIdx){
   const isEdit=typeof editIdx==='number';
-  const ex=isEdit?fixExp(exps[editIdx]):{t:'',co:'',s:'',e:'',present:false,d:'',type:'',arr:''};
+  const ex=isEdit?fixExp(exps[editIdx]):{t:'',co:'',s:'',e:'',present:false,d:'',type:'',arr:'',city:'',country:''};
   const optsHTML=(list,cur)=>['',...list].map(v=>`<option value="${v}" ${cur===v?'selected':''}>${v||'Not specified'}</option>`).join('')+(cur&&!list.includes(cur)?`<option value="${esc(cur)}" selected>${esc(cur)}</option>`:'');
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Experience</div>
     <div class="fg">
       <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" data-suggest="roles" autocomplete="off"></label>
       <label class="fld"><span class="fld-l">Company</span><input class="fi" id="ex-co" placeholder="Where you worked" value="${esc(ex.co)}"></label>
+      <div class="row2">
+        <div class="date-field"><label class="date-lbl" for="ex-city">City</label><input class="fi" id="ex-city" placeholder="e.g. Lagos" value="${esc(ex.city)}" autocomplete="off"></div>
+        <div class="date-field"><label class="date-lbl" for="ex-country">Country</label><input class="fi" id="ex-country" placeholder="e.g. Nigeria" value="${esc(ex.country)}" data-suggest="countries" autocomplete="off"></div>
+      </div>
       <div class="row2">
         <div class="date-field"><label class="date-lbl" for="ex-type">Employment type</label><select class="fi" id="ex-type" aria-label="Employment type">${optsHTML(EMP_TYPES,ex.type)}</select></div>
         <div class="date-field"><label class="date-lbl" for="ex-arr">Work arrangement</label><select class="fi" id="ex-arr" aria-label="Work arrangement">${optsHTML(WORK_ARR,ex.arr)}</select></div>
@@ -4378,9 +4409,9 @@ function useAISummary(btn){
 }
 
 function saveExp(modalEl,editIdx){
-  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d'),type=v('ex-type'),arr=v('ex-arr');
+  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d'),type=v('ex-type'),arr=v('ex-arr'),city=v('ex-city'),country=v('ex-country');
   if(!t){toast('Add a job title','err');return;}
-  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d,type,arr};
+  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d,type,arr,city,country};
   if(typeof editIdx==='number'){exps[editIdx]=rec;}else{exps.push(rec);}
   modalEl.remove();
   renderExpList();rCV();upATS();runJDMatch();
@@ -4493,7 +4524,7 @@ function renderExpList(){
     <div class="ei ei-editable" draggable="true">
       ${DRAG_HANDLE}
       <div class="ei-t">${esc(e.t)}${e.co?' @ '+esc(e.co):''}${[e.type,e.arr].filter(Boolean).map(x=>' · '+esc(x)).join('')}</div>
-      <div class="ei-s">${[esc(e.s),e.present?'Present':esc(e.e)].filter(Boolean).join(' – ')}</div>
+      <div class="ei-s">${[[esc(e.s),e.present?'Present':esc(e.e)].filter(Boolean).join(' – '),esc(expLoc(e))].filter(Boolean).join(' · ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
         <button class="ei-rm" onclick="exps.splice(${i},1);renderExpList();rCV();upATS();runJDMatch();toast('Experience removed')" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -6875,7 +6906,7 @@ EXTRACTION RULES:
 - location: City/Country exactly as written (e.g. "Lagos, Nigeria")
 - summary: The profile/summary/about section, copied word for word
 - skills: Every skill listed, exactly as written — include all tools, technologies, and competencies
-- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", type: employment type if stated (exactly one of Full-time, Part-time, Contract, Freelance, Internship, Temporary, Self-employed) else null, arrangement: work arrangement if stated (exactly one of On-site, Remote, Hybrid) else null, bullets: all bullet points for that role joined with \\n, copied exactly
+- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", type: employment type if stated (exactly one of Full-time, Part-time, Contract, Freelance, Internship, Temporary, Self-employed) else null, arrangement: work arrangement if stated (exactly one of On-site, Remote, Hybrid) else null, location: city and country of the role if stated, as "City, Country", else null, bullets: all bullet points for that role joined with \\n, copied exactly
 - education: Degree title exactly as written, school name exactly as written, graduation year
 - certifications: Certificate name exactly, issuer exactly, year if given
 - languages: Language name, proficiency level exactly as written
@@ -6949,7 +6980,8 @@ ${simUploadedCVText.slice(0,6000)}`;
           present:!!e.current,
           d:e.bullets||'',
           type:normEmp(e.type),
-          arr:normArr(e.arrangement)||normArr(e.type)
+          arr:normArr(e.arrangement)||normArr(e.type),
+          ...splitLoc(e.location)
         }));
       renderExpList();
     }
@@ -7409,7 +7441,7 @@ function escData(d){
     sum:esc(d.sum),workauth:esc(d.workauth),
     skills:d.skills.map(s=>esc(s)),
     skillGroups:d.skillGroups.map(g=>({cat:esc(g.cat),items:g.items.map(n=>esc(n))})),
-    exps:d.exps.map(e=>({...e,t:esc(e.t),co:esc(e.co)+empTags(e),d:esc(e.d)})),
+    exps:d.exps.map(e=>({...e,t:esc(e.t),co:esc(e.co),meta:expMeta(e),d:esc(e.d)})),
     edus:d.edus.map(e=>({...e,d:esc(e.d),s:esc(e.s),y:esc(e.y),g:esc(e.g)})),
     certs:d.certs.map(c=>({...c,name:esc(c.name),issuer:esc(c.issuer),year:esc(c.year)})),
     langs:d.langs.map(l=>({...l,name:esc(l.name),level:esc(l.level)})),
@@ -7471,7 +7503,7 @@ const TPL={
     <div class="classic-hr"></div>
     <div class="classic-sl">Summary</div>
     <p class="classic-sum">${d.sum}</p>
-    ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${e.meta}${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="classic-sl">Skills</div>${skLines(d,'classic-sk-line')}`:''}
     ${projsHTML(d,'classic-sl','classic-ex',AC)}${additionalInfoHTML(d,'classic-sl','classic-sum')}
@@ -7489,7 +7521,7 @@ const TPL={
     </div>
     <div class="nova-mn">
       <div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Profile</div><p style="font-size:13px;color:#4D4D5E;line-height:1.7">${d.sum}</p></div>
-      ${d.exps.length?`<div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Experience</div>${d.exps.map(e=>`<div class="nova-ex"><div class="nova-et">${e.t}</div><div class="nova-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
+      ${d.exps.length?`<div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Experience</div>${d.exps.map(e=>`<div class="nova-ex"><div class="nova-et">${e.t}</div><div class="nova-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
       ${d.edus.length?`<div class="nova-ms"><div class="nova-ml" style="color:${AC};border-color:${AC}22">Education</div>${d.edus.map(e=>`<div class="nova-ex"><div class="nova-et">${e.d}</div><div class="nova-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}</div>`:''}
     </div></div>`,
 
@@ -7502,7 +7534,7 @@ const TPL={
       <div class="apex-mn">
         <div class="apex-sl" style="color:${AC}">Profile</div>
         <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:17px">${d.sum}</p>
-        ${d.exps.length?`<div class="apex-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="apex-ex"><div class="apex-eh"><div class="apex-et">${e.t}</div><div class="apex-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join('–')}</div></div><div class="apex-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="apex-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="apex-ex"><div class="apex-eh"><div class="apex-et">${e.t}</div><div class="apex-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join('–')}</div></div><div class="apex-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="apex-sl" style="color:${AC};margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:10px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div class="apex-sb">
@@ -7519,7 +7551,7 @@ const TPL={
     <div class="prism-bd">
       <div>
         <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:4px">${d.sum}</p>
-        ${d.exps.length?`<div class="prism-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="prism-ex"><div class="prism-et">${e.t} — ${e.co}</div><div class="prism-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'prism-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="prism-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="prism-ex"><div class="prism-et">${e.t} — ${e.co}</div><div class="prism-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${e.meta}${bls(e.d,'prism-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="prism-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="prism-ex"><div class="prism-et">${e.d}</div><div class="prism-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
@@ -7535,7 +7567,7 @@ const TPL={
     <div style="font-size:13px;color:#4D4D5E;line-height:1.75;margin:17px 0;border-left:2.5px solid ${AC};padding-left:14px">${d.sum}</div>
     <div class="strand-bd">
       <div>
-        ${d.exps.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Experience</div>${d.exps.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.s||''}<br>${e.present?'Present':(e.e||'')}</div><div><div class="strand-et">${e.t}</div><div class="strand-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'strand-bl')}</div></div>`).join('')}`:''}
+        ${d.exps.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Experience</div>${d.exps.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.s||''}<br>${e.present?'Present':(e.e||'')}</div><div><div class="strand-et">${e.t}</div><div class="strand-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'strand-bl')}</div></div>`).join('')}`:''}
         ${d.edus.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Education</div>${d.edus.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.y||''}</div><div><div class="strand-et">${e.d}</div><div class="strand-ec" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       </div>
       <div>
@@ -7554,7 +7586,7 @@ const TPL={
       <p class="folio-sum">${d.sum}</p>
       <div class="folio-grid">
         <div>
-          ${d.exps.length?`<div class="folio-sl">Experience</div>${d.exps.map(e=>`<div class="folio-ex"><div class="folio-et">${e.t}</div><div class="folio-em" style="color:${AC}">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'folio-bl')}</div>`).join('')}`:''}
+          ${d.exps.length?`<div class="folio-sl">Experience</div>${d.exps.map(e=>`<div class="folio-ex"><div class="folio-et">${e.t}</div><div class="folio-em" style="color:${AC}">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.meta}${bls(e.d,'folio-bl')}</div>`).join('')}`:''}
           ${d.edus.length?`<div class="folio-sl" style="margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:11px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
         </div>
         <div>
@@ -7573,7 +7605,7 @@ const TPL={
     <p class="zenith-sum">${d.sum}</p>
     <div class="zenith-cols">
       <div>
-        ${d.exps.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.t}</div><div class="zenith-ec" style="color:${AC}">${e.co}</div><div class="zenith-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'zenith-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.t}</div><div class="zenith-ec" style="color:${AC}">${e.co}</div><div class="zenith-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${e.meta}${bls(e.d,'zenith-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.d}</div><div class="zenith-ec" style="color:${AC}">${e.s}</div><div class="zenith-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
@@ -7590,7 +7622,7 @@ const TPL={
     <p class="carbon-sum" style="border-color:${AC}">${d.sum}</p>
     <div class="carbon-bd">
       <div>
-        ${d.exps.length?`<div class="carbon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="carbon-ex" style="border-color:${AC}"><div class="carbon-et">${e.t}</div><div class="carbon-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'carbon-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="carbon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="carbon-ex" style="border-color:${AC}"><div class="carbon-et">${e.t}</div><div class="carbon-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.meta}${bls(e.d,'carbon-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="carbon-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="carbon-edu"><div class="carbon-ede">${e.d}</div><div class="carbon-eds">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
@@ -7617,7 +7649,7 @@ const TPL={
     <p class="pulse-sum">${d.sum}</p>
     <div class="pulse-bd">
       <div class="pulse-mn">
-        ${d.exps.length?`<div class="pulse-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="pulse-ex"><div class="pulse-et"><span>${e.t}</span><span class="pulse-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join('–')}</span></div><div class="pulse-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'pulse-bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="pulse-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="pulse-ex"><div class="pulse-et"><span>${e.t}</span><span class="pulse-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join('–')}</span></div><div class="pulse-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'pulse-bl')}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Education</div>${d.edus.map(e=>`<div class="pulse-ex"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div class="pulse-sb">
@@ -7640,7 +7672,7 @@ const TPL={
     <div class="merid-main">
       <div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">01</div>Profile</div>
       <p style="font-size:13px;color:#4D4D5E;line-height:1.75;margin-bottom:26px">${d.sum}</p>
-      ${d.exps.length?`<div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">02</div>Experience</div>${d.exps.map(e=>`<div class="merid-ex"><div class="merid-et">${e.t}</div><div class="merid-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="merid-bl"><span style="position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="merid-ml"><div class="merid-ml-num" style="background:${AC}">02</div>Experience</div>${d.exps.map(e=>`<div class="merid-ex"><div class="merid-et">${e.t}</div><div class="merid-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.meta}${e.d.split('\n').filter(Boolean).map(l=>`<div class="merid-bl"><span style="position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="merid-ml" style="margin-top:8px"><div class="merid-ml-num" style="background:${AC}">03</div>Education</div>${d.edus.map(e=>`<div class="merid-edu-row"><div><div class="merid-edu-d">${e.d}</div><div class="merid-edu-s">${e.s}</div></div><div class="merid-edu-y">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     </div></div>`,
 
@@ -7658,7 +7690,7 @@ const TPL={
       <p class="axis-sum">${d.sum}</p>
     </div>
     <div class="axis-body">
-      ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
+      ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">02</div><div class="axis-sec-title">Education</div></div>${d.edus.map(e=>`<div class="axis-grid-row"><div class="axis-date">${e.y||''}</div><div><div class="axis-et">${e.d}</div><div class="axis-em" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${skMap(d,s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'axis-sec-title','axis-grid-row',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">04</div><div class="axis-sec-title">Additional Info</div></div><p class="axis-sum" style="margin:0 0 18px">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</p>`:''}
@@ -7673,7 +7705,7 @@ const TPL={
     </div>
     <div class="mono-body">
       <p class="mono-sum">${d.sum}</p>
-      ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div>${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div>${e.meta}${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="mono-ex"><div class="mono-et">${e.d}</div><div class="mono-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">03</span>Skills</div><div class="mono-sk-row">${skMap(d,s=>`<div class="mono-sk-item" style="border-color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'mono-sl','mono-ex',AC)}${additionalInfoHTML(d,'mono-sl','mono-sum')}
@@ -7688,7 +7720,7 @@ const TPL={
     <div class="lat-body">
       <div>
         <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:22px">${d.sum}</p>
-        ${d.exps.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="lat-ex"><div class="lat-eh"><div class="lat-et">${e.t}</div><div class="lat-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="lat-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="lat-bl"><span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="lat-ex"><div class="lat-eh"><div class="lat-et">${e.t}</div><div class="lat-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="lat-ec" style="color:${AC}">${e.co}</div>${e.meta}${e.d.split('\n').filter(Boolean).map(l=>`<div class="lat-bl"><span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       </div>
       <div>
         ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${skMap(d,s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
@@ -7707,7 +7739,7 @@ const TPL={
     </div>
     <div class="aur-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
-      ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.meta}${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="aur-edu"><div class="aur-edu-d">${e.d}</div><div class="aur-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${skMap(d,s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'aur-sl','aur-ex',AC)}${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
@@ -7721,7 +7753,7 @@ const TPL={
     </div>
     <div class="bcn-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75">${d.sum}</p>
-      ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="bcn-sl" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="bcn-edu-row entry-card"><div><div class="bcn-edu-d">${e.d}</div><div class="bcn-edu-s">${e.s}</div></div><div class="bcn-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="bcn-sl" style="border-color:${AC}">Skills</div><div class="bcn-sk-row">${skMap(d,s=>`<div class="bcn-sk-chip">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'bcn-sl','bcn-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="bcn-sl" style="border-color:${AC}">Additional Info</div><div class="bcn-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -7740,7 +7772,7 @@ const TPL={
     <div class="csc-mn">
       <div class="csc-ml" style="border-color:${AC}">Profile</div>
       <p style="font-size:13px;color:#4D4D5E;line-height:1.7;margin-bottom:22px">${d.sum}</p>
-      ${d.exps.length?`<div class="csc-ml" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="csc-ex entry-card"><div class="csc-et">${e.t}</div><div class="csc-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="csc-ml" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="csc-ex entry-card"><div class="csc-et">${e.t}</div><div class="csc-em">${e.co}${e.s?' · '+e.s:''} ${(e.present||e.e)?'– '+(e.present?'Present':e.e):''}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="csc-ml" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="csc-edu-row entry-card"><div class="csc-edu-d">${e.d}</div><div class="csc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     </div></div>`,
 
@@ -7753,7 +7785,7 @@ const TPL={
     </div>
     <div class="vtx-body">
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
-      ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="vtx-edu-row entry-card"><div class="vtx-edu-d">${e.d}</div><div class="vtx-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Skills</div><div class="vtx-sk-row">${skMap(d,s=>`<div class="vtx-sk-chip" style="background:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'vtx-sl','vtx-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -7764,7 +7796,7 @@ const TPL={
     <div class="hbr-ti">${d.ti}</div>
     <div class="hbr-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="hbr-c">${c}</span>`).join('')}</div>
     <p class="hbr-sum">${d.sum}</p>
-    ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="hbr-sl" style="background:${AC}">Education</div>${d.edus.map(e=>`<div class="hbr-edu-row entry-card"><div><div class="hbr-edu-d">${e.d}</div><div class="hbr-edu-s">${e.s}</div></div><div class="hbr-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="hbr-sl" style="background:${AC}">Skills</div><div class="hbr-sk-row">${skMap(d,s=>`<div class="hbr-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
     ${projsHTML(d,'hbr-sl','hbr-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="hbr-sl" style="background:${AC}">Additional Info</div><div class="hbr-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -7776,7 +7808,7 @@ const TPL={
     <div class="spc-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' · ')}${d.liLink?' · '+d.liLink:''}</div>
     <p class="spc-sum">${d.sum}</p>
     ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${skMap(d,(s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
-    ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${(d.edus.length||d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-foot">
       <div>${d.edus.length?`<div class="spc-sl">Education</div>${d.edus.map(e=>`<div class="spc-edu-row entry-card"><div class="spc-edu-d">${e.d}</div><div class="spc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}</div>
       <div>${projsHTML(d,'spc-sl','spc-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-sl">Additional Info</div><div class="spc-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}</div>
@@ -7789,7 +7821,7 @@ const TPL={
     <div class="org-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' • ')}${d.liLink?' • '+d.liLink:''}</div>
     <div class="org-hr"></div>
     <p class="org-sum">${d.sum}</p>
-    ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="org-edu-row entry-card"><div class="org-edu-d">${e.d}, ${e.s}</div><div class="org-edu-s">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">03</span>Skills</div><div class="org-sk-row">${skMap(d,s=>`<div class="org-sk-chip">${s}</div>`).join('')}</div>`:''}
     ${projsHTML(d,'org-sl','org-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">04</span>Additional Info</div><div class="org-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
@@ -7802,7 +7834,7 @@ const TPL={
     </div>
     <div class="dusk-body">
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>`:''}
-      ${d.exps.length?`<div class="dusk-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="dusk-ex entry-card"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="dusk-et">${e.t}</div><div class="dusk-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="dusk-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="dusk-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="dusk-ex entry-card"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="dusk-et">${e.t}</div><div class="dusk-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="dusk-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="dusk-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="dusk-sl" style="color:${AC}">Skills</div><div class="dusk-sk-row">${skMap(d,s=>`<span class="dusk-sk-chip" style="background:${AC}">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'dusk-sl','dusk-ex',AC)}
@@ -7815,7 +7847,7 @@ const TPL={
     ${d.sum?`<p class="split-sum">${d.sum}</p>`:''}
     <div class="split-cols">
       <div class="split-col">
-        ${d.exps.length?`<div class="split-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="split-ex entry-card"><div class="split-et">${e.t}</div><div class="split-ec" style="color:${AC}">${e.co}</div><div class="split-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="split-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="split-ex entry-card"><div class="split-et">${e.t}</div><div class="split-ec" style="color:${AC}">${e.co}</div><div class="split-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
         ${projsHTML(d,'split-sl','split-ex',AC)}
       </div>
       <div class="split-col">
@@ -7829,7 +7861,7 @@ const TPL={
     <div class="serif-nm">${d.nm}</div><div class="serif-ti">${d.ti}</div>
     <div class="serif-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
     ${d.sum?`<p class="serif-sum">${d.sum}</p>`:''}
-    ${d.exps.length?`<div class="serif-sl">Experience</div>${d.exps.map(e=>`<div class="serif-ex entry-card"><div class="serif-et">${e.t} — ${e.co}</div><div class="serif-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="serif-sl">Experience</div>${d.exps.map(e=>`<div class="serif-ex entry-card"><div class="serif-et">${e.t} — ${e.co}</div><div class="serif-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="serif-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="serif-edu-d">${e.d}</div><div class="serif-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="serif-sl">Skills</div><div class="serif-sk-row">${skMap(d,s=>`<span class="serif-sk-item">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'serif-sl','serif-ex',AC)}
@@ -7840,7 +7872,7 @@ const TPL={
     <div class="ruled-nm">${d.nm}</div><div class="ruled-ti">${d.ti}</div>
     <div class="ruled-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="ruled-c">${c}</span>`).join('')}</div>
     ${d.sum?`<p class="ruled-sum">${d.sum}</p>`:''}
-    ${d.exps.length?`<div class="ruled-card"><div class="ruled-card-sl">Experience</div>${d.exps.map(e=>`<div class="ruled-ex entry-card"><div class="ruled-eh"><div class="ruled-et">${e.t}</div><div class="ruled-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="ruled-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
+    ${d.exps.length?`<div class="ruled-card"><div class="ruled-card-sl">Experience</div>${d.exps.map(e=>`<div class="ruled-ex entry-card"><div class="ruled-eh"><div class="ruled-et">${e.t}</div><div class="ruled-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="ruled-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
     ${d.edus.length?`<div class="ruled-card"><div class="ruled-card-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="ruled-edu-d">${e.d}</div><div class="ruled-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}</div>`:''}
     ${d.skills.length?`<div class="ruled-card"><div class="ruled-card-sl">Skills</div>${skMap(d,s=>`<span class="ruled-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${d.projs&&d.projs.length?`<div class="ruled-card"><div class="ruled-card-sl">Projects</div>${d.projs.map(p=>`<div class="ruled-ex entry-card">${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link">${esc(p.nm)}</a>`:`<span class="ruled-et">${esc(p.nm)}</span>`}${p.yr?` <span class="ruled-ed">${esc(p.yr)}</span>`:''}${p.desc?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${esc(p.desc)}</div>`:''}${p.stack?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">${p.stack.split(',').map(s=>`<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--surf);color:var(--ink)">${esc(s.trim())}</span>`).join('')}</div>`:''}</div>`).join('')}</div>`:''}
@@ -7851,7 +7883,7 @@ const TPL={
     <div class="slate-nm">${d.nm}</div><div class="slate-ti">${d.ti}</div>
     <div class="slate-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLinkDark:''}</div>
     ${d.sum?`<p class="slate-sum">${d.sum}</p>`:''}
-    ${d.exps.length?`<div class="slate-sl">Experience</div>${d.exps.map(e=>`<div class="slate-ex entry-card"><div class="slate-eh"><div class="slate-et">${e.t}</div><div class="slate-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="slate-ec">${e.co}</div>${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="slate-bl">${b}</div>`).join(''):''}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="slate-sl">Experience</div>${d.exps.map(e=>`<div class="slate-ex entry-card"><div class="slate-eh"><div class="slate-et">${e.t}</div><div class="slate-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="slate-ec">${e.co}</div>${e.meta}${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="slate-bl">${b}</div>`).join(''):''}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="slate-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="slate-edu-d">${e.d}</div><div class="slate-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="slate-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="slate-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'slate-sl','slate-ex',AC,true)}
@@ -7864,7 +7896,7 @@ const TPL={
       <div class="chr-nm">${d.nm}</div><div class="chr-ti" style="color:${AC}">${d.ti}</div>
       <div class="chr-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
       ${d.sum?`<p class="chr-sum">${d.sum}</p>`:''}
-      ${d.exps.length?`<div class="chr-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="chr-ex entry-card"><div class="chr-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join('\n')}</div><div class="chr-main"><div class="chr-et">${e.t}</div><div class="chr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div></div>`).join('')}`:''}
+      ${d.exps.length?`<div class="chr-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="chr-ex entry-card"><div class="chr-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join('\n')}</div><div class="chr-main"><div class="chr-et">${e.t}</div><div class="chr-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="chr-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:9px"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="chr-sl" style="color:${AC}">Skills</div><div style="margin-bottom:8px">${skMap(d,s=>`<span class="chr-sk-chip">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'chr-sl','chr-ex',AC)}
@@ -7883,7 +7915,7 @@ const TPL={
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:18px">${d.sum}</p>`:''}
       <div class="pro-cols">
         <div class="pro-main">
-          ${d.exps.length?`<div class="pro-sl">Experience</div>${d.exps.map(e=>`<div class="pro-ex entry-card"><div class="pro-et">${e.t}</div><div class="pro-ec" style="color:${AC}">${e.co}</div><div class="pro-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+          ${d.exps.length?`<div class="pro-sl">Experience</div>${d.exps.map(e=>`<div class="pro-ex entry-card"><div class="pro-et">${e.t}</div><div class="pro-ec" style="color:${AC}">${e.co}</div><div class="pro-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
           ${projsHTML(d,'pro-sl','pro-ex',AC)}
         </div>
         <div class="pro-side">
@@ -7899,7 +7931,7 @@ const TPL={
       <div class="edge-nm">${d.nm}</div><div class="edge-ti">${d.ti}</div>
       <div class="edge-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
       ${d.sum?`<div class="edge-sum" style="border-color:${AC};color:#3D3D4E;font-size:13px;line-height:1.75;margin:18px 0">${d.sum}</div>`:''}
-      ${d.exps.length?`<div class="edge-sl">Experience</div>${d.exps.map(e=>`<div class="edge-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="edge-et">${e.t}</div><div class="edge-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="edge-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="edge-sl">Experience</div>${d.exps.map(e=>`<div class="edge-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="edge-et">${e.t}</div><div class="edge-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="edge-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="edge-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="edge-edu-d">${e.d}</div><div class="edge-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="edge-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="edge-sk-chip">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'edge-sl','edge-ex',AC)}
@@ -7912,7 +7944,7 @@ const TPL={
     <div class="sage-nm">${d.nm}</div><div class="sage-ti">${d.ti}</div>
     <div class="sage-cs">${[d.em,d.ph,d.lo,d.liLink].map(c=>`<span class="sage-c">${c}</span>`).join('')}</div>
     ${d.sum?`<div class="sage-sum">${d.sum}</div>`:''}
-    ${d.exps.length?`<div class="sage-sl">Experience</div>${d.exps.map(e=>`<div class="sage-ex entry-card" style="margin-bottom:13px"><div class="sage-et">${e.t}</div><div class="sage-ec" style="color:${AC}">${e.co}</div><div class="sage-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="sage-sl">Experience</div>${d.exps.map(e=>`<div class="sage-ex entry-card" style="margin-bottom:13px"><div class="sage-et">${e.t}</div><div class="sage-ec" style="color:${AC}">${e.co}</div><div class="sage-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="sage-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="sage-edu-d">${e.d}</div><div class="sage-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="sage-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="sage-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'sage-sl','sage-ex',AC)}
@@ -7926,7 +7958,7 @@ const TPL={
     </div>
     <div class="blade-body">
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin:14px 0">${d.sum}</p>`:''}
-      ${d.exps.length?`<div class="blade-sl">Experience</div>${d.exps.map(e=>`<div class="blade-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="blade-et">${e.t}</div><div class="blade-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="blade-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+      ${d.exps.length?`<div class="blade-sl">Experience</div>${d.exps.map(e=>`<div class="blade-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="blade-et">${e.t}</div><div class="blade-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="blade-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="blade-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="blade-edu-d">${e.d}</div><div class="blade-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       ${d.skills.length?`<div class="blade-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="blade-sk-chip" style="background:${AC}">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'blade-sl','blade-ex',AC)}
@@ -7937,7 +7969,7 @@ const TPL={
     <div class="neon-nm">${d.nm}</div><div class="neon-ti">${d.ti}</div>
     <div class="neon-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLinkDark:''}</div>
     ${d.sum?`<p class="neon-sum">${d.sum}</p>`:''}
-    ${d.exps.length?`<div class="neon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="neon-ex entry-card"><div class="neon-eh"><div class="neon-et">${e.t}</div><div class="neon-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="neon-ec">${e.co}</div>${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="neon-bl" style="opacity:.6">${b}</div>`).join(''):''}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="neon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="neon-ex entry-card"><div class="neon-eh"><div class="neon-et">${e.t}</div><div class="neon-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="neon-ec">${e.co}</div>${e.meta}${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="neon-bl" style="opacity:.6">${b}</div>`).join(''):''}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="neon-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="neon-edu-d">${e.d}</div><div class="neon-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="neon-sl" style="color:${AC}">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="neon-sk-chip" style="color:${AC};border-color:${AC}44">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'neon-sl','neon-ex',AC,true)}
@@ -7949,7 +7981,7 @@ const TPL={
     <div class="frost-cs">${[d.em,d.ph,d.lo].filter(Boolean).join('  ·  ')}${d.liLink?' · '+d.liLink:''}</div>
     <div class="frost-div" style="background:${AC}"></div>
     ${d.sum?`<p class="frost-sum">${d.sum}</p>`:''}
-    ${d.exps.length?`<div class="frost-sl">Experience</div>${d.exps.map(e=>`<div class="frost-ex entry-card" style="margin-bottom:18px"><div class="frost-eh"><div class="frost-et">${e.t}</div><div class="frost-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="frost-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+    ${d.exps.length?`<div class="frost-sl">Experience</div>${d.exps.map(e=>`<div class="frost-ex entry-card" style="margin-bottom:18px"><div class="frost-eh"><div class="frost-et">${e.t}</div><div class="frost-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="frost-ec" style="color:${AC}">${e.co}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="frost-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="frost-edu-d">${e.d}</div><div class="frost-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
     ${d.skills.length?`<div class="frost-sl">Skills</div><div class="frost-sk-row">${skMap(d,s=>`<span class="frost-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'frost-sl','frost-ex',AC)}
@@ -7963,7 +7995,7 @@ const TPL={
     <div class="anchor-cols">
       <div class="anchor-main">
         ${d.sum?`<div class="anchor-sum" style="border-color:${AC}">${d.sum}</div>`:''}
-        ${d.exps.length?`<div class="anchor-sl">Experience</div>${d.exps.map(e=>`<div class="anchor-ex entry-card" style="margin-bottom:14px"><div class="anchor-et">${e.t} — ${e.co}</div><div class="anchor-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
+        ${d.exps.length?`<div class="anchor-sl">Experience</div>${d.exps.map(e=>`<div class="anchor-ex entry-card" style="margin-bottom:14px"><div class="anchor-et">${e.t} — ${e.co}</div><div class="anchor-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${e.meta}${bls(e.d,'bl')}</div>`).join('')}`:''}
         ${projsHTML(d,'anchor-sl','anchor-ex',AC)}
       </div>
       <div class="anchor-side">
@@ -8140,6 +8172,7 @@ function buildPlainText(){
     exps.forEach((e,i)=>{
       if(i)L.push('');
       L.push([e.t,e.co].filter(Boolean).join(', '));
+      const meta=[expLoc(e),e.type,e.arr].filter(Boolean).join(' | ');if(meta)L.push(meta);
       const dt=dates(e);if(dt)L.push(dt);
       bullets(e.d);
     });
