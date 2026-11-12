@@ -96,6 +96,28 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .sk-category{flex-basis:100%}
 .sk-category-label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .sk-category-chips{display:flex;flex-wrap:wrap;gap:7px;flex-basis:100%}
+/* Category label above a group of skills on the CV. Full width so it also works inside the
+   flex and grid skill layouts some templates use. */
+.cv-sk-grp{display:block;grid-column:1/-1;flex:0 0 100%;width:100%;box-sizing:border-box;margin:9px 0 4px;font-size:.72em;font-weight:700;letter-spacing:.09em;text-transform:uppercase;line-height:1.2;opacity:.72}
+.cv-sk-grp:first-child{margin-top:0}
+/* templates whose skills sit on a dark or coloured background */
+.nova-sb .cv-sk-grp,.carbon-bd .cv-sk-grp,.neon .cv-sk-grp,.merid-side .cv-sk-grp{color:#fff}
+/* ── Suggestion dropdown (one shared panel for every autosuggest input) ── */
+.sg{position:fixed;z-index:100000;box-sizing:border-box;padding:6px;background:var(--card);border:1px solid var(--bdr-strong);border-radius:var(--r-md);box-shadow:0 18px 44px rgba(23,23,28,.16),0 2px 8px rgba(23,23,28,.06);opacity:0;transform:translateY(-4px) scale(.985);transform-origin:top left;pointer-events:none;transition:opacity .12s ease,transform .14s cubic-bezier(.2,.8,.3,1)}
+.sg.open{opacity:1;transform:none;pointer-events:auto}
+.sg-list{display:flex;flex-direction:column;gap:2px;max-height:264px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.sg-o{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;font-size:14px;font-weight:500;line-height:1.25;color:var(--ink);cursor:pointer;user-select:none}
+.sg-o.on{background:var(--ac-soft)}
+.sg-o mark{background:none;color:var(--ac);font-weight:700}
+.sg-o .sg-h{margin-left:auto;padding-left:10px;font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.sg-o.dis{opacity:.5;cursor:default}
+.sg-o.new{color:var(--ac);font-weight:600}
+.sg-o.new b{font-weight:700}
+.sg-ic{flex:none;width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--ac-soft);color:var(--ac)}
+.sg-foot{display:flex;gap:14px;margin-top:4px;padding:8px 10px 3px;border-top:1px solid var(--bdr);font-size:11px;color:var(--muted)}
+.sg-foot kbd{font:inherit;font-weight:700;margin-right:4px;padding:1px 5px;border-radius:4px;background:var(--surf);color:var(--ink)}
+@media (hover:none),(pointer:coarse){.sg-foot{display:none}.sg-o{padding:13px 10px}}
+@media (prefers-reduced-motion:reduce){.sg{transition:none}}
 .sk-tag button:hover svg{transform:rotate(90deg)}
 .sim-section-head svg{flex-shrink:0;opacity:.65}
 .bar-menu-btn:hover svg{opacity:.7;transform:rotate(90deg)}
@@ -1708,7 +1730,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
       <div class="fg">
         <div class="row2 stack">
           <label class="fld"><span class="fld-l">Full name</span><input class="fi" id="f-name" placeholder="e.g. Ada Obi" oninput="rCV()" autocomplete="name"></label>
-          <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="f-title" placeholder="e.g. Product Designer" oninput="rCV()" list="role-suggestions" autocomplete="off"></label>
+          <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="f-title" placeholder="e.g. Product Designer" oninput="rCV()" data-suggest="roles" autocomplete="off"></label>
           <datalist id="role-suggestions">
             <option>Software Engineer</option><option>Senior Software Engineer</option><option>Full Stack Developer</option><option>Frontend Developer</option><option>Backend Developer</option><option>Mobile Developer</option><option>iOS Developer</option><option>Android Developer</option>
             <option>Product Manager</option><option>Senior Product Manager</option><option>Lead Product Manager</option><option>Associate Product Manager</option>
@@ -1760,8 +1782,8 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
       <div class="lbl sec-lbl-row"><span>Skills</span><span class="sec-done" id="lbl-skills"></span></div>
       <div class="sk-tags" id="sk-tags"></div>
       <div class="sk-row">
-        <input class="fi" id="sk-inp" placeholder="Add skill & press Enter" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}" list="skill-suggestions" autocomplete="off">
-        <input class="fi" id="sk-cat" placeholder="Category (optional)" style="width:150px" list="skill-cat-suggestions" autocomplete="off">
+        <input class="fi" id="sk-inp" placeholder="Add skill & press Enter" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}" data-suggest="skills" autocomplete="off">
+        <input class="fi" id="sk-cat" placeholder="Category (optional)" style="width:150px" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}" data-suggest="cats" autocomplete="off">
         <datalist id="skill-cat-suggestions"><option>Technical</option><option>Tools</option><option>Soft Skills</option><option>Languages</option><option>Domain</option><option>Other</option></datalist>
         <datalist id="skill-suggestions">
           <option>JavaScript</option><option>TypeScript</option><option>Python</option><option>React</option><option>Next.js</option><option>Node.js</option><option>Vue.js</option><option>Angular</option><option>HTML</option><option>CSS</option><option>Tailwind CSS</option>
@@ -1982,7 +2004,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
           </div>
           <div class="sim-upload-status" id="sim-upload-status"></div>
           <input type="file" id="sim-cv-file" accept=".pdf,.docx,.doc,.txt" style="display:none" onchange="handleSimUpload(this)">
-          <input class="fi" id="sim-role" placeholder="Target role (optional)" list="role-suggestions" autocomplete="off" style="margin-top:10px">
+          <input class="fi" id="sim-role" placeholder="Target role (optional)" data-suggest="roles" autocomplete="off" style="margin-top:10px">
         </div>
 
         <!-- Persona — always shown -->
@@ -3629,6 +3651,131 @@ function renderSk(){
   }).join('');
 }
 
+// ── SUGGESTIONS ──
+// One custom dropdown shared by every input marked data-suggest="roles|skills|stack|cats".
+// It replaces the browser's native <datalist> popup, so it matches the app in light and dark
+// and also works inside modals. The old <datalist> elements stay in the page as the source lists.
+const SG={el:null,list:null,inp:null,rows:[],act:-1,until:0,timer:0};
+function sgSource(kind){
+  const dl=id=>[...document.querySelectorAll('#'+id+' option')].map(o=>({v:o.value||o.textContent}));
+  if(kind==='roles')return{opts:dl('role-suggestions'),create:''};
+  if(kind==='stack')return{opts:dl('skill-suggestions'),create:'Add'};
+  if(kind==='skills'){
+    const have=new Set(skNames().map(s=>s.toLowerCase()));
+    return{opts:dl('skill-suggestions').map(o=>have.has(o.v.toLowerCase())?{v:o.v,h:'Added',dis:1}:o),create:'Add'};
+  }
+  if(kind==='cats'){
+    const n={};skills.forEach(s=>{const c=skCat(s);if(c)n[c]=(n[c]||0)+1;});
+    const names=[...SKILL_CATS,...Object.keys(n).filter(c=>!SKILL_CATS.includes(c))];
+    return{opts:names.map(c=>({v:c,h:n[c]?n[c]+(n[c]>1?' skills':' skill'):''})),create:'Create category'};
+  }
+  return{opts:[],create:''};
+}
+function sgMark(text,ql){
+  const i=ql?text.toLowerCase().indexOf(ql):-1;
+  if(i<0)return esc(text);
+  return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+ql.length))+'</mark>'+esc(text.slice(i+ql.length));
+}
+function sgEnsure(){
+  if(SG.el)return;
+  const el=document.createElement('div');
+  el.className='sg';
+  el.innerHTML='<div class="sg-list" id="sg-list" role="listbox"></div><div class="sg-foot"><span><kbd>↑↓</kbd>move</span><span><kbd>Enter</kbd>pick</span><span><kbd>Esc</kbd>close</span></div>';
+  el.addEventListener('mousedown',e=>e.preventDefault());           // keep focus in the input
+  el.addEventListener('click',e=>{const o=e.target.closest('.sg-o');if(o)sgPick(+o.dataset.i);});
+  el.addEventListener('mousemove',e=>{const o=e.target.closest('.sg-o');if(o&&!o.classList.contains('dis'))sgSetActive(+o.dataset.i,false);});
+  document.body.appendChild(el);
+  SG.el=el;SG.list=el.querySelector('.sg-list');
+}
+function sgRender(){
+  const inp=SG.inp;if(!inp)return;
+  const src=sgSource(inp.dataset.suggest),q=inp.value.trim(),ql=q.toLowerCase();
+  let rows=src.opts.filter(o=>!ql||o.v.toLowerCase().includes(ql));
+  if(ql)rows.sort((a,b)=>(a.v.toLowerCase().startsWith(ql)?0:1)-(b.v.toLowerCase().startsWith(ql)?0:1));
+  rows=rows.slice(0,60);
+  if(src.create&&q&&!src.opts.some(o=>o.v.toLowerCase()===ql))rows.push({v:q,create:src.create});
+  SG.rows=rows;SG.act=-1;
+  SG.list.innerHTML=rows.map((o,i)=>{
+    const plus='<span class="sg-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>';
+    const body=o.create?`${plus}<span>${esc(o.create)} “<b>${esc(o.v)}</b>”</span>`:`<span>${sgMark(o.v,ql)}</span>`;
+    return `<div class="sg-o${o.dis?' dis':''}${o.create?' new':''}" role="option" id="sg-o-${i}" data-i="${i}" aria-selected="false"${o.dis?' aria-disabled="true"':''}>${body}${o.h?`<span class="sg-h">${esc(o.h)}</span>`:''}</div>`;
+  }).join('');
+  SG.list.scrollTop=0;
+}
+function sgPlace(){
+  const inp=SG.inp,el=SG.el;if(!inp||!el)return;
+  const r=inp.getBoundingClientRect(),w=Math.max(r.width,240);
+  el.style.width=w+'px';
+  el.style.left=Math.min(Math.max(8,r.left),Math.max(8,innerWidth-w-8))+'px';
+  const need=Math.min(el.offsetHeight||300,300),below=innerHeight-r.bottom-12,above=r.top-12;
+  if(below<need&&above>below){el.style.top='auto';el.style.bottom=(innerHeight-r.top+6)+'px';el.style.transformOrigin='bottom left';}
+  else{el.style.bottom='auto';el.style.top=(r.bottom+6)+'px';el.style.transformOrigin='top left';}
+}
+function sgOpen(inp){
+  sgEnsure();SG.inp=inp;sgRender();
+  if(!SG.rows.length){sgClose();return;}
+  inp.setAttribute('role','combobox');inp.setAttribute('aria-autocomplete','list');
+  inp.setAttribute('aria-controls','sg-list');inp.setAttribute('aria-expanded','true');
+  sgPlace();SG.el.classList.add('open');
+  clearInterval(SG.timer);                                           // close if the field's modal goes away
+  SG.timer=setInterval(()=>{if(!SG.inp||!document.contains(SG.inp))sgClose();},400);
+}
+function sgClose(){
+  clearInterval(SG.timer);
+  if(SG.el)SG.el.classList.remove('open');
+  if(SG.inp){SG.inp.setAttribute('aria-expanded','false');SG.inp.removeAttribute('aria-activedescendant');}
+  SG.act=-1;
+}
+function sgIsOpen(inp){return !!(SG.el&&SG.el.classList.contains('open')&&SG.inp===inp);}
+function sgSetActive(i,scroll){
+  SG.act=i;
+  SG.list.querySelectorAll('.sg-o').forEach((el,k)=>{el.classList.toggle('on',k===i);el.setAttribute('aria-selected',k===i?'true':'false');});
+  if(SG.inp){if(i>=0)SG.inp.setAttribute('aria-activedescendant','sg-o-'+i);else SG.inp.removeAttribute('aria-activedescendant');}
+  if(scroll&&i>=0){const el=SG.list.children[i];if(el)el.scrollIntoView({block:'nearest'});}
+}
+function sgMove(d){
+  const n=SG.rows.length;if(!n)return;
+  let i=SG.act<0?(d>0?-1:0):SG.act;
+  for(let k=0;k<n;k++){i=(i+d+n)%n;if(!SG.rows[i].dis)break;}
+  if(SG.rows[i].dis)return;
+  sgSetActive(i,true);
+}
+function sgPick(i){
+  const o=SG.rows[i],inp=SG.inp;if(!o||o.dis||!inp)return;
+  SG.until=Date.now()+300;sgClose();
+  inp.value=o.v;
+  if(inp.id==='sk-inp')addSk();
+  else if(inp.id==='proj-stack-inp'){const b=gi('proj-stack-add-btn');if(b)b.click();}
+  else inp.dispatchEvent(new Event('input',{bubbles:true}));        // lets oninput handlers (CV preview) run
+}
+document.addEventListener('focusin',e=>{
+  const t=e.target;
+  if(t instanceof HTMLInputElement&&t.dataset.suggest){if(Date.now()>SG.until)sgOpen(t);}
+  else if(SG.el&&!SG.el.contains(t))sgClose();
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t instanceof HTMLInputElement&&t.dataset.suggest&&document.activeElement===t&&Date.now()>SG.until)sgOpen(t);
+});
+document.addEventListener('focusout',e=>{
+  if(e.target===SG.inp)setTimeout(()=>{if(document.activeElement!==SG.inp)sgClose();},0);
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target;if(!(t instanceof HTMLInputElement)||!t.dataset.suggest)return;
+  const open=sgIsOpen(t);
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    if(!open){sgOpen(t);if(!sgIsOpen(t))return;}
+    sgMove(e.key==='ArrowDown'?1:-1);
+  }else if(e.key==='Enter'&&open&&SG.act>=0){
+    e.preventDefault();e.stopImmediatePropagation();sgPick(SG.act);
+  }else if(e.key==='Escape'&&open){
+    e.preventDefault();e.stopPropagation();sgClose();
+  }else if(e.key==='Tab'&&open){sgClose();}
+},true);
+window.addEventListener('resize',()=>{if(SG.el&&SG.el.classList.contains('open'))sgPlace();});
+window.addEventListener('scroll',()=>{if(SG.el&&SG.el.classList.contains('open'))sgPlace();},true);
+
 // ── MODALS ──
 // Every dialog: announced as a dialog, focus moves in, Tab stays inside, Esc closes it,
 // and focus goes back to whatever opened it.
@@ -3666,7 +3813,7 @@ function addExp(editIdx){
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Experience</div>
     <div class="fg">
-      <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" list="role-suggestions" autocomplete="off"></label>
+      <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" data-suggest="roles" autocomplete="off"></label>
       <label class="fld"><span class="fld-l">Company</span><input class="fi" id="ex-co" placeholder="Where you worked" value="${esc(ex.co)}"></label>
       <label class="fld"><span class="fld-l">Employment type</span><select class="fi" id="ex-type"><option value="" ${!ex.type?'selected':''}>Not specified</option><option value="Full-time" ${ex.type==='Full-time'?'selected':''}>Full-time</option><option value="Contract" ${ex.type==='Contract'?'selected':''}>Contract</option><option value="Remote" ${ex.type==='Remote'?'selected':''}>Remote</option><option value="Part-time" ${ex.type==='Part-time'?'selected':''}>Part-time</option><option value="Internship" ${ex.type==='Internship'?'selected':''}>Internship</option></select></label>
       <div class="row2">
@@ -4002,7 +4149,7 @@ function addProj(editIdx){
           ${stackTags.map((t,i)=>`<span class="sk-tag" id="pst-${i}">${esc(t)}<button class="sk-rm" onclick="(()=>{const el=document.getElementById('pst-${i}');if(el)el.remove();const wrap=document.getElementById('proj-stack-tags');if(!wrap.children.length)wrap.style.marginBottom='0';})()" type="button"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>`).join('')}
         </div>
         <div class="sk-row">
-          <input class="fi" id="proj-stack-inp" placeholder="e.g. Figma, React" autocomplete="off" style="flex:1" list="skill-suggestions">
+          <input class="fi" id="proj-stack-inp" placeholder="e.g. Figma, React" autocomplete="off" style="flex:1" data-suggest="stack">
           <button class="btn-add-inline" id="proj-stack-add-btn" type="button">Add</button>
         </div>
       </div>
@@ -6815,8 +6962,29 @@ function getData(){
     certs,langs,projs,socials,
     workauth:v('f-workauth'),
     refs:gi('f-refs')?gi('f-refs').checked:false,
-    skills:skNames(),exps,edus
+    skills:skNames(),
+    skillGroups:skGroups().map(g=>({cat:g.cat,items:g.items.map(it=>it.n)})),
+    exps,edus
   };
+}
+
+// Skills for a template, grouped by category. Each template keeps its own item markup
+// (fn gets the name and a running index) and this adds a small label above each named
+// group. Returns an array so a template can keep calling .join('') on the result. With
+// no categories it yields exactly the old flat list, so uncategorised CVs look the same.
+function skMap(d,fn){
+  const groups=d.skillGroups||[{cat:'',items:d.skills}];
+  const out=[];let i=0;
+  groups.forEach(g=>{
+    if(g.cat)out.push(`<div class="cv-sk-grp">${g.cat}</div>`);
+    g.items.forEach(n=>out.push(fn(n,i++)));
+  });
+  return out;
+}
+// Classic is a plain text line, so each group becomes "Category: a • b".
+function skLines(d,cls){
+  const groups=d.skillGroups||[{cat:'',items:d.skills}];
+  return groups.map(g=>`<div class="${cls}">${g.cat?`<strong>${g.cat}:</strong> `:''}${g.items.join(' • ')}</div>`).join('');
 }
 
 // escData: HTML-escapes every free-text field before it reaches a template's
@@ -6828,6 +6996,7 @@ function escData(d){
     nm:esc(d.nm),ti:esc(d.ti),em:esc(d.em),ph:esc(d.ph),lo:esc(d.lo),
     sum:esc(d.sum),workauth:esc(d.workauth),
     skills:d.skills.map(s=>esc(s)),
+    skillGroups:d.skillGroups.map(g=>({cat:esc(g.cat),items:g.items.map(n=>esc(n))})),
     exps:d.exps.map(e=>({...e,t:esc(e.t),co:esc(e.co),d:esc(e.d)})),
     edus:d.edus.map(e=>({...e,d:esc(e.d),s:esc(e.s),y:esc(e.y),g:esc(e.g)})),
     certs:d.certs.map(c=>({...c,name:esc(c.name),issuer:esc(c.issuer),year:esc(c.year)})),
@@ -6892,7 +7061,7 @@ const TPL={
     <p class="classic-sum">${d.sum}</p>
     ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skills.join(' • ')}</div>`:''}
+    ${d.skills.length?`<div class="classic-sl">Skills</div>${skLines(d,'classic-sk-line')}`:''}
     ${projsHTML(d,'classic-sl','classic-ex',AC)}${additionalInfoHTML(d,'classic-sl','classic-sum')}
   </div>`,
 
@@ -6903,7 +7072,7 @@ const TPL={
       <div class="nova-ti">${d.ti}</div>
       <div class="nova-sl" style="color:${AC}">Contact</div>
       ${[d.em,d.ph,d.lo].map(c=>`<div class="nova-cr">${c}</div>`).join('')}${d.liLinkDark?'<div class="nova-cr">'+d.liLinkDark+'</div>':''}
-      ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+      ${d.skills.length?`<div class="nova-sl" style="color:${AC}">Skills</div>${skMap(d,(s,i)=>`<div class="nova-sk"><div class="nova-sk-nm">${s}</div><div class="nova-sk-tr"><div class="nova-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
       ${projsHTML(d,'nova-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="nova-sl" style="color:${AC}">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="nova-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="nova-mn">
@@ -6925,7 +7094,7 @@ const TPL={
         ${d.edus.length?`<div class="apex-sl" style="color:${AC};margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:10px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div class="apex-sb">
-        ${d.skills.length?`<div class="apex-sl" style="color:${AC}">Skills</div>${d.skills.map(s=>`<div class="apex-ch" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}`:''}
+        ${d.skills.length?`<div class="apex-sl" style="color:${AC}">Skills</div>${skMap(d,s=>`<div class="apex-ch" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}`:''}
         ${projsHTML(d,'apex-sl','entry-card',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="apex-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`<strong>Certifications:</strong> ${certsLine(d.certs)}`,d.langs.length&&`<strong>Languages:</strong> ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
@@ -6942,7 +7111,7 @@ const TPL={
         ${d.edus.length?`<div class="prism-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="prism-ex"><div class="prism-et">${e.d}</div><div class="prism-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
-        ${d.skills.length?`<div class="prism-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="prism-ski"><span>${s}</span><div style="display:flex;gap:3px">${[1,2,3,4,5].map(j=>`<div class="pd${SL[i%SL.length]/20>=j?' f':''}"></div>`).join('')}</div></div>`).join('')}`:''}
+        ${d.skills.length?`<div class="prism-sl" style="color:${AC}">Skills</div>${skMap(d,(s,i)=>`<div class="prism-ski"><span>${s}</span><div style="display:flex;gap:3px">${[1,2,3,4,5].map(j=>`<div class="pd${SL[i%SL.length]/20>=j?' f':''}"></div>`).join('')}</div></div>`).join('')}`:''}
         ${projsHTML(d,'prism-sl','entry-card',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="prism-sl" style="color:${AC}">Additional Info</div><div style="font-size:11px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certs: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References on request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
@@ -6958,7 +7127,7 @@ const TPL={
         ${d.edus.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Education</div>${d.edus.map(e=>`<div class="strand-ti"><div class="strand-dt" style="border-color:${AC}44">${e.y||''}</div><div><div class="strand-et">${e.d}</div><div class="strand-ec" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
       </div>
       <div>
-        ${d.skills.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Skills</div>${d.skills.map((s,i)=>`<div class="strand-skb"><div class="strand-skn">${s}</div><div class="strand-skt"><div class="strand-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+        ${d.skills.length?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Skills</div>${skMap(d,(s,i)=>`<div class="strand-skb"><div class="strand-skn">${s}</div><div class="strand-skt"><div class="strand-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
         ${projsHTML(d,'strand-sl','strand-ti',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="strand-sl"><span style="width:20px;height:1.5px;background:${AC};display:inline-block;margin-right:8px"></span>Additional Info</div><div style="font-size:11.5px;color:#4D4D5E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
@@ -6977,7 +7146,7 @@ const TPL={
           ${d.edus.length?`<div class="folio-sl" style="margin-top:17px">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:11px"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
         </div>
         <div>
-          ${d.skills.length?`<div class="folio-sl">Skills</div><div>${d.skills.map(s=>`<div class="folio-pill" style="color:${AC};border-color:${AC}">${s}</div>`).join('')}</div>`:''}
+          ${d.skills.length?`<div class="folio-sl">Skills</div><div>${skMap(d,s=>`<div class="folio-pill" style="color:${AC};border-color:${AC}">${s}</div>`).join('')}</div>`:''}
           ${projsHTML(d,'folio-sl','folio-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="folio-sl" style="margin-top:17px">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
         </div>
       </div>
@@ -6996,7 +7165,7 @@ const TPL={
         ${d.edus.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="zenith-ex"><div class="zenith-et">${e.d}</div><div class="zenith-ec" style="color:${AC}">${e.s}</div><div class="zenith-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
-        ${d.skills.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Skills &amp; Expertise</div><div>${d.skills.map(s=>`<div class="zenith-sk">${s}</div>`).join('')}</div>`:''}
+        ${d.skills.length?`<div class="zenith-sl" style="color:${AC};border-color:${AC}">Skills &amp; Expertise</div><div>${skMap(d,s=>`<div class="zenith-sk">${s}</div>`).join('')}</div>`:''}
         ${projsHTML(d,'zenith-sl','zenith-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="zenith-sl" style="color:${AC};border-color:${AC};margin-top:18px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
@@ -7013,7 +7182,7 @@ const TPL={
         ${d.edus.length?`<div class="carbon-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="carbon-edu"><div class="carbon-ede">${e.d}</div><div class="carbon-eds">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div>
-        ${d.skills.length?`<div class="carbon-sl" style="color:${AC}">Skills</div>${d.skills.map((s,i)=>`<div class="carbon-sk"><div class="carbon-skn">${s}</div><div class="carbon-skt"><div class="carbon-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
+        ${d.skills.length?`<div class="carbon-sl" style="color:${AC}">Skills</div>${skMap(d,(s,i)=>`<div class="carbon-sk"><div class="carbon-skn">${s}</div><div class="carbon-skt"><div class="carbon-skf" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}`:''}
         ${projsHTML(d,'carbon-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="carbon-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:#A0A0C4;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`,
@@ -7040,7 +7209,7 @@ const TPL={
         ${d.edus.length?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Education</div>${d.edus.map(e=>`<div class="pulse-ex"><div style="font-size:13.5px;font-weight:600;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
       </div>
       <div class="pulse-sb">
-        ${d.skills.length?`<div class="pulse-sl" style="color:${AC}">Tech Stack</div><div>${d.skills.map(s=>`<div class="pulse-tag" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}</div>`:''}
+        ${d.skills.length?`<div class="pulse-sl" style="color:${AC}">Tech Stack</div><div>${skMap(d,s=>`<div class="pulse-tag" style="background:${AC}18;color:${AC}">${s}</div>`).join('')}</div>`:''}
         ${projsHTML(d,'pulse-sl','pulse-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="pulse-sl" style="color:${AC};margin-top:15px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
     </div></div>`;
@@ -7053,7 +7222,7 @@ const TPL={
       <div class="merid-div"></div>
       <div class="merid-sl">Contact</div>
       ${[d.em,d.ph,d.lo].map(c=>`<div class="merid-cr">${c}</div>`).join('')}${d.liLinkDark?'<div class="merid-cr">'+d.liLinkDark+'</div>':''}
-      ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${d.skills.map(s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="merid-div"></div><div class="merid-sl">Skills</div><div>${skMap(d,s=>`<span class="merid-sk-pill">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'merid-sl',null,AC,true)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="merid-div"></div><div class="merid-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="merid-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="merid-main">
@@ -7079,7 +7248,7 @@ const TPL={
     <div class="axis-body">
       ${d.exps.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">01</div><div class="axis-sec-title">Experience</div></div>${d.exps.map(e=>`<div class="axis-grid-row"><div class="axis-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div><div><div class="axis-et">${e.t}</div><div class="axis-em" style="color:${AC}">${e.co}</div>${bls(e.d,'axis-bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">02</div><div class="axis-sec-title">Education</div></div>${d.edus.map(e=>`<div class="axis-grid-row"><div class="axis-date">${e.y||''}</div><div><div class="axis-et">${e.d}</div><div class="axis-em" style="color:${AC}">${e.s}${e.g?' · GPA '+e.g:''}</div></div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${d.skills.map(s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">03</div><div class="axis-sec-title">Skills</div></div><div class="axis-sk-grid">${skMap(d,s=>`<div class="axis-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'axis-sec-title','axis-grid-row',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="axis-sec-head"><div class="axis-num" style="background:${AC}">04</div><div class="axis-sec-title">Additional Info</div></div><p class="axis-sum" style="margin:0 0 18px">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</p>`:''}
     </div></div>`,
 
@@ -7094,7 +7263,7 @@ const TPL={
       <p class="mono-sum">${d.sum}</p>
       ${d.exps.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="mono-ex"><div class="mono-et">${e.t}, ${e.co}</div><div class="mono-em">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' — ')}</div>${bls(e.d,'mono-bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="mono-ex"><div class="mono-et">${e.d}</div><div class="mono-em">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">03</span>Skills</div><div class="mono-sk-row">${d.skills.map(s=>`<div class="mono-sk-item" style="border-color:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="mono-sl"><span class="mono-sl-num" style="color:${AC}">03</span>Skills</div><div class="mono-sk-row">${skMap(d,s=>`<div class="mono-sk-item" style="border-color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'mono-sl','mono-ex',AC)}${additionalInfoHTML(d,'mono-sl','mono-sum')}
     </div></div>`,
 
@@ -7110,7 +7279,7 @@ const TPL={
         ${d.exps.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="lat-ex"><div class="lat-eh"><div class="lat-et">${e.t}</div><div class="lat-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="lat-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="lat-bl"><span style="position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:1px;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       </div>
       <div>
-        ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${d.skills.map(s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
+        ${d.skills.length?`<div class="lat-sl" style="color:${AC};border-color:${AC}">Skills</div><div class="lat-sk-grid">${skMap(d,s=>`<div class="lat-sk-card">${s}</div>`).join('')}</div>`:''}
         ${d.edus.length?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Education</div>${d.edus.map(e=>`<div class="lat-edu-card"><div class="lat-edu-d">${e.d}</div><div class="lat-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
         ${projsHTML(d,'lat-sl','lat-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="lat-sl" style="color:${AC};border-color:${AC};margin-top:22px">Additional Info</div><div style="font-size:11.5px;color:#3D3D4E;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
@@ -7128,7 +7297,7 @@ const TPL={
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
       ${d.exps.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="aur-ex"><div class="aur-eh"><div class="aur-et">${e.t}</div><div class="aur-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="aur-ec" style="color:${AC}">${e.co}</div>${e.d.split('\n').filter(Boolean).map(l=>`<div class="aur-bl"><span style="position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:${AC}"></span>${l}</div>`).join('')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="aur-edu"><div class="aur-edu-d">${e.d}</div><div class="aur-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${d.skills.map(s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="aur-sl" style="color:${AC}"><span class="aur-sl-dot" style="background:${AC}"></span>Skills</div><div class="aur-sk-cloud">${skMap(d,s=>`<div class="aur-sk-pill" style="background:${AC}15;color:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'aur-sl','aur-ex',AC)}${additionalInfoHTML(d,'aur-sl','aur-edu-s')}
     </div></div>`,
 
@@ -7142,7 +7311,7 @@ const TPL={
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75">${d.sum}</p>
       ${d.exps.length?`<div class="bcn-sl" style="border-color:${AC}">Experience</div>${d.exps.map(e=>`<div class="bcn-ex entry-card"><div class="bcn-eh"><div class="bcn-et">${e.t}</div><div class="bcn-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="bcn-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="bcn-sl" style="border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="bcn-edu-row entry-card"><div><div class="bcn-edu-d">${e.d}</div><div class="bcn-edu-s">${e.s}</div></div><div class="bcn-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="bcn-sl" style="border-color:${AC}">Skills</div><div class="bcn-sk-row">${d.skills.map(s=>`<div class="bcn-sk-chip">${s}</div>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="bcn-sl" style="border-color:${AC}">Skills</div><div class="bcn-sk-row">${skMap(d,s=>`<div class="bcn-sk-chip">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'bcn-sl','bcn-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="bcn-sl" style="border-color:${AC}">Additional Info</div><div class="bcn-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
 
@@ -7153,7 +7322,7 @@ const TPL={
       <div class="csc-ti">${d.ti}</div>
       <div class="csc-sl">Contact</div>
       ${[d.em,d.ph,d.lo,d.liLink].map(c=>`<div class="csc-cr">${c}</div>`).join('')}
-      ${d.skills.length?`<div class="csc-sl">Skills</div><div>${d.skills.map(s=>`<span class="csc-sk-pill">${s}</span>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="csc-sl">Skills</div><div>${skMap(d,s=>`<span class="csc-sk-pill">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'csc-sl','csc-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="csc-sl">Additional Info</div>${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).map(t=>`<div class="csc-cr">${t}</div>`).join('')}`:''}
     </div>
     <div class="csc-mn">
@@ -7174,7 +7343,7 @@ const TPL={
       <p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>
       ${d.exps.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Experience</div>${d.exps.map(e=>`<div class="vtx-ex entry-card"><div class="vtx-eh"><div class="vtx-et">${e.t}</div><div class="vtx-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="vtx-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Education</div>${d.edus.map(e=>`<div class="vtx-edu-row entry-card"><div class="vtx-edu-d">${e.d}</div><div class="vtx-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Skills</div><div class="vtx-sk-row">${d.skills.map(s=>`<div class="vtx-sk-chip" style="background:${AC}">${s}</div>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Skills</div><div class="vtx-sk-row">${skMap(d,s=>`<div class="vtx-sk-chip" style="background:${AC}">${s}</div>`).join('')}</div>`:''}
       ${projsHTML(d,'vtx-sl','vtx-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="vtx-sl"><span class="vtx-sl-bar" style="background:${AC}"></span>Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
 
@@ -7185,7 +7354,7 @@ const TPL={
     <p class="hbr-sum">${d.sum}</p>
     ${d.exps.length?`<div class="hbr-sl" style="background:${AC}">Experience</div>${d.exps.map(e=>`<div class="hbr-ex entry-card"><div class="hbr-eh"><div class="hbr-et">${e.t}</div><div class="hbr-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="hbr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="hbr-sl" style="background:${AC}">Education</div>${d.edus.map(e=>`<div class="hbr-edu-row entry-card"><div><div class="hbr-edu-d">${e.d}</div><div class="hbr-edu-s">${e.s}</div></div><div class="hbr-ed">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="hbr-sl" style="background:${AC}">Skills</div><div class="hbr-sk-row">${d.skills.map(s=>`<div class="hbr-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="hbr-sl" style="background:${AC}">Skills</div><div class="hbr-sk-row">${skMap(d,s=>`<div class="hbr-sk-chip" style="border-color:${AC};color:${AC}">${s}</div>`).join('')}</div>`:''}
     ${projsHTML(d,'hbr-sl','hbr-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="hbr-sl" style="background:${AC}">Additional Info</div><div class="hbr-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
 
@@ -7194,7 +7363,7 @@ const TPL={
     <div class="spc-ti">${d.ti}</div>
     <div class="spc-cs">${[d.em,d.ph,d.lo].filter(Boolean).join(' · ')}${d.liLink?' · '+d.liLink:''}</div>
     <p class="spc-sum">${d.sum}</p>
-    ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${d.skills.map((s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="spc-sl">Skills</div><div class="spc-sk-grid">${skMap(d,(s,i)=>`<div class="spc-sk-item"><div class="spc-sk-nm"><span>${s}</span></div><div class="spc-sk-tr"><div class="spc-sk-fl" style="width:${SL[i%SL.length]}%;background:${AC}"></div></div></div>`).join('')}</div>`:''}
     ${d.exps.length?`<div class="spc-sl">Experience</div>${d.exps.map(e=>`<div class="spc-ex entry-card"><div class="spc-eh"><div class="spc-et">${e.t}</div><div class="spc-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="spc-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${(d.edus.length||d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="spc-foot">
       <div>${d.edus.length?`<div class="spc-sl">Education</div>${d.edus.map(e=>`<div class="spc-edu-row entry-card"><div class="spc-edu-d">${e.d}</div><div class="spc-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}</div>
@@ -7210,7 +7379,7 @@ const TPL={
     <p class="org-sum">${d.sum}</p>
     ${d.exps.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">01</span>Experience</div>${d.exps.map(e=>`<div class="org-ex entry-card"><div class="org-eh"><div class="org-et">${e.t}, ${e.co}</div><div class="org-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">02</span>Education</div>${d.edus.map(e=>`<div class="org-edu-row entry-card"><div class="org-edu-d">${e.d}, ${e.s}</div><div class="org-edu-s">${e.y||''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">03</span>Skills</div><div class="org-sk-row">${d.skills.map(s=>`<div class="org-sk-chip">${s}</div>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">03</span>Skills</div><div class="org-sk-row">${skMap(d,s=>`<div class="org-sk-chip">${s}</div>`).join('')}</div>`:''}
     ${projsHTML(d,'org-sl','org-ex',AC)}${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="org-sl"><span class="org-num" style="border-color:${AC};color:${AC}">04</span>Additional Info</div><div class="org-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
 
@@ -7223,7 +7392,7 @@ const TPL={
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin-bottom:6px">${d.sum}</p>`:''}
       ${d.exps.length?`<div class="dusk-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="dusk-ex entry-card"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="dusk-et">${e.t}</div><div class="dusk-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="dusk-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="dusk-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="dusk-sl" style="color:${AC}">Skills</div><div class="dusk-sk-row">${d.skills.map(s=>`<span class="dusk-sk-chip" style="background:${AC}">${s}</span>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="dusk-sl" style="color:${AC}">Skills</div><div class="dusk-sk-row">${skMap(d,s=>`<span class="dusk-sk-chip" style="background:${AC}">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'dusk-sl','dusk-ex',AC)}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="dusk-sl" style="color:${AC}">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
@@ -7238,7 +7407,7 @@ const TPL={
         ${projsHTML(d,'split-sl','split-ex',AC)}
       </div>
       <div class="split-col">
-        ${d.skills.length?`<div class="split-sl" style="color:${AC};border-color:${AC}">Skills</div><div style="margin-bottom:14px">${d.skills.map(s=>`<span class="split-sk-chip" style="background:var(--surf);color:${AC}">${s}</span>`).join('')}</div>`:''}
+        ${d.skills.length?`<div class="split-sl" style="color:${AC};border-color:${AC}">Skills</div><div style="margin-bottom:14px">${skMap(d,s=>`<span class="split-sk-chip" style="background:var(--surf);color:${AC}">${s}</span>`).join('')}</div>`:''}
         ${d.edus.length?`<div class="split-sl" style="color:${AC};border-color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="split-edu-d">${e.d}</div><div class="split-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
         ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="split-sl" style="color:${AC};border-color:${AC}">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
@@ -7250,7 +7419,7 @@ const TPL={
     ${d.sum?`<p class="serif-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="serif-sl">Experience</div>${d.exps.map(e=>`<div class="serif-ex entry-card"><div class="serif-et">${e.t} — ${e.co}</div><div class="serif-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' → ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="serif-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="serif-edu-d">${e.d}</div><div class="serif-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="serif-sl">Skills</div><div class="serif-sk-row">${d.skills.map(s=>`<span class="serif-sk-item">${s}</span>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="serif-sl">Skills</div><div class="serif-sk-row">${skMap(d,s=>`<span class="serif-sk-item">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'serif-sl','serif-ex',AC)}
     ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="serif-sl">Additional Info</div><div style="font-family:var(--ff-b);font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
@@ -7261,7 +7430,7 @@ const TPL={
     ${d.sum?`<p class="ruled-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="ruled-card"><div class="ruled-card-sl">Experience</div>${d.exps.map(e=>`<div class="ruled-ex entry-card"><div class="ruled-eh"><div class="ruled-et">${e.t}</div><div class="ruled-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="ruled-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}</div>`:''}
     ${d.edus.length?`<div class="ruled-card"><div class="ruled-card-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="ruled-edu-d">${e.d}</div><div class="ruled-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}</div>`:''}
-    ${d.skills.length?`<div class="ruled-card"><div class="ruled-card-sl">Skills</div>${d.skills.map(s=>`<span class="ruled-sk-chip">${s}</span>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="ruled-card"><div class="ruled-card-sl">Skills</div>${skMap(d,s=>`<span class="ruled-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${d.projs&&d.projs.length?`<div class="ruled-card"><div class="ruled-card-sl">Projects</div>${d.projs.map(p=>`<div class="ruled-ex entry-card">${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener noreferrer" class="proj-card-nm proj-card-link">${esc(p.nm)}</a>`:`<span class="ruled-et">${esc(p.nm)}</span>`}${p.yr?` <span class="ruled-ed">${esc(p.yr)}</span>`:''}${p.desc?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${esc(p.desc)}</div>`:''}${p.stack?`<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">${p.stack.split(',').map(s=>`<span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--surf);color:var(--ink)">${esc(s.trim())}</span>`).join('')}</div>`:''}</div>`).join('')}</div>`:''}
     ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="ruled-card"><div class="ruled-card-sl">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div></div>`:''}
   </div>`,
@@ -7272,7 +7441,7 @@ const TPL={
     ${d.sum?`<p class="slate-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="slate-sl">Experience</div>${d.exps.map(e=>`<div class="slate-ex entry-card"><div class="slate-eh"><div class="slate-et">${e.t}</div><div class="slate-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="slate-ec">${e.co}</div>${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="slate-bl">${b}</div>`).join(''):''}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="slate-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="slate-edu-d">${e.d}</div><div class="slate-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="slate-sl">Skills</div><div style="margin-bottom:6px">${d.skills.map(s=>`<span class="slate-sk-chip">${s}</span>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="slate-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="slate-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'slate-sl','slate-ex',AC,true)}
     ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="slate-sl">Additional Info</div><div class="slate-add-body">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
@@ -7285,7 +7454,7 @@ const TPL={
       ${d.sum?`<p class="chr-sum">${d.sum}</p>`:''}
       ${d.exps.length?`<div class="chr-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="chr-ex entry-card"><div class="chr-date">${[e.s,e.present?'Present':e.e].filter(Boolean).join('\n')}</div><div class="chr-main"><div class="chr-et">${e.t}</div><div class="chr-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div></div>`).join('')}`:''}
       ${d.edus.length?`<div class="chr-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card" style="margin-bottom:9px"><div style="font-size:13.5px;font-weight:700;color:var(--ink)">${e.d}</div><div style="font-size:11.5px;color:var(--muted)">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="chr-sl" style="color:${AC}">Skills</div><div style="margin-bottom:8px">${d.skills.map(s=>`<span class="chr-sk-chip">${s}</span>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="chr-sl" style="color:${AC}">Skills</div><div style="margin-bottom:8px">${skMap(d,s=>`<span class="chr-sk-chip">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'chr-sl','chr-ex',AC)}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="chr-sl" style="color:${AC}">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
@@ -7306,7 +7475,7 @@ const TPL={
           ${projsHTML(d,'pro-sl','pro-ex',AC)}
         </div>
         <div class="pro-side">
-          ${d.skills.length?`<div class="pro-sl">Skills</div><div style="margin-bottom:14px">${d.skills.map(s=>`<span class="pro-sk-chip">${s}</span>`).join('')}</div>`:''}
+          ${d.skills.length?`<div class="pro-sl">Skills</div><div style="margin-bottom:14px">${skMap(d,s=>`<span class="pro-sk-chip">${s}</span>`).join('')}</div>`:''}
           ${d.edus.length?`<div class="pro-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="pro-edu-d">${e.d}</div><div class="pro-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
           ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="pro-sl">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
         </div>
@@ -7320,7 +7489,7 @@ const TPL={
       ${d.sum?`<div class="edge-sum" style="border-color:${AC};color:#3D3D4E;font-size:13px;line-height:1.75;margin:18px 0">${d.sum}</div>`:''}
       ${d.exps.length?`<div class="edge-sl">Experience</div>${d.exps.map(e=>`<div class="edge-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="edge-et">${e.t}</div><div class="edge-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="edge-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="edge-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="edge-edu-d">${e.d}</div><div class="edge-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="edge-sl">Skills</div><div style="margin-bottom:6px">${d.skills.map(s=>`<span class="edge-sk-chip">${s}</span>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="edge-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="edge-sk-chip">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'edge-sl','edge-ex',AC)}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="edge-sl">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div>
@@ -7333,7 +7502,7 @@ const TPL={
     ${d.sum?`<div class="sage-sum">${d.sum}</div>`:''}
     ${d.exps.length?`<div class="sage-sl">Experience</div>${d.exps.map(e=>`<div class="sage-ex entry-card" style="margin-bottom:13px"><div class="sage-et">${e.t}</div><div class="sage-ec" style="color:${AC}">${e.co}</div><div class="sage-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="sage-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="sage-edu-d">${e.d}</div><div class="sage-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="sage-sl">Skills</div><div style="margin-bottom:6px">${d.skills.map(s=>`<span class="sage-sk-chip">${s}</span>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="sage-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="sage-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'sage-sl','sage-ex',AC)}
     ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="sage-sl">Additional Info</div><div style="font-size:11.5px;color:#7A7868;line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
@@ -7347,7 +7516,7 @@ const TPL={
       ${d.sum?`<p style="font-size:13px;color:#3D3D4E;line-height:1.75;margin:14px 0">${d.sum}</p>`:''}
       ${d.exps.length?`<div class="blade-sl">Experience</div>${d.exps.map(e=>`<div class="blade-ex entry-card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div class="blade-et">${e.t}</div><div class="blade-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="blade-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
       ${d.edus.length?`<div class="blade-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="blade-edu-d">${e.d}</div><div class="blade-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-      ${d.skills.length?`<div class="blade-sl">Skills</div><div style="margin-bottom:6px">${d.skills.map(s=>`<span class="blade-sk-chip" style="background:${AC}">${s}</span>`).join('')}</div>`:''}
+      ${d.skills.length?`<div class="blade-sl">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="blade-sk-chip" style="background:${AC}">${s}</span>`).join('')}</div>`:''}
       ${projsHTML(d,'blade-sl','blade-ex',AC)}
       ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="blade-sl">Additional Info</div><div style="font-size:11.5px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
     </div></div>`,
@@ -7358,7 +7527,7 @@ const TPL={
     ${d.sum?`<p class="neon-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="neon-sl" style="color:${AC}">Experience</div>${d.exps.map(e=>`<div class="neon-ex entry-card"><div class="neon-eh"><div class="neon-et">${e.t}</div><div class="neon-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="neon-ec">${e.co}</div>${e.d?e.d.split('\n').filter(Boolean).map(b=>`<div class="neon-bl" style="opacity:.6">${b}</div>`).join(''):''}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="neon-sl" style="color:${AC}">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="neon-edu-d">${e.d}</div><div class="neon-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="neon-sl" style="color:${AC}">Skills</div><div style="margin-bottom:6px">${d.skills.map(s=>`<span class="neon-sk-chip" style="color:${AC};border-color:${AC}44">${s}</span>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="neon-sl" style="color:${AC}">Skills</div><div style="margin-bottom:6px">${skMap(d,s=>`<span class="neon-sk-chip" style="color:${AC};border-color:${AC}44">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'neon-sl','neon-ex',AC,true)}
     ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="neon-sl" style="color:${AC}">Additional Info</div><div class="neon-add-body" style="font-size:11px;color:rgba(255,255,255,.4);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
@@ -7370,7 +7539,7 @@ const TPL={
     ${d.sum?`<p class="frost-sum">${d.sum}</p>`:''}
     ${d.exps.length?`<div class="frost-sl">Experience</div>${d.exps.map(e=>`<div class="frost-ex entry-card" style="margin-bottom:18px"><div class="frost-eh"><div class="frost-et">${e.t}</div><div class="frost-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div><div class="frost-ec" style="color:${AC}">${e.co}</div>${bls(e.d,'bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="frost-sl">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="frost-edu-d">${e.d}</div><div class="frost-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="frost-sl">Skills</div><div class="frost-sk-row">${d.skills.map(s=>`<span class="frost-sk-chip">${s}</span>`).join('')}</div>`:''}
+    ${d.skills.length?`<div class="frost-sl">Skills</div><div class="frost-sk-row">${skMap(d,s=>`<span class="frost-sk-chip">${s}</span>`).join('')}</div>`:''}
     ${projsHTML(d,'frost-sl','frost-ex',AC)}
     ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="frost-sl">Additional Info</div><div style="font-size:12px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
   </div>`,
@@ -7386,7 +7555,7 @@ const TPL={
         ${projsHTML(d,'anchor-sl','anchor-ex',AC)}
       </div>
       <div class="anchor-side">
-        ${d.skills.length?`<div class="anchor-sl">Skills</div>${d.skills.map(s=>`<div class="anchor-sk-chip">${s}</div>`).join('')}`:''}
+        ${d.skills.length?`<div class="anchor-sl">Skills</div>${skMap(d,s=>`<div class="anchor-sk-chip">${s}</div>`).join('')}`:''}
         ${d.edus.length?`<div class="anchor-sl" style="margin-top:16px">Education</div>${d.edus.map(e=>`<div class="entry-card"><div class="anchor-edu-d">${e.d}</div><div class="anchor-edu-s">${e.s}${e.y?' · '+e.y:''}${e.g?' · GPA '+e.g:''}</div></div>`).join('')}`:''}
         ${(d.certs.length||d.langs.length||d.workauth||d.refs)?`<div class="anchor-sl" style="margin-top:16px">Additional Info</div><div style="font-size:11px;color:var(--muted);line-height:1.7">${[d.certs.length&&`Certifications: ${certsLine(d.certs)}`,d.langs.length&&`Languages: ${langsLine(d.langs)}`,d.workauth,d.refs&&'References available upon request'].filter(Boolean).join('<br>')}</div>`:''}
       </div>
