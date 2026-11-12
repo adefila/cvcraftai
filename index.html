@@ -938,7 +938,7 @@ body.meet-open{overflow:hidden}
   /* @page margin stays 0 (that hides the browser's URL/date headers), so the page
      spacing lives here: clone repeats the top/bottom padding on every printed page */
   #print-target{display:block!important;position:static!important;inset:auto!important;overflow:visible!important;background:#fff;width:210mm;
-    padding:14mm 40px!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+    padding:8mm 40px!important;box-decoration-break:clone;-webkit-box-decoration-break:clone}
   /* Keep each entry intact — never split one job/degree across two pages */
   .entry-card,.classic-ex,.nova-ex,.nova-sk,.apex-ex,.prism-ex,.strand-ti,.folio-ex,
   .zenith-ex,.carbon-ex,.carbon-edu,.pulse-ex,.merid-ex,.merid-edu-row,.axis-grid-row,
@@ -8301,6 +8301,21 @@ function isCanvasBlank(canvas){
 }
 
 // Exports always render in the light theme, whatever theme the app is showing, and the theme comes back after.
+// Spacing trimmed for the exported PDF only (the preview keeps the full design). Templates carry their
+// own page padding, header bands and side columns carry top padding, and the same padding sits at the
+// foot of the last page. On top of the page margins added at export, that pushed a CV that is a little
+// over one page onto a second or third page. Everything is capped to a slim margin.
+const PDF_TOP_PAD=20,PDF_BOTTOM_PAD=14,PDF_BAND_PAD=22;
+function tightenForPdf(paper){
+  const root=paper&&paper.firstElementChild;
+  if(!root)return;
+  const win=root.ownerDocument.defaultView;
+  const px=el=>parseFloat(win.getComputedStyle(el).paddingTop)||0;
+  const c=win.getComputedStyle(root);
+  if(parseFloat(c.paddingTop)>PDF_TOP_PAD)root.style.paddingTop=PDF_TOP_PAD+'px';
+  if(parseFloat(c.paddingBottom)>PDF_BOTTOM_PAD)root.style.paddingBottom=PDF_BOTTOM_PAD+'px';
+  [...root.children].forEach(ch=>{if(px(ch)>PDF_BAND_PAD)ch.style.paddingTop=PDF_BAND_PAD+'px';});
+}
 async function doExport(){
   const root=document.documentElement,wasDark=root.getAttribute('data-theme')==='dark';
   if(wasDark)root.removeAttribute('data-theme');
@@ -8353,6 +8368,7 @@ async function doExportInner(){
           clonedEl.style.overflow='visible';
           clonedEl.style.minHeight='unset';
           clonedEl.style.transition='none';
+          tightenForPdf(clonedEl);
           // Ensure CSS variables resolve correctly in the cloned document
           const rootStyle=clonedDoc.documentElement.style;
           const computed=getComputedStyle(document.documentElement);
@@ -8405,7 +8421,7 @@ async function doExportInner(){
         '.chr-ex','.serif-ex','.split-ex','.pro-ex',
       ].join(',');
 
-      const TOP_PAD=48*SCALE;
+      const TOP_PAD=20*SCALE;
       const paperRect=paperEl.getBoundingClientRect();
       const blocks=[...paperEl.querySelectorAll(protectedSel)].map(el=>{
         const r=el.getBoundingClientRect();
@@ -8413,16 +8429,19 @@ async function doExportInner(){
       }).filter(b=>b.bottom>b.top+2);
 
       // Blank band kept at the foot of every page so text never runs to the edge
-      const BOTTOM_PAD=40*SCALE;
+      const BOTTOM_PAD=28*SCALE;
       const pageHeightPx=PAGE_H*SCALE;
       const contPageH=pageHeightPx-TOP_PAD-BOTTOM_PAD;
-      const MARGIN=28*SCALE;
+      const MARGIN=16*SCALE;
       const totalH=canvas.height;
       const cuts=[0];
       let pos=0,pageIdx=0;
       while(pos<totalH-1){
         const availH=pageIdx===0?pageHeightPx-BOTTOM_PAD:contPageH;
         let target=Math.min(pos+availH,totalH);
+        // If what is left fits in the blank band kept at the foot of this page, keep it here instead of
+        // starting another page for a few lines.
+        if(target<totalH&&totalH-target<=BOTTOM_PAD)target=totalH;
         if(target<totalH){
           const hit=blocks.find(b=>b.top<target&&b.bottom>target);
           if(hit){
@@ -8482,6 +8501,7 @@ async function doExportInner(){
     document.title=`${rawName} — CV`;
     const pt=gi('print-target');
     pt.innerHTML=gi('paper').innerHTML;
+    tightenForPdf(pt);
     // Remove skeleton from print target
     const emptyEl=pt.querySelector('#paper-empty,.paper-empty');
     if(emptyEl)emptyEl.remove();
