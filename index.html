@@ -122,6 +122,10 @@ button svg,a svg{transition:opacity .15s,transform .15s}
    flex and grid skill layouts some templates use. */
 .cv-sk-grp{display:block;grid-column:1/-1;flex:0 0 100%;width:100%;box-sizing:border-box;margin:9px 0 4px;font-size:.72em;font-weight:700;letter-spacing:.09em;text-transform:uppercase;line-height:1.2;opacity:.72}
 .cv-sk-grp:first-child{margin-top:0}
+/* Employment type and work arrangement tags after the company on the CV */
+.cv-emp,.cv-arr{display:inline-block;margin-left:.15em;padding:.06em .6em;border-radius:99px;font-size:.78em;font-weight:600;font-style:normal;line-height:1.5;letter-spacing:.02em;text-transform:none;white-space:nowrap;vertical-align:.1em}
+.cv-emp{box-shadow:inset 0 0 0 1px currentColor}
+.cv-arr{background:rgba(120,120,130,.18)}
 /* templates whose skills sit on a dark or coloured background */
 .nova-sb .cv-sk-grp,.carbon-bd .cv-sk-grp,.neon .cv-sk-grp,.merid-side .cv-sk-grp{color:#fff}
 /* ── Suggestion dropdown (one shared panel for every autosuggest input) ── */
@@ -1421,7 +1425,7 @@ body.meet-open{overflow:hidden}
 .blade{background:#fff;overflow:hidden}.blade-h{padding:38px 44px 54px;position:relative;clip-path:polygon(0 0,100% 0,100% 75%,0 100%);min-height:160px;color:#fff}.blade-nm{font-family:var(--ff-d);font-size:28px;font-weight:800;letter-spacing:-.3px;position:relative;z-index:1}.blade-ti{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;opacity:.8;margin-top:5px;position:relative;z-index:1}.blade-cs{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:12px;font-size:11px;opacity:.85;position:relative;z-index:1}.blade-h-bg{position:absolute;inset:0;z-index:0}.blade-body{padding:8px 44px 36px}.blade-sl{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin:20px 0 11px;display:flex;align-items:center;gap:9px}.blade-sl::after{content:'';flex:1;height:1.5px;background:var(--bdr)}.blade-et{font-size:14px;font-weight:700;color:var(--ink)}.blade-ec{font-size:12px;font-weight:600;margin:2px 0 6px}.blade-ed{font-size:10.5px;font-family:var(--ff-m);color:var(--muted)}.blade-ex{margin-bottom:14px}.blade-edu-d{font-size:13.5px;font-weight:600;color:var(--ink)}.blade-edu-s{font-size:11.5px;color:var(--muted);margin-top:2px;margin-bottom:9px}.blade-sk-chip{display:inline-block;font-size:11px;font-weight:600;padding:6px 13px;border-radius:6px;color:#fff;margin:0 5px 6px 0}
 
 /* ── NEON ── dark with vivid accent glow */
-.neon{background:#0A0A12;min-height:920px;padding:40px 42px}.neon-nm{font-family:var(--ff-d);font-size:28px;font-weight:800;letter-spacing:-.4px;color:#fff}.neon-ti{font-size:11.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:6px;opacity:.5}.neon-cs{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;font-size:11px;color:rgba(255,255,255,.5);padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.06)}.neon-sum{font-size:13px;line-height:1.75;color:rgba(255,255,255,.6);margin:18px 0}.neon-sl{font-size:9.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin:22px 0 13px}.neon-et{font-size:13.5px;font-weight:700;color:#fff}.neon-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.neon-ec{font-size:12px;font-weight:500;margin:2px 0 6px;opacity:.55}.neon-ed{font-size:10px;font-family:var(--ff-m);color:rgba(255,255,255,.3);white-space:nowrap}.neon-ex{margin-bottom:14px}.neon-bl{font-size:12px;color:rgba(255,255,255,.55);line-height:1.65;padding-left:14px;position:relative;margin-bottom:4px}.neon-bl::before{content:'▸';position:absolute;left:0;font-size:9px;top:3px}.neon-edu-d{font-size:13px;font-weight:600;color:#fff}.neon-edu-s{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;margin-bottom:8px}.neon-sk-chip{display:inline-block;font-size:10px;font-weight:700;padding:4px 11px;border-radius:5px;border:1px solid;margin:0 5px 5px 0}
+.neon{background:#0A0A12;min-height:920px;padding:40px 42px}.neon-nm{font-family:var(--ff-d);font-size:28px;font-weight:800;letter-spacing:-.4px;color:#fff}.neon-ti{font-size:11.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:6px;opacity:.5}.neon-cs{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;font-size:11px;color:rgba(255,255,255,.5);padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.06)}.neon-sum{font-size:13px;line-height:1.75;color:rgba(255,255,255,.6);margin:18px 0}.neon-sl{font-size:9.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin:22px 0 13px}.neon-et{font-size:13.5px;font-weight:700;color:#fff}.neon-eh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.neon-ec{font-size:12px;font-weight:500;margin:2px 0 6px;opacity:.55;color:#fff}.neon-ed{font-size:10px;font-family:var(--ff-m);color:rgba(255,255,255,.3);white-space:nowrap}.neon-ex{margin-bottom:14px}.neon-bl{font-size:12px;color:rgba(255,255,255,.55);line-height:1.65;padding-left:14px;position:relative;margin-bottom:4px}.neon-bl::before{content:'▸';position:absolute;left:0;font-size:9px;top:3px}.neon-edu-d{font-size:13px;font-weight:600;color:#fff}.neon-edu-s{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;margin-bottom:8px}.neon-sk-chip{display:inline-block;font-size:10px;font-weight:700;padding:4px 11px;border-radius:5px;border:1px solid;margin:0 5px 5px 0}
 
 /* ── FROST ── ultra clean, generous whitespace */
 .frost{padding:48px 52px;background:#fff}.frost-nm{font-family:var(--ff-d);font-size:30px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}.frost-ti{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px}.frost-cs{display:flex;flex-wrap:wrap;gap:5px 18px;margin-top:14px;font-size:11.5px;color:var(--muted)}.frost-div{height:2px;margin:22px 0}.frost-sum{font-size:13.5px;color:#3D3D4E;line-height:1.85;margin-bottom:24px}.frost-sl{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:24px 0 14px}.frost-et{font-size:14px;font-weight:700;color:var(--ink)}.frost-eh{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.frost-ec{font-size:12px;font-weight:600;margin:4px 0 4px}.frost-ed{font-size:10.5px;font-family:var(--ff-m);color:var(--muted);white-space:nowrap}.frost-ex{margin-bottom:18px}.frost-edu-d{font-size:13.5px;font-weight:600;color:var(--ink)}.frost-edu-s{font-size:12px;color:var(--muted);margin-top:3px;margin-bottom:12px}.frost-sk-row{display:flex;flex-wrap:wrap;gap:8px}.frost-sk-chip{font-size:11.5px;font-weight:500;padding:7px 16px;border-radius:999px;border:1.5px solid var(--bdr);color:var(--ink)}
@@ -2378,7 +2382,7 @@ function applySnapshot(data){
     skills=data.skills.map(s=>{const o=typeof s==='string'?{n:s,c:''}:{...s};if(!o.c||o.c==='General')o.c='';return o;});
     skillCats=Array.isArray(data.skillCats)?data.skillCats.filter(c=>typeof c==='string'&&c.trim()&&c!=='General'):[];
   }
-  if(Array.isArray(data.exps))exps=data.exps;
+  if(Array.isArray(data.exps))exps=data.exps.map(fixExp);
   if(Array.isArray(data.edus))edus=data.edus;
   if(Array.isArray(data.certs))certs=data.certs;
   if(Array.isArray(data.langs))langs=data.langs;
@@ -4026,7 +4030,8 @@ function csEnhance(sel){
   btn.type='button';btn.className='fi cs-btn';btn.style.cssText=sel.style.cssText;
   btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');
   const lab=sel.getAttribute('aria-label')||(sel.closest('label')&&((sel.closest('label').querySelector('.fld-l,.tpl-quick-lbl')||{}).textContent))||'';
-  if(lab)btn.setAttribute('aria-label',lab.trim());
+  const near=!lab&&sel.id&&document.querySelector('label[for="'+sel.id+'"]');
+  if(lab)btn.setAttribute('aria-label',lab.trim());else if(near)btn.setAttribute('aria-label',near.textContent.trim());
   btn.innerHTML='<span class="cs-val"></span>'+CS_CHEV;
   sel.parentNode.insertBefore(btn,sel);          // before the select, so a <label> activates the button
   sel.classList.add('cs-native');sel._csBtn=btn;
@@ -4187,15 +4192,41 @@ function mkModal(html){
   return el;
 }
 
+// Employment type (how you were hired) and work arrangement (where you worked) are separate fields.
+const EMP_TYPES=['Full-time','Part-time','Contract','Freelance','Internship','Temporary','Self-employed'];
+const WORK_ARR=['On-site','Remote','Hybrid'];
+const normPick=(x,list)=>{
+  const k=String(x||'').trim().toLowerCase().replace(/[\s_]+/g,'-').replace(/^onsite$/,'on-site');
+  return list.find(t=>t.toLowerCase()===k)||'';
+};
+const normEmp=x=>normPick(x,EMP_TYPES);
+const normArr=x=>normPick(x,WORK_ARR);
+// Older saves kept "Remote" in the employment type. It is a work arrangement, so it moves across.
+function fixExp(e){
+  const o={...e};
+  const a=normArr(o.arr)||normArr(o.type);
+  const t=normEmp(o.type)||(a?'':String(o.type||'').trim());
+  o.type=t;o.arr=a;
+  return o;
+}
+// The two tags after the company on the CV: employment type as an outlined pill, arrangement as a filled one.
+function empTags(e){
+  // real spaces between the tags, so copied text and ATS parsing read "Acme Corp Freelance Hybrid"
+  return (e.type?` <span class="cv-emp">${esc(e.type)}</span>`:'')+(e.arr?` <span class="cv-arr">${esc(e.arr)}</span>`:'');
+}
 function addExp(editIdx){
   const isEdit=typeof editIdx==='number';
-  const ex=isEdit?exps[editIdx]:{t:'',co:'',s:'',e:'',present:false,d:'',type:''};
+  const ex=isEdit?fixExp(exps[editIdx]):{t:'',co:'',s:'',e:'',present:false,d:'',type:'',arr:''};
+  const optsHTML=(list,cur)=>['',...list].map(v=>`<option value="${v}" ${cur===v?'selected':''}>${v||'Not specified'}</option>`).join('')+(cur&&!list.includes(cur)?`<option value="${esc(cur)}" selected>${esc(cur)}</option>`:'');
   const modalEl=mkModal(`
     <div class="modal-title">${isEdit?'Edit':'Add'} Experience</div>
     <div class="fg">
       <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" data-suggest="roles" autocomplete="off"></label>
       <label class="fld"><span class="fld-l">Company</span><input class="fi" id="ex-co" placeholder="Where you worked" value="${esc(ex.co)}"></label>
-      <label class="fld"><span class="fld-l">Employment type</span><select class="fi" id="ex-type"><option value="" ${!ex.type?'selected':''}>Not specified</option><option value="Full-time" ${ex.type==='Full-time'?'selected':''}>Full-time</option><option value="Contract" ${ex.type==='Contract'?'selected':''}>Contract</option><option value="Remote" ${ex.type==='Remote'?'selected':''}>Remote</option><option value="Part-time" ${ex.type==='Part-time'?'selected':''}>Part-time</option><option value="Internship" ${ex.type==='Internship'?'selected':''}>Internship</option></select></label>
+      <div class="row2">
+        <div class="date-field"><label class="date-lbl" for="ex-type">Employment type</label><select class="fi" id="ex-type" aria-label="Employment type">${optsHTML(EMP_TYPES,ex.type)}</select></div>
+        <div class="date-field"><label class="date-lbl" for="ex-arr">Work arrangement</label><select class="fi" id="ex-arr" aria-label="Work arrangement">${optsHTML(WORK_ARR,ex.arr)}</select></div>
+      </div>
       <div class="row2">
         <div class="date-field"><label class="date-lbl">Start date</label><input class="fi" id="ex-s" type="month" value="${esc(toMonthInput(ex.s))}"></div>
         <div class="date-field"><label class="date-lbl">End date</label><input class="fi" id="ex-e" type="month" value="${esc(ex.present?'':toMonthInput(ex.e))}" ${ex.present?'disabled':''}></div>
@@ -4347,9 +4378,9 @@ function useAISummary(btn){
 }
 
 function saveExp(modalEl,editIdx){
-  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d'),type=v('ex-type');
+  const t=v('ex-t'),co=v('ex-co'),s=v('ex-s'),present=gi('ex-present').checked,e=present?'':v('ex-e'),d=v('ex-d'),type=v('ex-type'),arr=v('ex-arr');
   if(!t){toast('Add a job title','err');return;}
-  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d,type};
+  const rec={t,co,s:formatMonth(s),e:present?'Present':formatMonth(e),present,d,type,arr};
   if(typeof editIdx==='number'){exps[editIdx]=rec;}else{exps.push(rec);}
   modalEl.remove();
   renderExpList();rCV();upATS();runJDMatch();
@@ -4461,7 +4492,7 @@ function renderExpList(){
   gi('exp-list').innerHTML=exps.map((e,i)=>`
     <div class="ei ei-editable" draggable="true">
       ${DRAG_HANDLE}
-      <div class="ei-t">${esc(e.t)}${e.co?' @ '+esc(e.co):''}${e.type?' · '+esc(e.type):''}</div>
+      <div class="ei-t">${esc(e.t)}${e.co?' @ '+esc(e.co):''}${[e.type,e.arr].filter(Boolean).map(x=>' · '+esc(x)).join('')}</div>
       <div class="ei-s">${[esc(e.s),e.present?'Present':esc(e.e)].filter(Boolean).join(' – ')}</div>
       <div class="ei-actions" ondragstart="event.stopPropagation()">
         <button class="ei-edit" onclick="addExp(${i})" title="Edit"><svg viewBox="0 0 24 24" fill="none" width="13" height="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 16.5-3.5z"/></svg></button>
@@ -6844,7 +6875,7 @@ EXTRACTION RULES:
 - location: City/Country exactly as written (e.g. "Lagos, Nigeria")
 - summary: The profile/summary/about section, copied word for word
 - skills: Every skill listed, exactly as written — include all tools, technologies, and competencies
-- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", type: employment type if stated (Full-time, Contract, Remote, Part-time, Internship) else null, bullets: all bullet points for that role joined with \\n, copied exactly
+- experience: Every job in the CV — title and company exactly as written, dates exactly as written (format: "Mon YYYY" e.g. "Jan 2023"), current:true only if explicitly says "Present", type: employment type if stated (exactly one of Full-time, Part-time, Contract, Freelance, Internship, Temporary, Self-employed) else null, arrangement: work arrangement if stated (exactly one of On-site, Remote, Hybrid) else null, bullets: all bullet points for that role joined with \\n, copied exactly
 - education: Degree title exactly as written, school name exactly as written, graduation year
 - certifications: Certificate name exactly, issuer exactly, year if given
 - languages: Language name, proficiency level exactly as written
@@ -6917,7 +6948,8 @@ ${simUploadedCVText.slice(0,6000)}`;
           e:e.current?'':formatMonth(e.end||''),
           present:!!e.current,
           d:e.bullets||'',
-          type:e.type||''
+          type:normEmp(e.type),
+          arr:normArr(e.arrangement)||normArr(e.type)
         }));
       renderExpList();
     }
@@ -7377,7 +7409,7 @@ function escData(d){
     sum:esc(d.sum),workauth:esc(d.workauth),
     skills:d.skills.map(s=>esc(s)),
     skillGroups:d.skillGroups.map(g=>({cat:esc(g.cat),items:g.items.map(n=>esc(n))})),
-    exps:d.exps.map(e=>({...e,t:esc(e.t),co:[esc(e.co),esc(e.type)].filter(Boolean).join(' · '),d:esc(e.d)})),
+    exps:d.exps.map(e=>({...e,t:esc(e.t),co:esc(e.co)+empTags(e),d:esc(e.d)})),
     edus:d.edus.map(e=>({...e,d:esc(e.d),s:esc(e.s),y:esc(e.y),g:esc(e.g)})),
     certs:d.certs.map(c=>({...c,name:esc(c.name),issuer:esc(c.issuer),year:esc(c.year)})),
     langs:d.langs.map(l=>({...l,name:esc(l.name),level:esc(l.level)})),
