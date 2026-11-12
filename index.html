@@ -2350,7 +2350,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
 <div class="toast" id="toast"></div>
 
 <!-- PRINT TARGET -->
-<datalist id="country-suggestions"><option>Afghanistan</option><option>Argentina</option><option>Australia</option><option>Austria</option><option>Bangladesh</option><option>Belgium</option><option>Brazil</option><option>Cameroon</option><option>Canada</option><option>Chile</option><option>China</option><option>Colombia</option><option>Côte d’Ivoire</option><option>Czechia</option><option>Denmark</option><option>Egypt</option><option>Ethiopia</option><option>Finland</option><option>France</option><option>Germany</option><option>Ghana</option><option>Greece</option><option>Hong Kong</option><option>Hungary</option><option>India</option><option>Indonesia</option><option>Ireland</option><option>Israel</option><option>Italy</option><option>Japan</option><option>Kenya</option><option>Malaysia</option><option>Mexico</option><option>Morocco</option><option>Netherlands</option><option>New Zealand</option><option>Nigeria</option><option>Norway</option><option>Pakistan</option><option>Peru</option><option>Philippines</option><option>Poland</option><option>Portugal</option><option>Qatar</option><option>Romania</option><option>Rwanda</option><option>Saudi Arabia</option><option>Senegal</option><option>Singapore</option><option>South Africa</option><option>South Korea</option><option>Spain</option><option>Sweden</option><option>Switzerland</option><option>Tanzania</option><option>Thailand</option><option>Turkey</option><option>Uganda</option><option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option><option>United States</option><option>Vietnam</option><option>Zambia</option><option>Zimbabwe</option></datalist>
+<datalist id="country-suggestions"><option>Afghanistan</option><option>Albania</option><option>Algeria</option><option>Andorra</option><option>Angola</option><option>Antigua and Barbuda</option><option>Argentina</option><option>Armenia</option><option>Australia</option><option>Austria</option><option>Azerbaijan</option><option>Bahamas</option><option>Bahrain</option><option>Bangladesh</option><option>Barbados</option><option>Belarus</option><option>Belgium</option><option>Belize</option><option>Benin</option><option>Bhutan</option><option>Bolivia</option><option>Bosnia and Herzegovina</option><option>Botswana</option><option>Brazil</option><option>Brunei</option><option>Bulgaria</option><option>Burkina Faso</option><option>Burundi</option><option>Cabo Verde</option><option>Cambodia</option><option>Cameroon</option><option>Canada</option><option>Central African Republic</option><option>Chad</option><option>Chile</option><option>China</option><option>Colombia</option><option>Comoros</option><option>Congo (Brazzaville)</option><option>Congo (Kinshasa)</option><option>Costa Rica</option><option>Côte d’Ivoire</option><option>Croatia</option><option>Cuba</option><option>Cyprus</option><option>Czechia</option><option>Denmark</option><option>Djibouti</option><option>Dominica</option><option>Dominican Republic</option><option>Ecuador</option><option>Egypt</option><option>El Salvador</option><option>Equatorial Guinea</option><option>Eritrea</option><option>Estonia</option><option>Eswatini</option><option>Ethiopia</option><option>Fiji</option><option>Finland</option><option>France</option><option>Gabon</option><option>Gambia</option><option>Georgia</option><option>Germany</option><option>Ghana</option><option>Greece</option><option>Grenada</option><option>Guatemala</option><option>Guinea</option><option>Guinea-Bissau</option><option>Guyana</option><option>Haiti</option><option>Honduras</option><option>Hong Kong</option><option>Hungary</option><option>Iceland</option><option>India</option><option>Indonesia</option><option>Iran</option><option>Iraq</option><option>Ireland</option><option>Israel</option><option>Italy</option><option>Jamaica</option><option>Japan</option><option>Jordan</option><option>Kazakhstan</option><option>Kenya</option><option>Kiribati</option><option>Kosovo</option><option>Kuwait</option><option>Kyrgyzstan</option><option>Laos</option><option>Latvia</option><option>Lebanon</option><option>Lesotho</option><option>Liberia</option><option>Libya</option><option>Liechtenstein</option><option>Lithuania</option><option>Luxembourg</option><option>Macau</option><option>Madagascar</option><option>Malawi</option><option>Malaysia</option><option>Maldives</option><option>Mali</option><option>Malta</option><option>Marshall Islands</option><option>Mauritania</option><option>Mauritius</option><option>Mexico</option><option>Micronesia</option><option>Moldova</option><option>Monaco</option><option>Mongolia</option><option>Montenegro</option><option>Morocco</option><option>Mozambique</option><option>Myanmar</option><option>Namibia</option><option>Nauru</option><option>Nepal</option><option>Netherlands</option><option>New Zealand</option><option>Nicaragua</option><option>Niger</option><option>Nigeria</option><option>North Korea</option><option>North Macedonia</option><option>Norway</option><option>Oman</option><option>Pakistan</option><option>Palau</option><option>Palestine</option><option>Panama</option><option>Papua New Guinea</option><option>Paraguay</option><option>Peru</option><option>Philippines</option><option>Poland</option><option>Portugal</option><option>Puerto Rico</option><option>Qatar</option><option>Romania</option><option>Russia</option><option>Rwanda</option><option>Saint Kitts and Nevis</option><option>Saint Lucia</option><option>Saint Vincent and the Grenadines</option><option>Samoa</option><option>San Marino</option><option>São Tomé and Príncipe</option><option>Saudi Arabia</option><option>Senegal</option><option>Serbia</option><option>Seychelles</option><option>Sierra Leone</option><option>Singapore</option><option>Slovakia</option><option>Slovenia</option><option>Solomon Islands</option><option>Somalia</option><option>South Africa</option><option>South Korea</option><option>South Sudan</option><option>Spain</option><option>Sri Lanka</option><option>Sudan</option><option>Suriname</option><option>Sweden</option><option>Switzerland</option><option>Syria</option><option>Taiwan</option><option>Tajikistan</option><option>Tanzania</option><option>Thailand</option><option>Timor-Leste</option><option>Togo</option><option>Tonga</option><option>Trinidad and Tobago</option><option>Tunisia</option><option>Turkey</option><option>Turkmenistan</option><option>Tuvalu</option><option>Uganda</option><option>Ukraine</option><option>United Arab Emirates</option><option>United Kingdom</option><option>United States</option><option>Uruguay</option><option>Uzbekistan</option><option>Vanuatu</option><option>Vatican City</option><option>Venezuela</option><option>Vietnam</option><option>Yemen</option><option>Zambia</option><option>Zimbabwe</option></datalist>
 <div id="print-target"></div>
 <!-- HIDDEN ON-SCREEN (not off-canvas) RENDER ZONE FOR PDF CAPTURE -->
 
@@ -3894,11 +3894,86 @@ function skInlineEdit(host,value,placeholder,onSave){
 // One custom dropdown shared by every input marked data-suggest="roles|skills|stack|cats".
 // It replaces the browser's native <datalist> popup, so it matches the app in light and dark
 // and also works inside modals. The old <datalist> elements stay in the page as the source lists.
+// States, regions and major cities by country, for the City / State dropdown. Each entry is
+// [what the first list is called, states or regions, major cities]. Anything else can still be typed.
+const GEO_RAW={
+'Nigeria':['State','Abia,Adamawa,Akwa Ibom,Anambra,Bauchi,Bayelsa,Benue,Borno,Cross River,Delta,Ebonyi,Edo,Ekiti,Enugu,FCT Abuja,Gombe,Imo,Jigawa,Kaduna,Kano,Katsina,Kebbi,Kogi,Kwara,Lagos,Nasarawa,Niger,Ogun,Ondo,Osun,Oyo,Plateau,Rivers,Sokoto,Taraba,Yobe,Zamfara','Abuja,Lagos,Port Harcourt,Ibadan,Kano,Benin City,Enugu,Kaduna,Abeokuta,Owerri,Warri,Uyo,Jos,Ilorin,Calabar,Asaba,Akure,Maiduguri,Yola,Awka'],
+'Ghana':['Region','Ahafo,Ashanti,Bono,Bono East,Central,Eastern,Greater Accra,North East,Northern,Oti,Savannah,Upper East,Upper West,Volta,Western,Western North','Accra,Kumasi,Tamale,Takoradi,Cape Coast,Sekondi,Ho,Koforidua,Sunyani,Tema'],
+'Kenya':['','','Nairobi,Mombasa,Kisumu,Nakuru,Eldoret,Thika,Malindi,Kitale,Nyeri,Machakos'],
+'South Africa':['Province','Eastern Cape,Free State,Gauteng,KwaZulu-Natal,Limpopo,Mpumalanga,North West,Northern Cape,Western Cape','Johannesburg,Cape Town,Durban,Pretoria,Gqeberha,Bloemfontein,East London,Sandton,Stellenbosch'],
+'Egypt':['','','Cairo,Alexandria,Giza,Sharm El Sheikh,Luxor,Aswan'],
+'Ethiopia':['','','Addis Ababa,Dire Dawa,Bahir Dar,Hawassa,Mekelle'],
+'Tanzania':['','','Dar es Salaam,Dodoma,Arusha,Mwanza,Zanzibar,Mbeya'],
+'Uganda':['','','Kampala,Entebbe,Jinja,Gulu,Mbarara'],
+'Rwanda':['','','Kigali,Butare,Gisenyi'],
+'Cameroon':['','','Douala,Yaoundé,Bamenda,Buea'],
+'Senegal':['','','Dakar,Thiès,Saint-Louis'],
+'Côte d’Ivoire':['','','Abidjan,Yamoussoukro,Bouaké'],
+'Morocco':['','','Casablanca,Rabat,Marrakech,Tangier,Fes'],
+'Zambia':['','','Lusaka,Ndola,Kitwe'],
+'Zimbabwe':['','','Harare,Bulawayo'],
+'United States':['State','Alabama,Alaska,Arizona,Arkansas,California,Colorado,Connecticut,Delaware,Florida,Georgia,Hawaii,Idaho,Illinois,Indiana,Iowa,Kansas,Kentucky,Louisiana,Maine,Maryland,Massachusetts,Michigan,Minnesota,Mississippi,Missouri,Montana,Nebraska,Nevada,New Hampshire,New Jersey,New Mexico,New York,North Carolina,North Dakota,Ohio,Oklahoma,Oregon,Pennsylvania,Rhode Island,South Carolina,South Dakota,Tennessee,Texas,Utah,Vermont,Virginia,Washington,West Virginia,Wisconsin,Wyoming,Washington DC','New York City,Los Angeles,Chicago,Houston,San Francisco,Seattle,Austin,Boston,Atlanta,Miami,Dallas,Denver'],
+'Canada':['Province','Alberta,British Columbia,Manitoba,New Brunswick,Newfoundland and Labrador,Northwest Territories,Nova Scotia,Nunavut,Ontario,Prince Edward Island,Quebec,Saskatchewan,Yukon','Toronto,Vancouver,Montreal,Calgary,Ottawa,Edmonton'],
+'United Kingdom':['Nation','England,Northern Ireland,Scotland,Wales','London,Manchester,Birmingham,Leeds,Liverpool,Bristol,Edinburgh,Glasgow,Cardiff,Belfast,Newcastle,Sheffield'],
+'Ireland':['','','Dublin,Cork,Galway,Limerick'],
+'India':['State','Andhra Pradesh,Arunachal Pradesh,Assam,Bihar,Chhattisgarh,Delhi,Goa,Gujarat,Haryana,Himachal Pradesh,Jharkhand,Karnataka,Kerala,Madhya Pradesh,Maharashtra,Manipur,Meghalaya,Mizoram,Nagaland,Odisha,Punjab,Rajasthan,Sikkim,Tamil Nadu,Telangana,Tripura,Uttar Pradesh,Uttarakhand,West Bengal','Mumbai,Bengaluru,Hyderabad,Chennai,Kolkata,Pune,Ahmedabad,Gurugram,Noida'],
+'Pakistan':['','','Karachi,Lahore,Islamabad,Rawalpindi,Faisalabad'],
+'Bangladesh':['','','Dhaka,Chittagong,Khulna'],
+'Philippines':['','','Manila,Quezon City,Cebu,Davao,Makati'],
+'Indonesia':['','','Jakarta,Surabaya,Bandung,Bali,Yogyakarta'],
+'Malaysia':['','','Kuala Lumpur,Penang,Johor Bahru,Selangor'],
+'Singapore':['','','Singapore'],
+'China':['','','Beijing,Shanghai,Shenzhen,Guangzhou,Hangzhou,Chengdu'],
+'Japan':['','','Tokyo,Osaka,Kyoto,Yokohama,Nagoya'],
+'South Korea':['','','Seoul,Busan,Incheon'],
+'Australia':['State','Australian Capital Territory,New South Wales,Northern Territory,Queensland,South Australia,Tasmania,Victoria,Western Australia','Sydney,Melbourne,Brisbane,Perth,Adelaide,Canberra'],
+'New Zealand':['','','Auckland,Wellington,Christchurch'],
+'Germany':['State','Baden-Württemberg,Bavaria,Berlin,Brandenburg,Bremen,Hamburg,Hesse,Lower Saxony,Mecklenburg-Vorpommern,North Rhine-Westphalia,Rhineland-Palatinate,Saarland,Saxony,Saxony-Anhalt,Schleswig-Holstein,Thuringia','Munich,Frankfurt,Cologne,Stuttgart,Düsseldorf'],
+'France':['','','Paris,Lyon,Marseille,Toulouse,Nice,Bordeaux'],
+'Spain':['','','Madrid,Barcelona,Valencia,Seville,Bilbao'],
+'Italy':['','','Rome,Milan,Turin,Naples,Florence'],
+'Netherlands':['','','Amsterdam,Rotterdam,The Hague,Utrecht,Eindhoven'],
+'Portugal':['','','Lisbon,Porto'],
+'Sweden':['','','Stockholm,Gothenburg,Malmö'],
+'Norway':['','','Oslo,Bergen'],
+'Denmark':['','','Copenhagen,Aarhus'],
+'Finland':['','','Helsinki,Tampere'],
+'Poland':['','','Warsaw,Kraków,Wrocław,Gdańsk'],
+'Switzerland':['','','Zurich,Geneva,Basel,Bern'],
+'Belgium':['','','Brussels,Antwerp'],
+'Austria':['','','Vienna,Salzburg'],
+'United Arab Emirates':['Emirate','Abu Dhabi,Ajman,Dubai,Fujairah,Ras Al Khaimah,Sharjah,Umm Al Quwain',''],
+'Saudi Arabia':['','','Riyadh,Jeddah,Dammam,Mecca,Medina'],
+'Qatar':['','','Doha'],
+'Turkey':['','','Istanbul,Ankara,Izmir'],
+'Israel':['','','Tel Aviv,Jerusalem,Haifa'],
+'Brazil':['','','São Paulo,Rio de Janeiro,Brasília,Belo Horizonte'],
+'Mexico':['','','Mexico City,Guadalajara,Monterrey'],
+'Argentina':['','','Buenos Aires,Córdoba'],
+'Colombia':['','','Bogotá,Medellín'],
+'Chile':['','','Santiago']
+};
+const GEO_ALIAS={usa:'united states',us:'united states','u.s.':'united states',america:'united states',uk:'united kingdom','great britain':'united kingdom',england:'united kingdom',scotland:'united kingdom',wales:'united kingdom',uae:'united arab emirates','ivory coast':'cote divoire'};
+// lower-case, no accents or apostrophes, so "Côte d’Ivoire", "cote d'ivoire" and "USA" all find their entry
+function geoKey(c){
+  const k=String(c||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’']/g,'');
+  return GEO_ALIAS[k]||k;
+}
+const GEO={};Object.keys(GEO_RAW).forEach(n=>{GEO[geoKey(n)]=GEO_RAW[n];});
+// Suggestions for the City / State field, based on the country picked above it.
+function geoPlaces(country){
+  const g=GEO[geoKey(country)];if(!g)return [];
+  const states=g[1]?g[1].split(',').map(v=>({v,h:g[0]||'Region'})):[];
+  const seen=new Set(states.map(o=>o.v.toLowerCase()));
+  const cities=g[2]?g[2].split(',').filter(v=>!seen.has(v.toLowerCase())).map(v=>({v,h:'City'})):[];
+  return [...states,...cities];
+}
 const SG={el:null,list:null,inp:null,rows:[],act:-1,until:0,timer:0};
 function sgSource(kind){
   const dl=id=>[...document.querySelectorAll('#'+id+' option')].map(o=>({v:o.value||o.textContent}));
   if(kind==='roles')return{opts:dl('role-suggestions'),create:''};
   if(kind==='countries')return{opts:dl('country-suggestions'),create:''};
+  if(kind==='places'){const c=gi('ex-country');return{opts:geoPlaces(c?c.value:''),create:''};}
   if(kind==='stack')return{opts:dl('skill-suggestions'),create:'Add'};
   if(kind==='skills'){
     const have=new Set(skNames().map(s=>s.toLowerCase()));
@@ -3911,8 +3986,11 @@ function sgSource(kind){
   }
   return{opts:[],create:''};
 }
+// Lower-case and drop accents one letter at a time, so the text keeps its length: typing "sao" finds
+// "São Paulo" and "cote" finds "Côte d’Ivoire", and the highlight still lines up with the real text.
+function fold(t){return [...String(t||'')].map(c=>c.normalize('NFD').replace(/[\u0300-\u036f]/g,'')[0]||c).join('').toLowerCase();}
 function sgMark(text,ql){
-  const i=ql?text.toLowerCase().indexOf(ql):-1;
+  const i=ql?fold(text).indexOf(ql):-1;
   if(i<0)return esc(text);
   return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+ql.length))+'</mark>'+esc(text.slice(i+ql.length));
 }
@@ -3929,11 +4007,11 @@ function sgEnsure(){
 }
 function sgRender(){
   const inp=SG.inp;if(!inp)return;
-  const src=sgSource(inp.dataset.suggest),q=inp.value.trim(),ql=q.toLowerCase();
-  let rows=src.opts.filter(o=>!ql||o.v.toLowerCase().includes(ql));
-  if(ql)rows.sort((a,b)=>(a.v.toLowerCase().startsWith(ql)?0:1)-(b.v.toLowerCase().startsWith(ql)?0:1));
-  rows=rows.slice(0,60);
-  if(src.create&&q&&!src.opts.some(o=>o.v.toLowerCase()===ql))rows.push({v:q,create:src.create});
+  const src=sgSource(inp.dataset.suggest),q=inp.value.trim(),ql=fold(q);
+  let rows=src.opts.filter(o=>!ql||fold(o.v).includes(ql));
+  if(ql)rows.sort((a,b)=>(fold(a.v).startsWith(ql)?0:1)-(fold(b.v).startsWith(ql)?0:1));
+  rows=rows.slice(0,120);
+  if(src.create&&q&&!src.opts.some(o=>fold(o.v)===ql))rows.push({v:q,create:src.create});
   SG.rows=rows;SG.act=-1;
   SG.list.innerHTML=rows.map((o,i)=>{
     const plus='<span class="sg-ic"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>';
@@ -3987,7 +4065,7 @@ function sgPick(i){
   inp.value=o.v;
   if(inp.id==='sk-inp')addSk();
   else if(inp.id==='proj-stack-inp'){const b=gi('proj-stack-add-btn');if(b)b.click();}
-  else inp.dispatchEvent(new Event('input',{bubbles:true}));        // lets oninput handlers (CV preview) run
+  else{inp.dispatchEvent(new Event('input',{bubbles:true}));if(inp.id==='ex-country'){const c=gi('ex-city');if(c){SG.until=0;c.focus();}}}        // lets oninput handlers (CV preview) run
 }
 document.addEventListener('focusin',e=>{
   const t=e.target;
@@ -4251,8 +4329,8 @@ function addExp(editIdx){
       <label class="fld"><span class="fld-l">Job title</span><input class="fi" id="ex-t" placeholder="e.g. Product Designer" value="${esc(ex.t)}" data-suggest="roles" autocomplete="off"></label>
       <label class="fld"><span class="fld-l">Company</span><input class="fi" id="ex-co" placeholder="Where you worked" value="${esc(ex.co)}"></label>
       <div class="row2">
-        <div class="date-field"><label class="date-lbl" for="ex-city">City</label><input class="fi" id="ex-city" placeholder="e.g. Lagos" value="${esc(ex.city)}" autocomplete="off"></div>
-        <div class="date-field"><label class="date-lbl" for="ex-country">Country</label><input class="fi" id="ex-country" placeholder="e.g. Nigeria" value="${esc(ex.country)}" data-suggest="countries" autocomplete="off"></div>
+        <div class="date-field"><label class="date-lbl" for="ex-country">Country</label><input class="fi" id="ex-country" placeholder="Search a country" value="${esc(ex.country)}" data-suggest="countries" autocomplete="off"></div>
+        <div class="date-field"><label class="date-lbl" for="ex-city">City / State</label><input class="fi" id="ex-city" placeholder="Search or type a place" value="${esc(ex.city)}" data-suggest="places" autocomplete="off"></div>
       </div>
       <div class="row2">
         <div class="date-field"><label class="date-lbl" for="ex-type">Employment type</label><select class="fi" id="ex-type" aria-label="Employment type">${optsHTML(EMP_TYPES,ex.type)}</select></div>
