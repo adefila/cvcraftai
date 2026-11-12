@@ -93,6 +93,9 @@ button svg,a svg{transition:opacity .15s,transform .15s}
 .btn-pill svg{transition:transform .18s cubic-bezier(.34,1.3,.64,1)}
 .btn-pill:hover:not(:disabled) svg{transform:translateX(2px)}
 .sk-tag button svg{transition:transform .15s,opacity .15s}
+.sk-category{flex-basis:100%}
+.sk-category-label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sk-category-chips{display:flex;flex-wrap:wrap;gap:7px;flex-basis:100%}
 .sk-tag button:hover svg{transform:rotate(90deg)}
 .sim-section-head svg{flex-shrink:0;opacity:.65}
 .bar-menu-btn:hover svg{opacity:.7;transform:rotate(90deg)}
@@ -1759,6 +1762,7 @@ html[data-theme="dark"] [style*="background:#FFF8E6"],html[data-theme="dark"] [s
       <div class="sk-row">
         <input class="fi" id="sk-inp" placeholder="Add skill & press Enter" style="flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addSk()}" list="skill-suggestions" autocomplete="off">
         <input class="fi" id="sk-cat" placeholder="Category (optional)" style="width:150px" list="skill-cat-suggestions" autocomplete="off">
+        <datalist id="skill-cat-suggestions"><option>Technical</option><option>Tools</option><option>Soft Skills</option><option>Languages</option><option>Domain</option><option>Other</option></datalist>
         <datalist id="skill-suggestions">
           <option>JavaScript</option><option>TypeScript</option><option>Python</option><option>React</option><option>Next.js</option><option>Node.js</option><option>Vue.js</option><option>Angular</option><option>HTML</option><option>CSS</option><option>Tailwind CSS</option>
           <option>Figma</option><option>Framer</option><option>Webflow</option><option>Adobe XD</option><option>Sketch</option><option>Illustrator</option><option>Photoshop</option><option>After Effects</option><option>Principle</option>
@@ -3586,11 +3590,12 @@ function setAC(color,el){
 // ── SKILLS ──
 const SKILL_CATS=['Technical','Tools','Soft Skills','Languages','Domain','Other'];
 function skName(s){return typeof s==='string'?s:(s&&s.n)||'';}
-function skCat(s){return typeof s==='string'?'General':(s&&s.c)||'General';}
+function skCat(s){return s&&s.c?s.c:'';}
 function skNames(){return skills.map(skName);}
+
 function addSk(){
   const inp=gi('sk-inp'),s=inp.value.trim();
-  const catInp=gi('sk-cat');const cat=(catInp&&catInp.value.trim())||'General';
+  const catInp=gi('sk-cat');const cat=catInp?catInp.value.trim():'';
   const nameOnly=skills.map(skName);
   if(s&&!nameOnly.includes(s)){
     skills.push({n:s,c:cat});inp.value='';if(catInp)catInp.value='';renderSk();rCV();upATS();
@@ -3599,9 +3604,29 @@ function addSk(){
   inp.focus();
 }
 function rmSk(i){skills.splice(i,1);renderSk();rCV();upATS();}
+// Groups skills by category for the editor. Skills with no category come first with no label;
+// the suggested categories follow in a fixed order, then any custom ones A to Z.
+// Each item keeps its index in `skills` so the remove button hits the right one.
+function skGroups(){
+  const map=new Map();
+  skills.forEach((s,i)=>{
+    const c=skCat(s);
+    if(!map.has(c))map.set(c,[]);
+    map.get(c).push({n:skName(s),i});
+  });
+  const rank=c=>{if(c==='')return -1;const k=SKILL_CATS.indexOf(c);return k>=0?k:SKILL_CATS.length;};
+  return [...map.entries()]
+    .sort((a,b)=>rank(a[0])-rank(b[0])||a[0].localeCompare(b[0]))
+    .map(([cat,items])=>({cat,items}));
+}
 function renderSk(){
-  gi('sk-tags').innerHTML=skills.map((s,i)=>
-    `<div class="sk-tag">${esc(skName(s))}<span style="font-size:10px;font-weight:700;color:var(--muted);margin-left:4px">${esc(skCat(s))}</span><button onclick="rmSk(${i})" title="Remove"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('');
+  const x='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  gi('sk-tags').innerHTML=skGroups().map(g=>{
+    const chips=g.items.map(it=>`<div class="sk-tag">${esc(it.n)}<button onclick="rmSk(${it.i})" title="Remove" aria-label="Remove ${esc(it.n)}">${x}</button></div>`).join('');
+    return g.cat
+      ?`<div class="sk-category"><div class="sk-category-label">${esc(g.cat)}</div><div class="sk-category-chips">${chips}</div></div>`
+      :`<div class="sk-category-chips">${chips}</div>`;
+  }).join('');
 }
 
 // ── MODALS ──
@@ -6867,7 +6892,7 @@ const TPL={
     <p class="classic-sum">${d.sum}</p>
     ${d.exps.length?`<div class="classic-sl">Experience</div>${d.exps.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.t}, ${e.co}</div><div class="classic-ed">${[e.s,e.present?'Present':e.e].filter(Boolean).join(' – ')}</div></div>${bls(e.d,'classic-bl')}</div>`).join('')}`:''}
     ${d.edus.length?`<div class="classic-sl">Education</div>${d.edus.map(e=>`<div class="classic-ex"><div class="classic-eh"><div class="classic-et">${e.d}</div><div class="classic-ed">${e.y||''}</div></div><div class="classic-ec">${e.s}${e.g?', GPA '+e.g:''}</div></div>`).join('')}`:''}
-    ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skNames().join(' • ')}</div>`:''}
+    ${d.skills.length?`<div class="classic-sl">Skills</div><div class="classic-sk-line">${d.skills.join(' • ')}</div>`:''}
     ${projsHTML(d,'classic-sl','classic-ex',AC)}${additionalInfoHTML(d,'classic-sl','classic-sum')}
   </div>`,
 
